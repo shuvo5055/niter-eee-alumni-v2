@@ -1,42 +1,6 @@
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
-import ErrorBoundary from "./components/ErrorBoundary";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
-
-
-function Router() {
-  return (
-    <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
-
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
-
-function App() {
-  return (
-    <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
-  );
-}
-
-export default App;
+/**
+ * Circuit Archive design system: the global shell ensures every public route carries the same institutional voice.
+ */
+import "./archive-refinement.css";
+import {Toaster} from "@/components/ui/sonner"; import {TooltipProvider} from "@/components/ui/tooltip"; import {Route,Switch} from "wouter"; import ErrorBoundary from "./components/ErrorBoundary"; import {ThemeProvider} from "./contexts/ThemeContext"; import SiteShell from "./components/SiteShell"; import Home from "./pages/Home"; import Alumni from "./pages/Alumni"; import Batches from "./pages/Batches"; import BatchDetail from "./pages/BatchDetail"; import Districts from "./pages/Districts"; import DistrictDetail from "./pages/DistrictDetail"; import Jobs from "./pages/Jobs"; import Gallery from "./pages/Gallery"; import About from "./pages/About"; import Contact from "./pages/Contact"; import Profile from "./pages/Profile"; import NotFound from "./pages/NotFound";
+function Router(){return <SiteShell><Switch><Route path="/" component={Home}/><Route path="/alumni" component={Alumni}/><Route path="/alumni/:slug" component={Profile}/><Route path="/batches" component={Batches}/><Route path="/batches/:batch" component={BatchDetail}/><Route path="/districts" component={Districts}/><Route path="/districts/:district" component={DistrictDetail}/><Route path="/jobs" component={Jobs}/><Route path="/gallery" component={Gallery}/><Route path="/about" component={About}/><Route path="/contact" component={Contact}/><Route component={NotFound}/></Switch></SiteShell>}; export default function App(){return <ErrorBoundary><ThemeProvider defaultTheme="light"><TooltipProvider><Toaster/><Router/></TooltipProvider></ThemeProvider></ErrorBoundary>}

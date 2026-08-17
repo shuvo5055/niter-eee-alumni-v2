@@ -1,5 +1,9 @@
 # Official NITER Brand Update
 
+- [x] Audit current compact mobile overrides against the renewed desktop-faithful responsive requirements.
+- [x] Restore the full shared hero hierarchy, including the headline, and remove mobile-specific visual compression.
+- [x] Validate the common design across 360px, 375px, 390px, 412px, 768px, 1024px, and desktop widths.
+- [x] Save and deliver the desktop-faithful responsive checkpoint.
 - [x] Confirm the current responsive implementation matches the newly supplied compact desktop-like mobile reference.
 - [x] Restore the compact reference responsive layer and match the screenshot’s concise hero and directory text hierarchy.
 - [x] Verify the reference composition across the requested phone, tablet, and desktop widths before saving a checkpoint.

@@ -3,11 +3,11 @@
   .thesis-header__mast{min-height:80px!important;padding-top:10px!important;padding-bottom:10px!important;align-items:center!important;gap:8px!important}
   .thesis-institute-lockup{gap:8px!important;flex:0 1 50%;min-width:0}
   .thesis-institute-lockup__logo{width:46px!important;height:46px!important;max-width:46px!important}
-  .thesis-institute-lockup__name{max-width:100px;font-size:6.35px!important;letter-spacing:.06em!important;line-height:1.18!important}
+  .thesis-institute-lockup__name{max-width:106px;font-size:7.5px!important;letter-spacing:.055em!important;line-height:1.18!important}
   .thesis-header__right{display:flex!important;flex:0 1 50%;min-width:0;margin-left:auto;justify-content:flex-end}
   .thesis-alumni-lockup{position:static!important;display:flex!important;align-items:flex-end!important;text-align:right!important;min-width:0}
-  .thesis-alumni-lockup strong{font-size:14px!important;line-height:1!important;white-space:normal!important}
-  .thesis-alumni-lockup span{font-size:6px!important;letter-spacing:.075em!important;line-height:1.15!important}
+  .thesis-alumni-lockup strong{font-size:15px!important;line-height:1!important;white-space:normal!important}
+  .thesis-alumni-lockup span{font-size:8px!important;letter-spacing:.065em!important;line-height:1.15!important}
   .thesis-mobile-nav{top:130px!important}
   .hero__inner{position:relative;padding-top:47px!important;padding-bottom:42px!important}
   .hero__buttons{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;gap:10px!important;width:auto!important}
@@ -26,9 +26,9 @@
 @media(max-width:440px){
   .thesis-header__mast{min-height:74px!important}
   .thesis-institute-lockup__logo{width:42px!important;height:42px!important;max-width:42px!important}
-  .thesis-institute-lockup__name{max-width:91px;font-size:5.8px!important}
-  .thesis-alumni-lockup strong{font-size:12px!important}
-  .thesis-alumni-lockup span{font-size:5.3px!important}
+  .thesis-institute-lockup__name{max-width:94px;font-size:7px!important}
+  .thesis-alumni-lockup strong{font-size:13px!important}
+  .thesis-alumni-lockup span{font-size:7px!important}
   .thesis-mobile-nav{top:124px!important}
   .hero__lede{max-width:88%!important}
   .hero__buttons .button{flex-basis:145px!important;width:145px!important;font-size:12px!important;padding-left:10px!important;padding-right:10px!important}

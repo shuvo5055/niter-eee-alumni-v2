@@ -1,5 +1,9 @@
 # Official NITER Brand Update
 
+- [x] Audit the complete homepage at 360px, 375px, 390px, and 412px widths for overflow and stacking issues.
+- [x] Refine mobile header, menu bar, statistics, directory search, alumni cards, section spacing, and footer flow.
+- [x] Verify full-page mobile rendering across representative phone widths without horizontal scrolling.
+- [x] Save and deliver the optimized mobile homepage checkpoint.
 - [x] Verify the latest Featured Alumni section visual-editor removals.
 - [x] Remove the missed Featured Alumni heading and clean empty visual-editor elements.
 - [x] Validate the updated homepage and save a checkpoint.

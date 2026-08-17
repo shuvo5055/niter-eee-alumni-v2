@@ -21,7 +21,7 @@ export function Header(){
         <span className="thesis-institute-lockup__name"><strong>NATIONAL INSTITUTE OF</strong><strong>TEXTILE ENGINEERING &amp;</strong><strong>RESEARCH</strong></span>
       </Link>
       <div className="thesis-header__right">
-        <div className="thesis-alumni-lockup"><strong>NITER Alumni Association</strong><span>Department of EEE, NITER</span></div>
+        <div className="thesis-alumni-lockup"><strong>NITER Alumni Association</strong><span>Department of EEE</span></div>
         <div className="thesis-header__utility"><button className="thesis-icon-button" onClick={()=>setSearchOpen(value=>!value)} aria-label="Search alumni"><Search size={19}/></button><button className="thesis-menu-button" onClick={()=>setOpen(value=>!value)} aria-label="Toggle menu">{open?<X size={24}/>:<Menu size={24}/>}</button></div>
       </div>
     </div>

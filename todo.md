@@ -1,5 +1,7 @@
 # Official NITER Brand Update
 
+- [x] Move the navigation bar beneath the masthead to the left while preserving the right-side Alumni Association lockup.
+- [x] Verify the left-aligned navigation and responsive mobile header behavior.
 - [x] Adapt the shared header to the dark navy and indigo NITER Thesis Library reference composition.
 - [x] Display the uploaded NITER logo unchanged beside the requested full institute name.
 - [x] Add the requested NITER Alumni Association and Department of EEE, NITER lockup on the right.

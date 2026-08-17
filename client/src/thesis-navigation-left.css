@@ -1,0 +1,5 @@
+/* Thesis Library header alignment: navigation begins at the left edge of the lower institutional bar. */
+@media(min-width:781px){
+  .thesis-header .thesis-header__navwrap{justify-content:flex-start!important}
+  .thesis-header .thesis-header__navwrap .thesis-nav{margin-left:0!important;margin-right:auto!important;padding-left:0;justify-content:flex-start!important}
+}

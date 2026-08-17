@@ -1,5 +1,8 @@
 # Official NITER Brand Update
 
+- [x] Apply the supplied compact mobile composition: four statistics across, side-by-side directory panels, and two-column alumni cards.
+- [x] Preserve the desktop visual system while scaling typography, controls, and imagery for the compact phone layout.
+- [x] Verify the mobile homepage at reference-like phone dimensions and save a checkpoint.
 - [x] Compare desktop and mobile homepage screenshots for visual-system inconsistencies.
 - [x] Refine responsive CSS so mobile preserves desktop typography, spacing language, cards, and section composition.
 - [x] Verify desktop-consistent mobile presentation without overflow or clipping.

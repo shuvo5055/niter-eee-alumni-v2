@@ -1,0 +1,59 @@
+/* Compact reference mobile mode: keeps the desktop information density and two-column rhythm at phone widths, proportionally scaled to fit. */
+@media(max-width:520px){
+  .thesis-header__mast{min-height:72px!important;padding:8px 12px!important}
+  .thesis-institute-lockup__logo{width:40px!important;height:40px!important;max-width:40px!important}
+  .thesis-institute-lockup__name{max-width:85px;font-size:5.35px!important;letter-spacing:.052em!important}
+  .thesis-alumni-lockup strong{font-size:11px!important}
+  .thesis-alumni-lockup span{font-size:4.8px!important}
+  .thesis-header__navwrap{padding-left:12px!important;padding-right:12px!important;min-height:39px!important}
+  .thesis-header__navcontrols{gap:8px!important;overflow:hidden}
+  .thesis-menu-bar__button{grid-template-columns:14px auto!important;gap:4px!important;min-width:52px!important;width:52px!important;height:25px!important;padding:0 6px!important;font-size:5.7px!important;letter-spacing:.08em!important}
+  .thesis-menu-bar__button svg{width:14px;height:14px}
+  .thesis-header__navcontrols .thesis-nav{display:flex!important;gap:8px!important;flex:1 1 auto!important;min-width:0!important;overflow:hidden}
+  .thesis-header__navcontrols .thesis-nav a{font-size:5.8px!important;letter-spacing:0!important;white-space:nowrap}
+  .thesis-header__navcontrols .thesis-nav a:after{bottom:-10px!important;height:1px!important}
+  .thesis-mobile-nav{top:111px!important}
+  .hero__inner{padding-top:40px!important;padding-bottom:31px!important}
+  .hero__lede{max-width:59%!important;font-size:10px!important;line-height:1.62!important}
+  .hero__buttons{gap:8px!important}
+  .hero__buttons .button{flex:0 0 calc((100vw - 90px)/2)!important;width:calc((100vw - 90px)/2)!important;min-height:33px!important;padding:0 6px!important;font-size:8px!important}
+  .hero__buttons .button svg{width:14px;height:14px}
+  .hero__stat-mark{transform:scale(.48)!important;right:-6px!important;bottom:4px!important}
+  .stats-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  .stat-card{min-height:105px!important;padding:11px 8px!important}
+  .stat-card svg{width:15px;height:15px}
+  .stat-card strong{font-size:19px!important;line-height:1.05!important}
+  .stat-card p{font-size:5.7px!important;letter-spacing:.05em!important;line-height:1.25!important}
+  .stat-card__index{font-size:6px!important}
+  .find-section{padding:58px 0!important}
+  .find-layout{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)!important;gap:13px!important;align-items:center!important}
+  .find-copy{padding-right:0!important}
+  .find-copy .eyebrow{font-size:6px!important}
+  .find-copy>p:not(.eyebrow){font-size:8px!important;line-height:1.55!important}
+  .find-copy__detail{margin-top:16px!important;padding-top:12px!important;font-size:6.5px!important;line-height:1.4!important}
+  .find-copy__detail svg{width:15px;height:15px;flex:0 0 auto}
+  .find-panel{padding:14px 10px!important}
+  .find-panel__label{font-size:6px!important;letter-spacing:.1em!important}
+  .find-search{min-height:31px!important}
+  .find-search svg{width:12px;height:12px}
+  .find-search input{font-size:6.6px!important}
+  .find-search button{flex:0 0 31px!important;width:31px!important}
+  .quick-search{gap:4px!important;margin-top:9px!important}
+  .quick-search span{font-size:6px!important}
+  .quick-search button{font-size:5.5px!important;padding:3px 5px!important}
+  .alumni-grid,.alumni-grid--home{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  .featured-section{padding:42px 0!important}
+  .alumni-card{grid-template-columns:48px minmax(0,1fr)!important;overflow:hidden!important}
+  .alumni-card__image{width:48px!important;min-width:48px!important}
+  .alumni-card__content{min-width:0!important;padding:7px 6px!important;overflow:hidden!important}
+  .alumni-card__name{font-size:9px!important;line-height:1.03!important;overflow-wrap:normal!important}
+  .alumni-card__batch,.alumni-card__position,.alumni-card__org,.alumni-card__meta{font-size:5px!important;line-height:1.2!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .alumni-card__footer{justify-content:space-between!important;padding-top:5px!important;margin-top:5px!important;gap:2px!important;min-width:0!important}
+  .alumni-card__footer>*{min-width:0!important}
+  .alumni-card__footer a{font-size:5px!important;white-space:nowrap}
+  .network-banner{padding:36px 0!important}
+  .network-banner .button{min-width:32px!important;min-height:28px!important;padding:0 10px!important}
+  .official-footer{padding-top:37px!important}
+  .official-footer__identity strong{font-size:20px!important}
+  .official-footer__brand>p{font-size:8px!important}
+}

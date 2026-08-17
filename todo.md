@@ -1,5 +1,8 @@
 # Official NITER Brand Update
 
+- [x] Verify the latest Featured Alumni section visual-editor removals.
+- [x] Remove the missed Featured Alumni heading and clean empty visual-editor elements.
+- [x] Validate the updated homepage and save a checkpoint.
 - [x] Verify the visual-editor text removals and repeated logo background-color edits.
 - [x] Repair the invalid repeated style attributes in the shared header.
 - [x] Apply the missed homepage text removals manually.

@@ -1,5 +1,8 @@
 # Official NITER Brand Update
 
+- [x] Remove the forced black background from the official NITER logo in the header.
+- [x] Confirm the official NITER logo is cleanly visible in the shared footer.
+- [x] Verify both logo treatments at desktop and mobile sizes and save a checkpoint.
 - [x] Verify the Batch page helper-text removal and clean the empty element.
 - [x] Validate the Batch page rendering and save a checkpoint.
 - [x] Remove the shared header search button and unused search-control state.

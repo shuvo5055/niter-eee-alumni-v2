@@ -15,7 +15,7 @@ export function Header(){
     <div className="thesis-header__diagonal" aria-hidden="true"/>
     <div className="container thesis-header__mast">
       <Link href="/" className="thesis-institute-lockup" aria-label="NITER EEE Alumni home">
-        <img className="official-niter-logo thesis-institute-lockup__logo" src={officialLogo} alt="Official NITER logo" style={{backgroundColor:"#000000"}}/>
+        <img className="official-niter-logo thesis-institute-lockup__logo" src={officialLogo} alt="Official NITER logo"/>
         <span className="thesis-institute-lockup__name"><strong>NATIONAL INSTITUTE OF</strong><strong>TEXTILE ENGINEERING &amp;</strong><strong>RESEARCH</strong></span>
       </Link>
       <div className="thesis-header__right"><div className="thesis-alumni-lockup"><strong>NITER Alumni Association</strong><span>Department of EEE</span></div></div>

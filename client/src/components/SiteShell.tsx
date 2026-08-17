@@ -3,16 +3,14 @@
  */
 import {useEffect,useState} from "react";
 import {Link,useLocation} from "wouter";
-import {Menu,Search,X,ArrowUpRight,MapPin,Mail,Linkedin,Facebook} from "lucide-react";
-import {Input} from "@/components/ui/input";
+import {Menu,X,ArrowUpRight,MapPin,Mail,Linkedin,Facebook} from "lucide-react";
 
 const officialLogo="/manus-storage/niter-official-logo_b5db41d0.jpg";
 const navLinks=[["Home","/"],["Alumni","/alumni"],["Batch","/batches"],["District","/districts"],["Job","/jobs"],["About","/about"],["Contact","/contact"]];
 
 export function Header(){
-  const[location,setLocation]=useLocation(); const[open,setOpen]=useState(false); const[searchOpen,setSearchOpen]=useState(false); const[query,setQuery]=useState(""); const[scrolled,setScrolled]=useState(false);
+  const[location]=useLocation(); const[open,setOpen]=useState(false); const[scrolled,setScrolled]=useState(false);
   useEffect(()=>{const handle=()=>setScrolled(window.scrollY>14);handle();window.addEventListener("scroll",handle);return()=>window.removeEventListener("scroll",handle)},[]);
-  const submit=(event:React.FormEvent)=>{event.preventDefault();const term=query.trim();setSearchOpen(false);setOpen(false);setLocation(term?`/alumni?q=${encodeURIComponent(term)}`:"/alumni")};
   return <header className={`site-header thesis-header ${scrolled?"site-header--scrolled":""}`}>
     <div className="thesis-header__diagonal" aria-hidden="true"/>
     <div className="container thesis-header__mast">
@@ -20,10 +18,9 @@ export function Header(){
         <img className="official-niter-logo thesis-institute-lockup__logo" src={officialLogo} alt="Official NITER logo" style={{backgroundColor:"#000000"}}/>
         <span className="thesis-institute-lockup__name"><strong>NATIONAL INSTITUTE OF</strong><strong>TEXTILE ENGINEERING &amp;</strong><strong>RESEARCH</strong></span>
       </Link>
-      <div className="thesis-header__right"><div className="thesis-alumni-lockup"><strong>NITER Alumni Association</strong><span>Department of EEE</span></div><div className="thesis-header__utility"><button className="thesis-icon-button" onClick={()=>setSearchOpen(value=>!value)} aria-label="Search alumni"><Search size={19}/></button></div></div>
+      <div className="thesis-header__right"><div className="thesis-alumni-lockup"><strong>NITER Alumni Association</strong><span>Department of EEE</span></div></div>
     </div>
     <div className="thesis-header__navrow"><div className="container thesis-header__navwrap"><div className="thesis-header__navcontrols"><button className="thesis-menu-button thesis-menu-bar__button" onClick={()=>setOpen(value=>!value)} aria-label="Toggle navigation menu">{open?<X size={22}/>:<Menu size={22}/>}<span>Menu</span></button><nav className="desktop-nav thesis-nav" aria-label="Primary navigation">{navLinks.map(([label,href])=><Link key={href} href={href} className={location===href||(href!=="/"&&location.startsWith(href))?"is-active":""}>{label}</Link>)}</nav></div></div></div>
-    {searchOpen&&<form className="header-search thesis-header__search" onSubmit={submit}><Search size={17}/><Input autoFocus value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search alumni, batch, district or organization"/><button>Search <ArrowUpRight size={15}/></button></form>}
     {open&&<nav className="mobile-nav thesis-mobile-nav" aria-label="Mobile navigation">{navLinks.map(([label,href])=><Link key={href} href={href} onClick={()=>setOpen(false)}>{label}<ArrowUpRight size={16}/></Link>)}</nav>}
   </header>
 }

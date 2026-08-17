@@ -1,5 +1,8 @@
 # Official NITER Brand Update
 
+- [x] Remove the shared header search button and unused search-control state.
+- [x] Verify the simplified header at desktop and mobile widths.
+- [x] Save and deliver the header cleanup checkpoint.
 - [x] Verify the latest directory and department-banner visual-editor removals.
 - [x] Correct unintended AUMNI copy corruption and remove the missed empty heading elements.
 - [x] Validate the cleaned homepage and save a checkpoint.

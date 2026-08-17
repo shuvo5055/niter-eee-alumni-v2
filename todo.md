@@ -1,5 +1,8 @@
 # Official NITER Brand Update
 
+- [x] Verify the latest directory and department-banner visual-editor removals.
+- [x] Correct unintended AUMNI copy corruption and remove the missed empty heading elements.
+- [x] Validate the cleaned homepage and save a checkpoint.
 - [x] Audit the complete homepage at 360px, 375px, 390px, and 412px widths for overflow and stacking issues.
 - [x] Refine mobile header, menu bar, statistics, directory search, alumni cards, section spacing, and footer flow.
 - [x] Verify full-page mobile rendering across representative phone widths without horizontal scrolling.

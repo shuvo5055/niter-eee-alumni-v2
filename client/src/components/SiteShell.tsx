@@ -1,9 +1,47 @@
 /**
- * Circuit Archive design system: shared NITER Navy navigation, distinct data metaphors, and Archive Ivory institutional footer.
+ * Official NITER identity: preserve the provided logo unchanged, with a white institutional header and dark-purple academic footer.
  */
-import {useEffect,useState} from "react"; import {Link,useLocation} from "wouter"; import {Menu,Search,X,ArrowUpRight,MapPin,Mail,Linkedin,Facebook} from "lucide-react"; import {Input} from "@/components/ui/input";
-const logo="/manus-storage/niter-eee-alumni-logo_e20a7d81.png"; const navLinks=[["Home","/"],["Alumni","/alumni"],["Batch","/batches"],["District","/districts"],["Job","/jobs"],["Gallery","/gallery"],["About","/about"],["Contact","/contact"]];
-export function Header(){const[location,setLocation]=useLocation();const[open,setOpen]=useState(false);const[searchOpen,setSearchOpen]=useState(false);const[query,setQuery]=useState("");const[scrolled,setScrolled]=useState(false);useEffect(()=>{const handle=()=>setScrolled(window.scrollY>14);handle();window.addEventListener("scroll",handle);return()=>window.removeEventListener("scroll",handle)},[]);const submit=(event:React.FormEvent)=>{event.preventDefault();const term=query.trim();setSearchOpen(false);setOpen(false);setLocation(term?`/alumni?q=${encodeURIComponent(term)}`:"/alumni")};return <header className={`site-header ${scrolled?"site-header--scrolled":""}`}><div className="container header-inner"><Link href="/" className="brand-lockup" aria-label="NITER EEE Alumni home"><img className="brand-mark" src={logo} alt="NITER EEE Alumni circuit mark"/><span><strong>NITER EEE</strong><small>ALUMNI NETWORK</small></span></Link><nav className="desktop-nav" aria-label="Primary navigation">{navLinks.map(([label,href])=><Link key={href} href={href} className={location===href||(href!=="/"&&location.startsWith(href))?"is-active":""}>{label}</Link>)}</nav><div className="header-actions"><button className="icon-button" onClick={()=>setSearchOpen(value=>!value)} aria-label="Search alumni"><Search size={19}/></button><button className="menu-button" onClick={()=>setOpen(value=>!value)} aria-label="Toggle menu">{open?<X size={23}/>:<Menu size={23}/>}</button></div></div>{searchOpen&&<form className="header-search" onSubmit={submit}><Search size={17}/><Input autoFocus value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search alumni, batch, district or organization"/><button>Search <ArrowUpRight size={15}/></button></form>}{open&&<nav className="mobile-nav" aria-label="Mobile navigation">{navLinks.map(([label,href])=><Link key={href} href={href} onClick={()=>setOpen(false)}>{label}<ArrowUpRight size={16}/></Link>)}</nav>}</header>}
-export function Footer(){return <footer className="site-footer"><div className="footer-network" aria-hidden="true"><i/><i/><i/><i/><i/></div><div className="container footer-grid"><div className="footer-intro"><div className="brand-lockup"><img className="brand-mark" src={logo} alt=""/><span><strong>NITER EEE</strong><small>ALUMNI NETWORK</small></span></div><p>A shared record of NITER EEE journeys—built to keep graduates, knowledge, and opportunity in active connection.</p><div className="footer-social"><a href="#contact" aria-label="Email NITER EEE Alumni"><Mail size={17}/></a><a href="#contact" aria-label="LinkedIn"><Linkedin size={17}/></a><a href="#contact" aria-label="Facebook"><Facebook size={17}/></a></div></div><div><p className="footer-label">EXPLORE</p><div className="footer-links"><Link href="/alumni">Alumni directory</Link><Link href="/batches">By batch</Link><Link href="/districts">By district</Link><Link href="/jobs">By profession</Link></div></div><div><p className="footer-label">DEPARTMENT</p><div className="footer-links"><Link href="/gallery">Gallery</Link><Link href="/about">Our community</Link><Link href="/contact">Contact</Link><a href="#top">Back to top</a></div></div><div className="footer-contact"><p className="footer-label">NITER EEE</p><p><MapPin size={16}/> Nayarhat, Savar<br/>Dhaka 1350, Bangladesh</p><a href="mailto:eee@niter.edu.bd">eee@niter.edu.bd</a><a href="tel:+880000000000">+880 0000 000000</a></div></div><div className="container footer-bottom"><span>© 2026 NITER EEE Alumni. All Rights Reserved.</span><span>Electrical & Electronic Engineering · NITER</span></div></footer>}
+import {useEffect,useState} from "react";
+import {Link,useLocation} from "wouter";
+import {Menu,Search,X,ArrowUpRight,MapPin,Mail,Linkedin,Facebook} from "lucide-react";
+import {Input} from "@/components/ui/input";
+
+const officialLogo="/manus-storage/niter-official-logo_b5db41d0.jpg";
+const navLinks=[["Home","/"],["Alumni","/alumni"],["Batch","/batches"],["District","/districts"],["Job","/jobs"],["About","/about"],["Contact","/contact"]];
+
+export function Header(){
+  const[location,setLocation]=useLocation(); const[open,setOpen]=useState(false); const[searchOpen,setSearchOpen]=useState(false); const[query,setQuery]=useState(""); const[scrolled,setScrolled]=useState(false);
+  useEffect(()=>{const handle=()=>setScrolled(window.scrollY>14);handle();window.addEventListener("scroll",handle);return()=>window.removeEventListener("scroll",handle)},[]);
+  const submit=(event:React.FormEvent)=>{event.preventDefault();const term=query.trim();setSearchOpen(false);setOpen(false);setLocation(term?`/alumni?q=${encodeURIComponent(term)}`:"/alumni")};
+  return <header className={`site-header official-header ${scrolled?"site-header--scrolled":""}`}>
+    <div className="container header-inner official-header__inner">
+      <Link href="/" className="official-brand-lockup" aria-label="NITER EEE Alumni home">
+        <img className="official-niter-logo" src={officialLogo} alt="Official NITER logo"/>
+        <span><strong>NITER EEE Alumni</strong><small>DEPARTMENT OF ELECTRICAL &amp; ELECTRONIC ENGINEERING</small></span>
+      </Link>
+      <nav className="desktop-nav official-nav" aria-label="Primary navigation">{navLinks.map(([label,href])=><Link key={href} href={href} className={location===href||(href!=="/"&&location.startsWith(href))?"is-active":""}>{label}</Link>)}</nav>
+      <div className="header-actions official-header__actions"><button className="icon-button" onClick={()=>setSearchOpen(value=>!value)} aria-label="Search alumni"><Search size={19}/></button><button className="menu-button" onClick={()=>setOpen(value=>!value)} aria-label="Toggle menu">{open?<X size={23}/>:<Menu size={23}/>}</button></div>
+    </div>
+    {searchOpen&&<form className="header-search official-header__search" onSubmit={submit}><Search size={17}/><Input autoFocus value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search alumni, batch, district or organization"/><button>Search <ArrowUpRight size={15}/></button></form>}
+    {open&&<nav className="mobile-nav official-mobile-nav" aria-label="Mobile navigation">{navLinks.map(([label,href])=><Link key={href} href={href} onClick={()=>setOpen(false)}>{label}<ArrowUpRight size={16}/></Link>)}</nav>}
+  </header>
+}
+
+export function Footer(){return <footer className="site-footer official-footer">
+  <div className="official-footer__texture" aria-hidden="true"><i/><i/><i/><i/></div>
+  <div className="container official-footer__grid">
+    <section className="official-footer__brand">
+      <div className="official-footer__identity"><img className="official-niter-logo official-footer__logo" src={officialLogo} alt="Official NITER logo"/><div><strong>NITER EEE Alumni</strong><span>Department of Electrical and<br/>Electronic Engineering</span></div></div>
+      <p>Connecting NITER EEE alumni, building professional networks, and strengthening our alumni community.</p>
+      <div className="footer-social official-footer__social"><a href="#contact" aria-label="Email NITER EEE Alumni"><Mail size={17}/></a><a href="#contact" aria-label="LinkedIn"><Linkedin size={17}/></a><a href="#contact" aria-label="Facebook"><Facebook size={17}/></a></div>
+    </section>
+    <section className="official-footer__links"><p className="footer-label">QUICK LINKS</p><div>{navLinks.slice(0,4).map(([label,href])=><Link href={href} key={href}>{label}</Link>)}</div></section>
+    <section className="official-footer__links"><p className="footer-label">ALUMNI NETWORK</p><div>{navLinks.slice(4).map(([label,href])=><Link href={href} key={href}>{label}</Link>)}<Link href="/gallery">Gallery</Link></div></section>
+    <section className="official-footer__contact"><p className="footer-label">NITER EEE</p><p><MapPin size={16}/>Nayarhat, Savar<br/>Dhaka 1350, Bangladesh</p><a href="mailto:eee@niter.edu.bd">eee@niter.edu.bd</a><a href="tel:+880000000000">+880 0000 000000</a></section>
+  </div>
+  <div className="container official-footer__bottom"><span>© 2026 NITER EEE Alumni. All Rights Reserved.</span><span>NITER · Electrical and Electronic Engineering</span></div>
+</footer>}
+
 function resolveHeroVariant(eyebrow:string){if(eyebrow.includes("COHORT"))return "cohort";if(eyebrow.includes("GEOGRAPHIC")||eyebrow.includes("DISTRICT"))return "geography";if(eyebrow.includes("MEMORY"))return "memory";if(eyebrow.includes("CAREER"))return "career";if(eyebrow.includes("ALUMNI"))return "signal";if(eyebrow.includes("COMMUNITY"))return "archive";return "archive"}
-export function PageHero({eyebrow,title,description,action}:{eyebrow:string;title:string;description:string;action?:React.ReactNode}){const variant=resolveHeroVariant(eyebrow);return <section className={`page-hero page-hero--${variant}`}><div className="page-hero__circuit" aria-hidden="true"><span/><span/><span/><i/><i/><i/></div><div className="container"><p className="eyebrow eyebrow--light">{eyebrow}</p><div className="page-hero__content"><h1>{title}</h1><p>{description}</p>{action}</div></div></section>}; export default function SiteShell({children}:{children:React.ReactNode}){return <><Header/><main id="top">{children}</main><Footer/></>}
+export function PageHero({eyebrow,title,description,action}:{eyebrow:string;title:string;description:string;action?:React.ReactNode}){const variant=resolveHeroVariant(eyebrow);return <section className={`page-hero page-hero--${variant}`}><div className="page-hero__circuit" aria-hidden="true"><span/><span/><span/><i/><i/><i/></div><div className="container"><p className="eyebrow eyebrow--light">{eyebrow}</p><div className="page-hero__content"><h1>{title}</h1><p>{description}</p>{action}</div></div></section>}
+export default function SiteShell({children}:{children:React.ReactNode}){return <><Header/><main id="top">{children}</main><Footer/></>}

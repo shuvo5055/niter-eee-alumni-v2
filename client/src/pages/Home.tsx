@@ -21,8 +21,8 @@ export default function Home(){
           <p className="eyebrow eyebrow--light"><Network size={15}/> NITER EEE / ALUMNI NETWORK</p>
           <p className="hero__lede">A platform for connecting NITER EEE alumni, exploring professional paths, and preserving the memories that built our department.</p>
           <div className="hero__buttons">
-            <Link href="/alumni" className="button button--signal" style={{backgroundColor:"#21b6d7",color:"#000000"}}>Alumni<ArrowRight size={18}/></Link>
-            <Link href="/batches" className="button button--ghost" style={{backgroundColor:"#21b6d7",color:"#000000"}}>Your batch<ArrowRight size={18}/></Link>
+            <Link href="/alumni" className="button button--signal" style={{backgroundColor:"#21b6d7",color:"#000000"}}>Explore alumni<ArrowRight size={18}/></Link>
+            <Link href="/batches" className="button button--ghost">Find your batch<ArrowRight size={18}/></Link>
           </div>
         </div>
         <div className="hero__stat-mark"><span>EEE</span><small>EST. 2026<br/>ALUMNI ARCHIVE</small></div>

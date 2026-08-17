@@ -36,3 +36,9 @@
   .stat-card{padding:17px 13px!important}
   .find-panel{padding:20px 14px!important}
 }
+
+@media(min-width:521px) and (max-width:780px){
+  .thesis-header__navcontrols .thesis-nav{display:flex!important;gap:20px!important;flex:1 1 auto!important}
+  .thesis-header__navcontrols .thesis-nav a{font-size:9px!important;white-space:nowrap}
+  .thesis-menu-bar__button{min-width:104px!important;width:104px!important}
+}

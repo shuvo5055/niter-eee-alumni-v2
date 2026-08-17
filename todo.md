@@ -1,5 +1,12 @@
 # Official NITER Brand Update
 
+- [x] Confirm the current responsive implementation matches the newly supplied compact desktop-like mobile reference.
+- [x] Restore the compact reference responsive layer and match the screenshot’s concise hero and directory text hierarchy.
+- [x] Verify the reference composition across the requested phone, tablet, and desktop widths before saving a checkpoint.
+- [ ] Restore the full desktop masthead and hero hierarchy in the shared responsive presentation.
+- [ ] Remove overly compressed mobile-only overrides while retaining adaptive widths, spacing, and columns.
+- [ ] Verify the shared design at 360px, 375px, 390px, 412px, 768px, 1024px, and desktop widths.
+- [ ] Save and deliver the desktop-aligned responsive checkpoint.
 - [x] Verify the shortened hero action labels and the cleared Association title from the latest visual edits.
 - [x] Remove invalid placeholder CSS values from the masthead and keep the intended cyan action treatments scoped correctly.
 - [x] Validate the updated header and hero on desktop and mobile, then save a checkpoint.

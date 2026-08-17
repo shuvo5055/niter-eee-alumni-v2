@@ -1,5 +1,8 @@
 # Official NITER Brand Update
 
+- [x] Verify the page-wide duplicate inline style artifact from the latest action-button edit.
+- [x] Restore clean homepage markup and retain the cyan background with black text on the intended action button.
+- [x] Validate the homepage and save a checkpoint.
 - [x] Remove the forced black background from the official NITER logo in the header.
 - [x] Confirm the official NITER logo is cleanly visible in the shared footer.
 - [x] Verify both logo treatments at desktop and mobile sizes and save a checkpoint.

@@ -1,5 +1,7 @@
 # Official NITER Brand Update
 
+- [x] Verify the Batch page helper-text removal and clean the empty element.
+- [x] Validate the Batch page rendering and save a checkpoint.
 - [x] Remove the shared header search button and unused search-control state.
 - [x] Verify the simplified header at desktop and mobile widths.
 - [x] Save and deliver the header cleanup checkpoint.

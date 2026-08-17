@@ -1,5 +1,8 @@
 # Official NITER Brand Update
 
+- [ ] Identify every active responsive rule that changes the desktop composition on mobile and tablet widths.
+- [ ] Apply a fixed desktop-canvas scaling strategy that preserves desktop proportions without mobile stacking or reflow.
+- [ ] Verify the same full desktop composition at phone, tablet, and desktop viewports, then save a checkpoint.
 - [x] Audit the mobile hero width, responsive overrides, and sources of horizontal overflow.
 - [x] Repair the 320px–768px hero, 2×2 statistics, stacked directory, and single-column alumni-card layouts without altering desktop styling.
 - [x] Verify 320px, 360px, 375px, 390px, 414px, 480px, and 768px widths for overflow, clipping, and readable controls.

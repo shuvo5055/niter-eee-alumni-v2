@@ -1,5 +1,8 @@
 # Official NITER Brand Update
 
+- [x] Move the hamburger trigger out of the masthead and into a separate bordered navigation bar below it.
+- [x] Keep the NITER logo and Alumni Association identity visible within the masthead on mobile.
+- [x] Verify the separate menu bar, slide-out navigation, and hero ordering at desktop and mobile sizes.
 - [x] Move the navigation bar beneath the masthead to the left while preserving the right-side Alumni Association lockup.
 - [x] Verify the left-aligned navigation and responsive mobile header behavior.
 - [x] Adapt the shared header to the dark navy and indigo NITER Thesis Library reference composition.

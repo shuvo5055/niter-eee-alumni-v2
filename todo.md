@@ -1,5 +1,8 @@
 # Official NITER Brand Update
 
+- [x] Verify the shortened hero action labels and the cleared Association title from the latest visual edits.
+- [x] Remove invalid placeholder CSS values from the masthead and keep the intended cyan action treatments scoped correctly.
+- [x] Validate the updated header and hero on desktop and mobile, then save a checkpoint.
 - [x] Apply the supplied compact mobile composition: four statistics across, side-by-side directory panels, and two-column alumni cards.
 - [x] Preserve the desktop visual system while scaling typography, controls, and imagery for the compact phone layout.
 - [x] Verify the mobile homepage at reference-like phone dimensions and save a checkpoint.

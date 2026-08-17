@@ -1,0 +1,35 @@
+/* Responsive repair layer: keeps the desktop visual language while allowing phone and tablet content to use the available viewport width. */
+@media (max-width: 780px) {
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body, #root { width: 100%; max-width: 100%; overflow-x: hidden; }
+
+  .hero { min-height: auto !important; overflow: hidden; }
+  .hero__inner { display: block !important; min-height: auto !important; padding: 52px 20px 46px !important; }
+  .hero__copy { position: relative; z-index: 1; width: 100% !important; max-width: 100% !important; min-width: 0 !important; }
+  .hero__copy h1 { width: 100%; max-width: 100% !important; font-size: clamp(2.3rem, 9vw, 3.9rem) !important; line-height: .96 !important; }
+  .hero__lede { width: 100%; max-width: 34rem !important; font-size: clamp(1rem, 3.6vw, 1.16rem) !important; line-height: 1.62 !important; }
+  .hero__stat-mark { right: -8px !important; bottom: 4px !important; transform: scale(.52) !important; opacity: .52 !important; pointer-events: none; }
+  .hero__buttons { display: flex !important; flex-flow: row wrap !important; gap: 12px !important; width: 100% !important; max-width: 100% !important; }
+  .hero__buttons .button { flex: 1 1 154px !important; width: auto !important; min-width: 0 !important; max-width: 230px; min-height: 46px !important; padding: 0 14px !important; }
+
+  .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .stat-card { min-width: 0 !important; min-height: 110px !important; padding: 18px 14px !important; }
+  .stat-card strong { font-size: clamp(1.45rem, 6.5vw, 1.75rem) !important; }
+  .stat-card p { font-size: 8px !important; }
+
+  .find-layout { grid-template-columns: minmax(0, 1fr) !important; gap: 32px !important; }
+  .find-copy, .find-panel, .find-search { width: 100% !important; max-width: 100% !important; min-width: 0 !important; }
+  .find-panel { padding: 22px 16px !important; }
+  .find-search input { min-width: 0 !important; width: 100% !important; }
+
+  .alumni-grid, .alumni-grid--home { grid-template-columns: minmax(0, 1fr) !important; }
+  .alumni-card { width: 100% !important; min-width: 0 !important; }
+}
+
+@media (max-width: 440px) {
+  .hero__inner { padding: 46px 20px 40px !important; }
+  .hero__copy h1 { font-size: clamp(2.25rem, 10vw, 2.8rem) !important; }
+  .hero__buttons .button { flex-basis: 100% !important; max-width: none; }
+  .stat-card { min-height: 102px !important; padding: 16px 12px !important; }
+  .find-panel { padding: 20px 14px !important; }
+}

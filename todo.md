@@ -1,5 +1,9 @@
 # Official NITER Brand Update
 
+- [x] Audit the mobile hero width, responsive overrides, and sources of horizontal overflow.
+- [x] Repair the 320px–768px hero, 2×2 statistics, stacked directory, and single-column alumni-card layouts without altering desktop styling.
+- [x] Verify 320px, 360px, 375px, 390px, 414px, 480px, and 768px widths for overflow, clipping, and readable controls.
+- [x] Save and deliver the mobile/tablet responsiveness checkpoint.
 - [x] Audit current compact mobile overrides against the renewed desktop-faithful responsive requirements.
 - [x] Restore the full shared hero hierarchy, including the headline, and remove mobile-specific visual compression.
 - [x] Validate the common design across 360px, 375px, 390px, 412px, 768px, 1024px, and desktop widths.

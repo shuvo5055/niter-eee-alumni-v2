@@ -72,3 +72,5 @@
 - [x] Build, inspect, and save the verified homepage visual-edit checkpoint.
 - [x] Locate and remove the requested “Find an alumnus” heading from the homepage directory section.
 - [x] Build, inspect, and save the verified directory-heading removal checkpoint.
+- [x] Verify the updated NITER Alumni Association typography in the shared header.
+- [x] Build, inspect, and save the verified header-typography checkpoint.

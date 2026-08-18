@@ -18,7 +18,7 @@ export function Header(){
         <img className="official-niter-logo thesis-institute-lockup__logo" src={officialLogo} alt="Official NITER logo"/>
         <span className="thesis-institute-lockup__name"><strong>NATIONAL INSTITUTE OF</strong><strong>TEXTILE ENGINEERING &amp;</strong><strong>RESEARCH</strong></span>
       </Link>
-      <div className="thesis-header__right"><div className="thesis-alumni-lockup"><strong>NITER Alumni Association</strong><span>Department of EEE</span></div></div>
+      <div className="thesis-header__right"><div className="thesis-alumni-lockup"><strong>NITER Alumni Association</strong><span style={{fontWeight:"900"}}>Department of EEE</span></div></div>
     </div>
     <div className="thesis-header__navrow"><div className="container thesis-header__navwrap"><div className="thesis-header__navcontrols"><button className="thesis-menu-button thesis-menu-bar__button" onClick={()=>setOpen(value=>!value)} aria-label="Toggle navigation menu">{open?<X size={22}/>:<Menu size={22}/>}<span>Menu</span></button><nav className="desktop-nav thesis-nav" aria-label="Primary navigation">{navLinks.map(([label,href])=><Link key={href} href={href} className={location===href||(href!=="/"&&location.startsWith(href))?"is-active":""}>{label}</Link>)}</nav></div></div></div>
     {open&&<nav className="mobile-nav thesis-mobile-nav" aria-label="Mobile navigation">{navLinks.map(([label,href])=><Link key={href} href={href} onClick={()=>setOpen(false)}>{label}<ArrowUpRight size={16}/></Link>)}</nav>}

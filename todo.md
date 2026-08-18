@@ -75,9 +75,14 @@
 - [x] Redesign the fixed admin shell with premium branded navigation, top header, grouped links, and responsive collapse behavior.
 - [x] Rebuild the dashboard overview using live analytics, recent alumni/jobs tables, and quick actions without changing backend behavior.
 - [x] Restyle existing administration sections, users and roles, and empty/loading states into the shared premium dashboard system.
-- [ ] Publish the redesigned admin dashboard and save a new checkpoint.
-- [ ] Verify the redesigned live `/admin` route at desktop and mobile widths.
-- [ ] Verify the redesigned live `/admin/alumni` route uses the shared premium dashboard shell.
+- [x] Publish the redesigned admin dashboard and save a new checkpoint.
+- [ ] Verify the authenticated live `/admin` dashboard at desktop and mobile widths.
+- [ ] Verify the authenticated live `/admin/alumni` route uses the shared premium dashboard shell.
+- [ ] Save a final checkpoint after authenticated production verification of the redesigned admin routes.
+- [ ] Reconcile the requested credential-form login with the existing passwordless OAuth authentication model without creating duplicate credentials.
+- [ ] Design and implement a branded NITER EEE Alumni OAuth sign-in, persistent session, logout, and protected-route experience.
+- [ ] Validate secure access, role messaging, and post-login redirect behavior without changing public pages or database roles.
+- [ ] Inspect and apply the available NITER Thesis Library-style login presentation to the existing secure admin sign-in flow.
 - [x] Verify the latest homepage hero text and action-button visual-editor changes.
 - [x] Remove invalid placeholder style values while retaining the intended hero actions.
 - [x] Build, inspect, and save the verified homepage visual-edit checkpoint.

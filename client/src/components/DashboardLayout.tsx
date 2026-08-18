@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import "../admin-login.css";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -25,7 +26,7 @@ export default function DashboardLayout({ children, menuItems = defaultMenuItems
   const { loading, user } = useAuth();
 
   if (loading) return <DashboardLayoutSkeleton />;
-  if (!user) return <div className="admin-signin"><div><p className="admin-kicker">NITER EEE ALUMNI</p><h1>Sign in to continue</h1><p>Access to this dashboard requires authentication. Continue to launch the secure login flow.</p><Button onClick={() => startLogin()} className="admin-signin__button">Sign in</Button></div></div>;
+  if (!user) return <div className="admin-signin"><aside className="admin-signin__identity"><div className="admin-signin__identity-top"><img src="/manus-storage/niter-official-logo_b5db41d0.jpg" alt="Official NITER logo"/><p><strong>NATIONAL INSTITUTE OF</strong><strong>TEXTILE ENGINEERING &amp;</strong><strong>RESEARCH</strong></p></div><div className="admin-signin__identity-copy"><span>NITER EEE ALUMNI</span><h1>Administrative<br/>Portal</h1><p>A secured workspace for preserving alumni records, managing opportunities, and stewarding the NITER EEE network.</p></div><small>DEPARTMENT OF ELECTRICAL &amp; ELECTRONIC ENGINEERING</small></aside><section className="admin-signin__card"><div className="admin-signin__seal"><ShieldCheck size={24}/></div><p className="admin-kicker">SECURE ADMINISTRATOR ACCESS</p><h2>Welcome back.</h2><p>Continue with your authorized Manus account to access the NITER EEE Alumni administration portal.</p><Button onClick={() => startLogin("/admin")} className="admin-signin__button">Continue securely</Button><div className="admin-signin__note"><span/>Your session stays active on this trusted browser.<span/></div><small>Super Administrators and Editors receive access based on their assigned role.</small></section></div>;
 
   return <SidebarProvider className="admin-dashboard-shell"><AdminDashboardFrame menuItems={menuItems}>{children}</AdminDashboardFrame></SidebarProvider>;
 }

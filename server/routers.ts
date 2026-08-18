@@ -69,8 +69,8 @@ export const appRouter = router({
       const db = await requireDb();
       const [[alumniCount], [batchCount], [districtCount], [jobCount], [userCount], recentAlumni, recentJobs, byBatch, byDistrict] = await Promise.all([
         db.select({ value: count() }).from(alumni), db.select({ value: count() }).from(batches), db.select({ value: count() }).from(districts), db.select({ value: count() }).from(jobs), db.select({ value: count() }).from(users),
-        db.select({ id: alumni.id, fullName: alumni.fullName, status: alumni.status, createdAt: alumni.createdAt }).from(alumni).orderBy(desc(alumni.createdAt)).limit(5),
-        db.select({ id: jobs.id, title: jobs.title, organization: jobs.organization, status: jobs.status, createdAt: jobs.createdAt }).from(jobs).orderBy(desc(jobs.createdAt)).limit(5),
+        db.select({ id: alumni.id, slug: alumni.slug, fullName: alumni.fullName, photoUrl: alumni.photoUrl, session: alumni.session, batchNumber: batches.batchNumber, districtName: districts.name, currentOrganization: alumni.currentOrganization, currentDesignation: alumni.currentDesignation, status: alumni.status, createdAt: alumni.createdAt }).from(alumni).leftJoin(batches, eq(alumni.batchId, batches.id)).leftJoin(districts, eq(alumni.districtId, districts.id)).orderBy(desc(alumni.createdAt)).limit(5),
+        db.select({ id: jobs.id, title: jobs.title, organization: jobs.organization, location: jobs.location, status: jobs.status, createdAt: jobs.createdAt }).from(jobs).orderBy(desc(jobs.createdAt)).limit(5),
         db.select({ label: batches.batchNumber, value: count(alumni.id) }).from(batches).leftJoin(alumni, eq(alumni.batchId, batches.id)).groupBy(batches.id, batches.batchNumber).orderBy(batches.batchNumber),
         db.select({ label: districts.name, value: count(alumni.id) }).from(districts).leftJoin(alumni, eq(alumni.districtId, districts.id)).groupBy(districts.id, districts.name).orderBy(districts.name),
       ]);

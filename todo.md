@@ -71,6 +71,13 @@
 - [x] Diagnose why the live `/admin` path resolves to the public 404 page on mobile.
 - [x] Publish the explicit `/admin` route correction to the live domain.
 - [x] Verify live `/admin` and `/admin/alumni` routes after publication, then save a checkpoint.
+- [x] Audit existing admin routes, data contracts, role controls, and reusable dashboard components before the in-place redesign.
+- [x] Redesign the fixed admin shell with premium branded navigation, top header, grouped links, and responsive collapse behavior.
+- [x] Rebuild the dashboard overview using live analytics, recent alumni/jobs tables, and quick actions without changing backend behavior.
+- [x] Restyle existing administration sections, users and roles, and empty/loading states into the shared premium dashboard system.
+- [ ] Publish the redesigned admin dashboard and save a new checkpoint.
+- [ ] Verify the redesigned live `/admin` route at desktop and mobile widths.
+- [ ] Verify the redesigned live `/admin/alumni` route uses the shared premium dashboard shell.
 - [x] Verify the latest homepage hero text and action-button visual-editor changes.
 - [x] Remove invalid placeholder style values while retaining the intended hero actions.
 - [x] Build, inspect, and save the verified homepage visual-edit checkpoint.

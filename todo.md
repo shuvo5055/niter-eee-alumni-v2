@@ -83,6 +83,8 @@
 - [ ] Design and implement a branded NITER EEE Alumni OAuth sign-in, persistent session, logout, and protected-route experience.
 - [ ] Validate secure access, role messaging, and post-login redirect behavior without changing public pages or database roles.
 - [ ] Inspect and apply the available NITER Thesis Library-style login presentation to the existing secure admin sign-in flow.
+- [ ] Republish the completed branded OAuth sign-in update and verify the new production bundle is active.
+- [ ] Verify the live Thesis Library-inspired sign-in screen and secure return to `/admin` after OAuth authentication.
 - [x] Verify the latest homepage hero text and action-button visual-editor changes.
 - [x] Remove invalid placeholder style values while retaining the intended hero actions.
 - [x] Build, inspect, and save the verified homepage visual-edit checkpoint.

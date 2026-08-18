@@ -33,11 +33,11 @@ export default function Profile({ params }: { params: { slug: string } }) {
             <img src={person.photo} alt={`Portrait of ${person.name}`} style={academicProfile ? { width: "100%", height: "100%", borderRadius: "50%" } : undefined} />
             {!academicProfile && <span />}
           </div>
-          <div className="profile-hero__info">
+          <div className="profile-hero__info" style={academicProfile ? { transform: "translateY(-22px)" } : undefined}>
             {!academicProfile && <p className="eyebrow">NITER EEE / BATCH {person.batch}</p>}
             <h1>{person.name}</h1>
             {academicProfile ? (
-              <div className="profile-record-summary" style={{ display: "flex", flexWrap: "wrap", gap: "9px 18px", marginTop: "14px", color: "#c8e2e6", fontSize: "11px", fontWeight: 700 }}>
+              <div className="profile-record-summary" style={{ display: "grid", gap: "6px", marginTop: "18px", color: "#c8e2e6", fontSize: "11px", fontWeight: 700, lineHeight: 1.25 }}>
                 <span>Session: {person.profileSession}</span>
                 <span>ID: {person.studentId}</span>
                 <span>BG: {person.bloodGroup}</span>

@@ -81,3 +81,6 @@
 - [x] Replace the existing profile’s academic and professional blocks with the requested text-only content and work split.
 - [x] Replace the standalone contact card with a compact WhatsApp, Facebook, and LinkedIn contact row.
 - [x] Build, inspect, and save the verified profile-only refinement checkpoint.
+- [x] Raise the Tauhid profile name within the existing banner beside the circular portrait.
+- [x] Convert the banner’s Session, ID, BG, and District information into a vertically aligned list.
+- [x] Build, inspect, and save the verified profile-banner layout checkpoint.

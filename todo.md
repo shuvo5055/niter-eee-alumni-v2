@@ -84,3 +84,6 @@
 - [x] Raise the Tauhid profile name within the existing banner beside the circular portrait.
 - [x] Convert the banner’s Session, ID, BG, and District information into a vertically aligned list.
 - [x] Build, inspect, and save the verified profile-banner layout checkpoint.
+- [x] Define the reusable per-alumnus data fields and safe empty-value fallbacks for the global profile template.
+- [x] Apply the current Tauhid profile design to every alumni profile without sharing personal data across records.
+- [x] Verify the global template on representative alumni from different batches and save a checkpoint.

@@ -77,3 +77,7 @@
 - [x] Audit the profile visual-editor output and retain its intended Alumni record content.
 - [x] Remove malformed duplicate inline styles and repair profile markup.
 - [x] Build, inspect, and save the verified alumni-profile checkpoint.
+- [x] Make the existing Tauhid profile photo circular and present its core record details without extra icons.
+- [x] Replace the existing profile’s academic and professional blocks with the requested text-only content and work split.
+- [x] Replace the standalone contact card with a compact WhatsApp, Facebook, and LinkedIn contact row.
+- [x] Build, inspect, and save the verified profile-only refinement checkpoint.

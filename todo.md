@@ -74,3 +74,6 @@
 - [x] Build, inspect, and save the verified directory-heading removal checkpoint.
 - [x] Verify the updated NITER Alumni Association typography in the shared header.
 - [x] Build, inspect, and save the verified header-typography checkpoint.
+- [x] Audit the profile visual-editor output and retain its intended Alumni record content.
+- [x] Remove malformed duplicate inline styles and repair profile markup.
+- [x] Build, inspect, and save the verified alumni-profile checkpoint.

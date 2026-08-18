@@ -1,8 +1,8 @@
 # Official NITER Brand Update
 
-- [ ] Identify every active responsive rule that changes the desktop composition on mobile and tablet widths.
-- [ ] Apply a fixed desktop-canvas scaling strategy that preserves desktop proportions without mobile stacking or reflow.
-- [ ] Verify the same full desktop composition at phone, tablet, and desktop viewports, then save a checkpoint.
+- [x] Identify every active responsive rule that changes the desktop composition on mobile and tablet widths.
+- [x] Apply a fixed desktop-canvas scaling strategy that preserves desktop proportions without mobile stacking or reflow.
+- [x] Verify the same full desktop composition at phone, tablet, and desktop viewports, then save a checkpoint.
 - [x] Audit the mobile hero width, responsive overrides, and sources of horizontal overflow.
 - [x] Repair the 320px–768px hero, 2×2 statistics, stacked directory, and single-column alumni-card layouts without altering desktop styling.
 - [x] Verify 320px, 360px, 375px, 390px, 414px, 480px, and 768px widths for overflow, clipping, and readable controls.
@@ -14,10 +14,10 @@
 - [x] Confirm the current responsive implementation matches the newly supplied compact desktop-like mobile reference.
 - [x] Restore the compact reference responsive layer and match the screenshot’s concise hero and directory text hierarchy.
 - [x] Verify the reference composition across the requested phone, tablet, and desktop widths before saving a checkpoint.
-- [ ] Restore the full desktop masthead and hero hierarchy in the shared responsive presentation.
-- [ ] Remove overly compressed mobile-only overrides while retaining adaptive widths, spacing, and columns.
-- [ ] Verify the shared design at 360px, 375px, 390px, 412px, 768px, 1024px, and desktop widths.
-- [ ] Save and deliver the desktop-aligned responsive checkpoint.
+- [x] Restore the full desktop masthead and hero hierarchy in the shared responsive presentation.
+- [x] Remove overly compressed mobile-only overrides while retaining adaptive widths, spacing, and columns.
+- [x] Verify the shared design at 360px, 375px, 390px, 412px, 768px, 1024px, and desktop widths.
+- [x] Save and deliver the desktop-aligned responsive checkpoint.
 - [x] Verify the shortened hero action labels and the cleared Association title from the latest visual edits.
 - [x] Remove invalid placeholder CSS values from the masthead and keep the intended cyan action treatments scoped correctly.
 - [x] Validate the updated header and hero on desktop and mobile, then save a checkpoint.
@@ -66,7 +66,8 @@
 - [x] Replace the shared header logo treatment with the uploaded NITER logo and white/purple institutional styling.
 - [x] Replace the shared footer logo treatment and ensure the requested NITER EEE Alumni copy and links are present.
 - [x] Verify desktop and mobile header/footer responsiveness with the unaltered logo.
-- [ ] Save a checkpoint and deliver the branding update.
+- [x] Save a checkpoint and deliver the branding update.
+- [x] Audit all imported responsive CSS layers and document the fixed desktop-canvas behavior.
 - [x] Verify the latest homepage hero text and action-button visual-editor changes.
 - [x] Remove invalid placeholder style values while retaining the intended hero actions.
 - [x] Build, inspect, and save the verified homepage visual-edit checkpoint.

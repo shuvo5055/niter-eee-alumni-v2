@@ -90,3 +90,12 @@
 - [x] Enlarge the shared NITER Alumni header while retaining the existing institutional layout.
 - [x] Remove the black background treatment behind the official NITER logo in the shared footer.
 - [x] Build, inspect, and save the verified shared header/footer refinement checkpoint.
+- [x] Obtain explicit approval to expand beyond the public-facing-only scope and add a secured admin system.
+- [x] Plan database-backed alumni, batch, district, job, content, and role-management capabilities.
+- [x] Provision full-stack backend, authentication, database, and storage capabilities.
+- [x] Build role-protected administration workflows and connect public pages to managed records.
+- [x] Implement edit flows for batches, districts, jobs, and gallery items, including job publish/unpublish controls.
+- [x] Wire Homepage, About, and Contact public content to the managed content records.
+- [x] Verify end-to-end that managed alumni, jobs, gallery items, and content updates appear on public pages.
+- [x] Test authorization and public synchronization, then publish the full-stack dashboard.
+- [x] Run the controlled legacy-directory migration and verify imported records resolve through the public data procedures.

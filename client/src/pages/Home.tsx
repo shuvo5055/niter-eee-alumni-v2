@@ -4,12 +4,15 @@ import {Link,useLocation} from "wouter";
 import {ArrowRight,Search,Users,MapPinned,BriefcaseBusiness,Layers3,GraduationCap,Network} from "lucide-react";
 import AlumniCard from "@/components/AlumniCard";
 import {alumni} from "@/data/alumni";
+import {trpc} from "@/lib/trpc";
 
 const stats=[{value:"500+",label:"Total Alumni",icon:Users},{value:"9",label:"Active Batches",icon:Layers3},{value:"64",label:"Districts Covered",icon:MapPinned},{value:"200+",label:"Organizations",icon:BriefcaseBusiness}];
 
 export default function Home(){
   const[,setLocation]=useLocation();
   const[query,setQuery]=useState("");
+  const managedContent=trpc.publicData.content.useQuery({key:"homepage"});
+  const homepage=(managedContent.data?.value||{}) as {heroDescription?:string};
   const results=useMemo(()=>alumni.filter(person=>`${person.name} ${person.batch} ${person.district} ${person.position} ${person.organization}`.toLowerCase().includes(query.toLowerCase())).slice(0,3),[query]);
   const submit=(event:React.FormEvent)=>{event.preventDefault();setLocation(query.trim()?`/alumni?q=${encodeURIComponent(query.trim())}`:"/alumni")};
   return <>
@@ -19,7 +22,7 @@ export default function Home(){
       <div className="container hero__inner">
         <div className="hero__copy">
           <p className="eyebrow eyebrow--light"><Network size={15}/> NITER EEE / ALUMNI NETWORK</p>
-          <p className="hero__lede">A platform for connecting NITER EEE alumni, exploring professional paths, and preserving the memories that built our department.</p>
+          <p className="hero__lede">{homepage.heroDescription||"A platform for connecting NITER EEE alumni, exploring professional paths, and preserving the memories that built our department."}</p>
           <div className="hero__buttons">
             <Link href="/alumni" className="button button--signal" style={{backgroundColor:"#21b6d7",color:"#000000"}}>Explore alumnni<ArrowRight size={18}/></Link>
             <Link href="/batches" className="button button--ghost" style={{backgroundColor:"#21b6d7",color:"#000000"}}>Find your batch<ArrowRight size={18}/></Link>

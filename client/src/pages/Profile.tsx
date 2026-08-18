@@ -2,15 +2,35 @@
 import { Link } from "wouter";
 import { ArrowLeft, Facebook, Linkedin, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
 import { getAlumni } from "@/data/alumni";
+import { trpc } from "@/lib/trpc";
 
 const displayValue = (value?: string) => value?.trim() || "-";
 
 export default function Profile({ params }: { params: { slug: string } }) {
-  const person = getAlumni(params.slug);
+  const managed = trpc.publicData.alumniBySlug.useQuery({ slug: params.slug });
+  const legacyPerson = getAlumni(params.slug);
+  const person = managed.data ? {
+    name: managed.data.fullName,
+    photo: managed.data.photoUrl || legacyPerson?.photo || "https://images.unsplash.com/photo-1535713875002-cad84cf45f1d?auto=format&fit=crop&w=640&q=85",
+    studentId: managed.data.studentId || "-",
+    district: managed.data.districtName || "-",
+    degree: managed.data.bsc || "-",
+    higherEducation: managed.data.msc || "-",
+    industry: managed.data.industry || "-",
+    organization: managed.data.currentOrganization || "-",
+    position: managed.data.currentDesignation || "-",
+    profile: {
+      session: managed.data.session || "-", bloodGroup: managed.data.bloodGroup || "-", school: managed.data.school || "-", college: managed.data.college || "-", bsc: managed.data.bsc || "-", msc: managed.data.msc || "-", skill: managed.data.skill || "-", researchActivities: managed.data.researchActivities || "-",
+      currentWork: { organization: managed.data.currentOrganization || "-", designation: managed.data.currentDesignation || "-", duration: managed.data.currentDuration || "-" },
+      previousWork: { organization: managed.data.previousOrganization || "-", designation: managed.data.previousDesignation || "-", duration: managed.data.previousDuration || "-" },
+      contacts: { whatsapp: managed.data.whatsapp || undefined, facebook: managed.data.facebook || undefined, linkedin: managed.data.linkedin || undefined },
+    },
+  } : legacyPerson;
 
-  if (!person) {
+  if (!person && !managed.isLoading) {
     return <section className="not-found-page"><div><p className="eyebrow">RECORD NOT FOUND</p><h1>This profile is not in the public archive.</h1><Link href="/alumni" className="button button--navy">Back to alumni</Link></div></section>;
   }
+  if (!person) return <section className="not-found-page"><div><p className="eyebrow">LOADING RECORD</p><h1>Opening alumni profile…</h1></div></section>;
 
   const profile = person.profile ?? {};
   const contacts = profile.contacts ?? {};

@@ -70,3 +70,5 @@
 - [x] Verify the latest homepage hero text and action-button visual-editor changes.
 - [x] Remove invalid placeholder style values while retaining the intended hero actions.
 - [x] Build, inspect, and save the verified homepage visual-edit checkpoint.
+- [x] Locate and remove the requested “Find an alumnus” heading from the homepage directory section.
+- [x] Build, inspect, and save the verified directory-heading removal checkpoint.

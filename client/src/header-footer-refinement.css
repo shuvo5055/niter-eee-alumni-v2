@@ -1,0 +1,13 @@
+/* Thesis Library identity refinement: increase the institutional masthead scale and blend the untouched official logo into its footer field. */
+.thesis-header__mast{min-height:132px!important}
+.thesis-institute-lockup{gap:20px!important}
+.thesis-institute-lockup__logo{width:86px!important;height:86px!important;max-width:86px!important}
+.thesis-institute-lockup__name{font-size:14px!important}
+.thesis-alumni-lockup strong{font-size:36px!important}
+.thesis-alumni-lockup span{font-size:12px!important}
+.thesis-header__navwrap{min-height:54px!important}
+.thesis-menu-bar__button{height:38px!important}
+.thesis-header__search,.thesis-mobile-nav{top:186px!important}
+
+/* The logo source remains unmodified; screen blending makes its JPEG black field visually disappear against the footer. */
+.official-footer__logo{background:transparent!important;mix-blend-mode:screen!important}

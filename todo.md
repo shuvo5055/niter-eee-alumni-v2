@@ -87,3 +87,6 @@
 - [x] Define the reusable per-alumnus data fields and safe empty-value fallbacks for the global profile template.
 - [x] Apply the current Tauhid profile design to every alumni profile without sharing personal data across records.
 - [x] Verify the global template on representative alumni from different batches and save a checkpoint.
+- [x] Enlarge the shared NITER Alumni header while retaining the existing institutional layout.
+- [x] Remove the black background treatment behind the official NITER logo in the shared footer.
+- [x] Build, inspect, and save the verified shared header/footer refinement checkpoint.

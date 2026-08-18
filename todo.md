@@ -67,3 +67,6 @@
 - [x] Replace the shared footer logo treatment and ensure the requested NITER EEE Alumni copy and links are present.
 - [x] Verify desktop and mobile header/footer responsiveness with the unaltered logo.
 - [ ] Save a checkpoint and deliver the branding update.
+- [x] Verify the latest homepage hero text and action-button visual-editor changes.
+- [x] Remove invalid placeholder style values while retaining the intended hero actions.
+- [x] Build, inspect, and save the verified homepage visual-edit checkpoint.

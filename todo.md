@@ -88,8 +88,13 @@
 - [x] Audit the existing premium admin presentation against the requested UI-only dashboard layout without touching implementation behavior.
 - [x] Refine only the admin dashboard shell, grouped navigation, header, cards, charts, tables, and responsive visual presentation.
 - [x] Build and verify the visual-only admin UI update at desktop and mobile widths, then publish it.
-- [ ] Publish the final UI-only institutional admin dashboard refinement.
-- [ ] Verify the published `/admin` and `/admin/alumni` presentation at desktop and mobile widths.
+- [x] Convert the existing mobile Alumni Management table into a clean stacked record layout without changing any data or actions.
+- [x] Build and locally verify the refined mobile and desktop admin presentation, then publish it.
+- [x] Publish the final UI-only institutional admin dashboard refinement.
+- [x] Authenticated production verification deliberately skipped per the user’s project-file-only verification instruction.
+- [x] Authenticated production nested-route verification deliberately skipped per the user’s project-file-only verification instruction.
+- [x] Verify the existing `/admin` and `/admin/alumni` visual presentation using local build, automated checks, and local preview screenshots only.
+- [ ] Save a final checkpoint after project-file-only verification of the UI-only dashboard refinement.
 - [x] Verify the latest homepage hero text and action-button visual-editor changes.
 - [x] Remove invalid placeholder style values while retaining the intended hero actions.
 - [x] Build, inspect, and save the verified homepage visual-edit checkpoint.

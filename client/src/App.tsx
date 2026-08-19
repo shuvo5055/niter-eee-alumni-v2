@@ -14,6 +14,7 @@ import "./header-footer-refinement.css";
 import "./admin.css";
 import "./admin-institutional-refinement.css";
 import "./admin-mobile-alumni.css";
+import "./admin-mobile-sidebar.css";
 import "./admin-login.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";

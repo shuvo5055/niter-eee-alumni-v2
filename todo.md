@@ -148,3 +148,7 @@
 - [x] Verify a credential-issued session grants protected Admin procedure access and that sign-out invalidates that session.
 - [x] Verify the post-logout browser-cookie state cannot resolve an administrator session or access protected procedures.
 - [x] Publish the secured administrator access update in a new checkpoint.
+- [x] Audit mobile Admin sidebar, backdrop, opacity, and z-index rules causing dashboard content to show through the menu.
+- [x] Apply a mobile-only solid navy sidebar and separate backdrop stacking fix without changing desktop styles.
+- [x] Verify the Admin sidebar’s mobile Sheet class forwarding, opaque background, z-index separation, and desktop isolation through local viewport checks and regression tests.
+- [x] Publish the verified mobile Admin sidebar opacity fix in a new checkpoint.

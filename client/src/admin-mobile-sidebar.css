@@ -1,0 +1,40 @@
+/* Mobile sheet only: the dashboard backdrop is intentionally separate from the solid navigation panel. */
+@media (max-width: 767px) {
+  .admin-sidebar[data-mobile="true"] {
+    position: fixed !important;
+    z-index: 70 !important;
+    isolation: isolate;
+    opacity: 1 !important;
+    background-color: #061d36 !important;
+    background-image: linear-gradient(180deg, #04172b 0%, #082e4f 58%, #101f51 100%) !important;
+    background-blend-mode: normal !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .admin-sidebar[data-mobile="true"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 1;
+    background: #061d36;
+  }
+
+  .admin-sidebar[data-mobile="true"] > *,
+  .admin-sidebar[data-mobile="true"] *,
+  .admin-sidebar[data-mobile="true"]::after {
+    opacity: 1 !important;
+  }
+
+  .admin-sidebar[data-mobile="true"]::after {
+    display: none;
+  }
+
+  body:has(.admin-dashboard-shell) [data-slot="sheet-overlay"] {
+    z-index: 60 !important;
+    opacity: 1 !important;
+    background: rgba(1, 10, 24, 0.52) !important;
+    backdrop-filter: none !important;
+  }
+}

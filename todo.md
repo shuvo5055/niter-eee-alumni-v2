@@ -127,3 +127,11 @@
 - [x] Verify end-to-end that managed alumni, jobs, gallery items, and content updates appear on public pages.
 - [x] Test authorization and public synchronization, then publish the full-stack dashboard.
 - [x] Run the controlled legacy-directory migration and verify imported records resolve through the public data procedures.
+- [x] Audit all login UI, client auth hooks, protected-route behavior, and public-route redirects affected by removing authentication.
+- [x] Remove authentication-related UI, redirects, prompts, and unnecessary public client auth state while preserving public data and visual design.
+- [x] Verify public routes, navigation, search, and directory data open directly with no login loop, blank page, or console error.
+- [x] Publish the authentication-free public access update in a new checkpoint.
+- [x] Disable the `/admin` interface so no public visitor encounters a login, authorization, or administrator screen.
+- [x] Remove the client OAuth launcher, automatic unauthenticated redirect handling, login prompts, and unused dashboard authentication UI.
+- [x] Re-run build, automated tests, and local direct-route checks after disabling client authentication.
+- [x] Fix the Contact-page React list-key warning found during post-change console verification.

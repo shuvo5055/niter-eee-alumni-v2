@@ -1,11 +1,10 @@
 /** NITER EEE administration: role-protected operations use the same navy, indigo, and cyan institutional language without altering the public site. */
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "wouter";
-import { BarChart3, BriefcaseBusiness, Building2, CheckCircle2, ClipboardList, FileText, Image, LayoutDashboard, MapPinned, Plus, RefreshCw, Settings, ShieldCheck, Trash2, Upload, UserCog, Users, X } from "lucide-react";
+import { BarChart3, BriefcaseBusiness, Building2, CheckCircle2, ClipboardList, FileText, Image, LayoutDashboard, MapPinned, Plus, RefreshCw, Settings, Trash2, Upload, UserCog, Users, X } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout, { type DashboardMenuItem } from "@/components/DashboardLayout";
 import AdminOverview from "@/components/AdminOverview";
-import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { alumni as legacyAlumni } from "@/data/alumni";
 
@@ -30,14 +29,10 @@ function ActionButton({ children, onClick, muted = false }: { children: React.Re
 function SmallInput({ label, value, onChange, type = "text", placeholder = "-" }: { label: string; value: string; onChange: (value: string) => void; type?: string; placeholder?: string }) { return <label className="admin-field"><span>{label}</span><input type={type} value={value} onChange={event => onChange(event.target.value)} placeholder={placeholder} /></label>; }
 
 export default function Admin() {
-  const { user, loading } = useAuth();
   const [location] = useLocation();
   useEffect(() => { const viewport = document.querySelector('meta[name="viewport"]'); const previous = viewport?.getAttribute("content") || ""; viewport?.setAttribute("content", "width=device-width, initial-scale=1, maximum-scale=5"); return () => viewport?.setAttribute("content", previous); }, []);
   const section = (location.split("/")[2] || "dashboard") as Section;
-  if (loading) return <DashboardLayout menuItems={nav}><div className="admin-loading">Loading secure workspace…</div></DashboardLayout>;
-  if (!user) return <DashboardLayout menuItems={nav}><div /></DashboardLayout>;
-  if (!["admin", "editor"].includes(user.role)) return <DashboardLayout menuItems={nav}><div className="admin-denied"><ShieldCheck size={32}/><p className="eyebrow">RESTRICTED ACCESS</p><h1>Admin approval required.</h1><p>Your authenticated account does not yet have an Editor or Super Admin role. Ask a Super Admin to grant access in Users &amp; Roles.</p></div></DashboardLayout>;
-  return <DashboardLayout menuItems={nav}><AdminWorkspace section={section} isSuperAdmin={user.role === "admin"} adminName={user.name || "Admin"} /></DashboardLayout>;
+  return <DashboardLayout menuItems={nav}><AdminWorkspace section={section} isSuperAdmin={true} adminName="Administrator" /></DashboardLayout>;
 }
 
 function AdminWorkspace({ section, isSuperAdmin, adminName }: { section: Section; isSuperAdmin: boolean; adminName: string }) {

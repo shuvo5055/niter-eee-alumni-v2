@@ -127,3 +127,7 @@
 - [x] Verify end-to-end that managed alumni, jobs, gallery items, and content updates appear on public pages.
 - [x] Test authorization and public synchronization, then publish the full-stack dashboard.
 - [x] Run the controlled legacy-directory migration and verify imported records resolve through the public data procedures.
+- [x] Restore the Admin dashboard routes and UI without any login page, OAuth launcher, client redirect, or authentication prompt.
+- [x] Make existing Admin dashboard data and management actions available directly without client authentication state.
+- [x] Verify `/admin` and public routes at desktop and mobile widths with no login prompt, redirect, blank page, or console error.
+- [x] Publish the restored no-login Admin dashboard in a new checkpoint.

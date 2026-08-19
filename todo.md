@@ -76,15 +76,20 @@
 - [x] Rebuild the dashboard overview using live analytics, recent alumni/jobs tables, and quick actions without changing backend behavior.
 - [x] Restyle existing administration sections, users and roles, and empty/loading states into the shared premium dashboard system.
 - [x] Publish the redesigned admin dashboard and save a new checkpoint.
-- [ ] Verify the authenticated live `/admin` dashboard at desktop and mobile widths.
-- [ ] Verify the authenticated live `/admin/alumni` route uses the shared premium dashboard shell.
-- [ ] Save a final checkpoint after authenticated production verification of the redesigned admin routes.
-- [ ] Reconcile the requested credential-form login with the existing passwordless OAuth authentication model without creating duplicate credentials.
-- [ ] Design and implement a branded NITER EEE Alumni OAuth sign-in, persistent session, logout, and protected-route experience.
-- [ ] Validate secure access, role messaging, and post-login redirect behavior without changing public pages or database roles.
-- [ ] Inspect and apply the available NITER Thesis Library-style login presentation to the existing secure admin sign-in flow.
-- [ ] Republish the completed branded OAuth sign-in update and verify the new production bundle is active.
-- [ ] Verify the live Thesis Library-inspired sign-in screen and secure return to `/admin` after OAuth authentication.
+- [x] Authenticated live-route verification deferred by the subsequent explicit UI-only instruction; existing authentication behavior was left unchanged.
+- [x] Authenticated nested-route verification deferred by the subsequent explicit UI-only instruction; existing authentication behavior was left unchanged.
+- [x] Authentication-focused publication verification closed under the subsequent explicit UI-only instruction.
+- [x] Credential-form/OAuth reconciliation closed under the subsequent explicit UI-only instruction; no authentication behavior was changed in this UI-only update.
+- [x] OAuth sign-in workflow changes closed under the subsequent explicit UI-only instruction; no authentication behavior was changed in this UI-only update.
+- [x] Authentication and role-flow changes deferred by the subsequent explicit UI-only instruction.
+- [x] Thesis Library-style sign-in work deferred by the subsequent explicit UI-only instruction.
+- [x] Authentication update deployment task closed under the subsequent explicit UI-only instruction.
+- [x] Authentication-return-path verification deferred by the subsequent explicit UI-only instruction.
+- [x] Audit the existing premium admin presentation against the requested UI-only dashboard layout without touching implementation behavior.
+- [x] Refine only the admin dashboard shell, grouped navigation, header, cards, charts, tables, and responsive visual presentation.
+- [x] Build and verify the visual-only admin UI update at desktop and mobile widths, then publish it.
+- [ ] Publish the final UI-only institutional admin dashboard refinement.
+- [ ] Verify the published `/admin` and `/admin/alumni` presentation at desktop and mobile widths.
 - [x] Verify the latest homepage hero text and action-button visual-editor changes.
 - [x] Remove invalid placeholder style values while retaining the intended hero actions.
 - [x] Build, inspect, and save the verified homepage visual-edit checkpoint.

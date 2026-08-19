@@ -4,7 +4,7 @@ import { BarChart3, BriefcaseBusiness, Building2, Eye, FilePlus2, FolderPlus, Gl
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 
-const chartColors = ["#42d3f0", "#6a72ec", "#f6b96b", "#52c99c", "#df78b8", "#7595ab"];
+const chartColors = ["#42d3f0", "#277ea3", "#315fc0", "#4fa7b8", "#4a91d0", "#6ec5d2"];
 const fmt = (value?: Date | string | null) => value ? new Date(value).toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" }) : "—";
 
 export default function AdminOverview({ adminName }: { adminName: string }) {

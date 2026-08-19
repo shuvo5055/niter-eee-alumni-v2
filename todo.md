@@ -94,7 +94,7 @@
 - [x] Authenticated production verification deliberately skipped per the user’s project-file-only verification instruction.
 - [x] Authenticated production nested-route verification deliberately skipped per the user’s project-file-only verification instruction.
 - [x] Verify the existing `/admin` and `/admin/alumni` visual presentation using local build, automated checks, and local preview screenshots only.
-- [ ] Save a final checkpoint after project-file-only verification of the UI-only dashboard refinement.
+- [x] Save a final checkpoint after project-file-only verification of the UI-only dashboard refinement.
 - [x] Verify the latest homepage hero text and action-button visual-editor changes.
 - [x] Remove invalid placeholder style values while retaining the intended hero actions.
 - [x] Build, inspect, and save the verified homepage visual-edit checkpoint.

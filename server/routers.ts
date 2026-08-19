@@ -1,11 +1,13 @@
 import { and, count, desc, eq, like, or } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
+import { createHash, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
-import { COOKIE_NAME } from "@shared/const";
+import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { adminProcedure, editorProcedure, publicProcedure, router } from "./_core/trpc";
 import { systemRouter } from "./_core/systemRouter";
-import { getDb, recordActivity } from "./db";
+import { getDb, recordActivity, upsertUser } from "./db";
+import { sdk } from "./_core/sdk";
 import { alumni, batches, districts, galleryItems, jobs, siteContent, users } from "../drizzle/schema";
 import { storagePut } from "./storage";
 
@@ -27,6 +29,9 @@ const galleryInput = z.object({ id: z.number().int().optional(), title: z.string
 const legacyAlumniInput = z.object({ slug: z.string().min(2).max(160), fullName: z.string().min(2).max(200), batchNumber: z.number().int().min(1), districtName: z.string().min(2).max(120), studentId: optionalText, photoUrl: optionalText, organization: optionalText, designation: optionalText, industry: optionalText, country: optionalText, city: optionalText, session: optionalText, bloodGroup: optionalText, school: optionalText, college: optionalText, bsc: optionalText, msc: optionalText, skill: optionalText, researchActivities: optionalText, currentDuration: optionalText, previousOrganization: optionalText, previousDesignation: optionalText, previousDuration: optionalText, whatsapp: optionalText, facebook: optionalText, linkedin: optionalText });
 const requireDb = async () => { const db = await getDb(); if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database is unavailable" }); return db; };
 const parseDate = (value?: string | null) => value ? new Date(value) : null;
+const hashValue = (value: string) => createHash("sha256").update(value).digest();
+const matchesSecret = (provided: string, configured: string) => timingSafeEqual(hashValue(provided), hashValue(configured));
+const credentialAdminOpenId = (email: string) => `credential-admin-${createHash("sha256").update(email).digest("hex").slice(0, 40)}`;
 
 const publicAlumniSelect = {
   id: alumni.id, slug: alumni.slug, fullName: alumni.fullName, session: alumni.session, studentId: alumni.studentId, bloodGroup: alumni.bloodGroup, photoUrl: alumni.photoUrl,
@@ -41,6 +46,18 @@ export const appRouter = router({
   system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
+    signIn: publicProcedure.input(z.object({ email: z.string().trim().email().max(320), password: z.string().min(1).max(256), remember: z.boolean().default(false) })).mutation(async ({ ctx, input }) => {
+      const configuredEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+      const configuredPassword = process.env.ADMIN_PASSWORD;
+      if (!configuredEmail || !configuredPassword) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Administrator access is not configured." });
+      if (!matchesSecret(input.email.toLowerCase(), configuredEmail) || !matchesSecret(input.password, configuredPassword)) throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid email or password." });
+      const openId = credentialAdminOpenId(configuredEmail);
+      await upsertUser({ openId, name: "Administrator", email: configuredEmail, loginMethod: "credentials", role: "admin", lastSignedIn: new Date() });
+      const expiresInMs = input.remember ? ONE_YEAR_MS : 1000 * 60 * 60 * 12;
+      const token = await sdk.createSessionToken(openId, { expiresInMs, name: "Administrator" });
+      ctx.res.cookie(COOKIE_NAME, token, { ...getSessionCookieOptions(ctx.req), maxAge: expiresInMs });
+      return { success: true } as const;
+    }),
     logout: publicProcedure.mutation(({ ctx }) => { ctx.res.clearCookie(COOKIE_NAME, { ...getSessionCookieOptions(ctx.req), maxAge: -1 }); return { success: true } as const; }),
   }),
   publicData: router({

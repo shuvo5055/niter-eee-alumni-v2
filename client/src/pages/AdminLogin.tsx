@@ -1,13 +1,16 @@
 import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 import { FormEvent, useState } from "react";
+import { useLocation } from "wouter";
+import { trpc } from "@/lib/trpc";
 
 export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [, setLocation] = useLocation();
+  const signIn = trpc.auth.signIn.useMutation({ onSuccess: () => setLocation("/admin"), onError: () => setError("The email or password you entered is invalid.") });
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -20,11 +23,7 @@ export default function AdminLogin() {
       return;
     }
     setError("");
-    setSubmitting(true);
-    window.setTimeout(() => {
-      setSubmitting(false);
-      setError("The email or password you entered is invalid.");
-    }, 360);
+    signIn.mutate({ email, password, remember });
   };
 
   return <main className="alumni-admin-login" aria-labelledby="admin-login-heading">
@@ -60,7 +59,7 @@ export default function AdminLogin() {
           <a className="alumni-admin-login__forgot" href="#login-help">Forgot Password?</a>
         </div>
 
-        <button className="alumni-admin-login__submit" type="submit" disabled={submitting}>{submitting ? "Checking…" : <>Login <ArrowRight size={18} /></>}</button>
+        <button className="alumni-admin-login__submit" type="submit" disabled={signIn.isPending}>{signIn.isPending ? "Checking…" : <>Login <ArrowRight size={18} /></>}</button>
       </form>
 
       {error && <p className="alumni-admin-login__error" aria-live="polite">{error}</p>}

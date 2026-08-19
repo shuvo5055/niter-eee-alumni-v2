@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 
-function directAccessContext(): TrpcContext {
+function anonymousContext(): TrpcContext {
   return {
     user: null,
     req: { protocol: "https", headers: {} } as TrpcContext["req"],
@@ -10,16 +10,14 @@ function directAccessContext(): TrpcContext {
   };
 }
 
-describe("direct administration access", () => {
-  it("returns dashboard data without an authenticated user", async () => {
-    const caller = appRouter.createCaller(directAccessContext());
-    const overview = await caller.admin.overview();
-    expect(overview.counts).toHaveProperty("alumni");
-    expect(Array.isArray(overview.recentAlumni)).toBe(true);
+describe("protected administration access", () => {
+  it("rejects anonymous dashboard requests", async () => {
+    const caller = appRouter.createCaller(anonymousContext());
+    await expect(caller.admin.overview()).rejects.toMatchObject({ code: "UNAUTHORIZED" });
   });
 
-  it("returns the existing user list without a role gate", async () => {
-    const caller = appRouter.createCaller(directAccessContext());
-    await expect(caller.admin.users.list()).resolves.toBeInstanceOf(Array);
+  it("rejects anonymous user-management requests", async () => {
+    const caller = appRouter.createCaller(anonymousContext());
+    await expect(caller.admin.users.list()).rejects.toMatchObject({ code: "UNAUTHORIZED" });
   });
 });

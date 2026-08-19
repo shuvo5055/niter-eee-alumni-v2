@@ -18,24 +18,19 @@ const requireUser = t.middleware(async opts => {
 
 export const protectedProcedure = t.procedure.use(requireUser);
 
-const directAdministrator: NonNullable<TrpcContext["user"]> = {
-  id: 0,
-  openId: "direct-admin-access",
-  name: "Administrator",
-  email: null,
-  loginMethod: "direct-access",
-  role: "admin",
-  createdAt: new Date(0),
-  updatedAt: new Date(0),
-  lastSignedIn: new Date(0),
-};
-
-const directAdminAccess = t.middleware(async opts => {
+const requireEditor = t.middleware(async opts => {
   const { ctx, next } = opts;
-  return next({ ctx: { ...ctx, user: ctx.user ?? directAdministrator } });
+  if (!ctx.user) throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+  if (ctx.user.role !== "admin" && ctx.user.role !== "editor") throw new TRPCError({ code: "FORBIDDEN", message: "Administrator access is required." });
+  return next({ ctx: { ...ctx, user: ctx.user } });
 });
 
-// The administration interface is intentionally direct-access: no OAuth, login prompt,
-// or role gate is required. Mutations are recorded against the direct administrator actor.
-export const adminProcedure = t.procedure.use(directAdminAccess);
-export const editorProcedure = t.procedure.use(directAdminAccess);
+const requireAdmin = t.middleware(async opts => {
+  const { ctx, next } = opts;
+  if (!ctx.user) throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+  if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "Administrator access is required." });
+  return next({ ctx: { ...ctx, user: ctx.user } });
+});
+
+export const adminProcedure = t.procedure.use(requireAdmin);
+export const editorProcedure = t.procedure.use(requireEditor);

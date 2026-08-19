@@ -141,3 +141,10 @@
 - [x] Add clean client-side invalid-credential validation without introducing a backend authentication system.
 - [x] Verify the refined Admin Login UI at desktop and mobile widths, then publish it.
 - [x] Save and publish the verified Admin Login UI refinement in a new checkpoint.
+- [x] Audit the existing direct-access Admin route and Login form before enabling credential-based access.
+- [x] Store the supplied administrator credential securely and add server-side sign-in, sign-out, and session validation.
+- [x] Protect Admin data and management routes while preserving unrestricted public alumni pages.
+- [x] Verify valid and invalid sign-in behavior, protected Admin access, sign-out, and public routes without exposing credentials.
+- [x] Verify a credential-issued session grants protected Admin procedure access and that sign-out invalidates that session.
+- [x] Verify the post-logout browser-cookie state cannot resolve an administrator session or access protected procedures.
+- [x] Publish the secured administrator access update in a new checkpoint.

@@ -30,9 +30,13 @@ function SmallInput({ label, value, onChange, type = "text", placeholder = "-" }
 
 export default function Admin() {
   const [location] = useLocation();
+  const [, setLocation] = useLocation();
+  const auth = trpc.auth.me.useQuery();
+  const logout = trpc.auth.logout.useMutation({ onSuccess: () => setLocation("/admin/login") });
   useEffect(() => { const viewport = document.querySelector('meta[name="viewport"]'); const previous = viewport?.getAttribute("content") || ""; viewport?.setAttribute("content", "width=device-width, initial-scale=1, maximum-scale=5"); return () => viewport?.setAttribute("content", previous); }, []);
   const section = (location.split("/")[2] || "dashboard") as Section;
-  return <DashboardLayout menuItems={nav}><AdminWorkspace section={section} isSuperAdmin={true} adminName="Administrator" /></DashboardLayout>;
+  const adminName = auth.data?.name?.trim() || "Administrator";
+  return <DashboardLayout menuItems={nav} adminName={adminName} onSignOut={() => logout.mutate()}><AdminWorkspace section={section} isSuperAdmin={auth.data?.role === "admin"} adminName={adminName} /></DashboardLayout>;
 }
 
 function AdminWorkspace({ section, isSuperAdmin, adminName }: { section: Section; isSuperAdmin: boolean; adminName: string }) {

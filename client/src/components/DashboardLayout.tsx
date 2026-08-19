@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Bell, ChevronDown, ChevronRight, LayoutDashboard, PanelLeft, ShieldCheck, Users } from "lucide-react";
+import { Bell, ChevronDown, ChevronRight, LayoutDashboard, LogOut, PanelLeft, ShieldCheck, Users } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useLocation } from "wouter";
 
@@ -16,11 +16,11 @@ const defaultMenuItems: DashboardMenuItem[] = [
   { icon: Users, label: "Alumni Management", path: "/admin/alumni" },
 ];
 
-export default function DashboardLayout({ children, menuItems = defaultMenuItems }: { children: React.ReactNode; menuItems?: DashboardMenuItem[] }) {
-  return <SidebarProvider className="admin-dashboard-shell"><AdminDashboardFrame menuItems={menuItems}>{children}</AdminDashboardFrame></SidebarProvider>;
+export default function DashboardLayout({ children, menuItems = defaultMenuItems, adminName = "Administrator", onSignOut }: { children: React.ReactNode; menuItems?: DashboardMenuItem[]; adminName?: string; onSignOut?: () => void }) {
+  return <SidebarProvider className="admin-dashboard-shell"><AdminDashboardFrame menuItems={menuItems} adminName={adminName} onSignOut={onSignOut}>{children}</AdminDashboardFrame></SidebarProvider>;
 }
 
-function AdminDashboardFrame({ children, menuItems }: { children: React.ReactNode; menuItems: DashboardMenuItem[] }) {
+function AdminDashboardFrame({ children, menuItems, adminName, onSignOut }: { children: React.ReactNode; menuItems: DashboardMenuItem[]; adminName: string; onSignOut?: () => void }) {
   const [location, setLocation] = useLocation();
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({ "Alumni Management": true, "Batch Management": true, "District Management": true, "Job Management": true });
   const activeItem = useMemo(() => menuItems.flatMap(item => [{ label: item.label, path: item.path }, ...(item.children ?? [])]).find(item => location === item.path) ?? menuItems.find(item => location.startsWith(item.path)), [location, menuItems]);
@@ -48,14 +48,14 @@ function AdminDashboardFrame({ children, menuItems }: { children: React.ReactNod
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="admin-sidebar__footer">
-        <div className="admin-role-note"><ShieldCheck size={15} /><span>DIRECT<br />ACCESS</span></div>
-        <div className="admin-profile-trigger"><Avatar><AvatarFallback>A</AvatarFallback></Avatar><span><strong>Administrator</strong><small>Dashboard access</small></span></div>
+        <div className="admin-role-note"><ShieldCheck size={15} /><span>SECURE<br />ACCESS</span></div>
+        <button className="admin-profile-trigger" onClick={onSignOut} aria-label="Sign out from administrator access"><Avatar><AvatarFallback>{adminName.slice(0, 1).toUpperCase()}</AvatarFallback></Avatar><span><strong>{adminName}</strong><small>Sign out</small></span><LogOut size={14} /></button>
       </SidebarFooter>
     </Sidebar>
     <SidebarInset className="admin-dashboard-inset">
       <header className="admin-topbar">
         <div className="admin-topbar__left"><SidebarTrigger className="admin-sidebar-toggle"><PanelLeft size={18} /></SidebarTrigger><div><p>ADMINISTRATION / {activeItem?.label?.toUpperCase() || "DASHBOARD"}</p><strong>{activeItem?.label || "Dashboard"}</strong></div></div>
-        <div className="admin-topbar__right"><button className="admin-notification" aria-label="Notifications"><Bell size={18} /><i /></button><div className="admin-avatar-summary"><Avatar><AvatarFallback>A</AvatarFallback></Avatar><span><strong>Administrator</strong><small>Dashboard access</small></span></div></div>
+        <div className="admin-topbar__right"><button className="admin-notification" aria-label="Notifications"><Bell size={18} /><i /></button><div className="admin-avatar-summary"><Avatar><AvatarFallback>{adminName.slice(0, 1).toUpperCase()}</AvatarFallback></Avatar><span><strong>{adminName}</strong><small>Secure access</small></span></div></div>
       </header>
       <main className="admin-main">{children}</main>
     </SidebarInset>

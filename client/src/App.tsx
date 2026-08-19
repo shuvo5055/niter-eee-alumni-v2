@@ -18,6 +18,8 @@ import "./admin-login.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";
+import { useEffect } from "react";
+import { useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import SiteShell from "./components/SiteShell";
@@ -35,13 +37,24 @@ import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
+import { trpc } from "./lib/trpc";
 
 function PublicRouter() {
   return <SiteShell><Switch><Route path="/" component={Home}/><Route path="/alumni" component={Alumni}/><Route path="/alumni/:slug" component={Profile}/><Route path="/batches" component={Batches}/><Route path="/batches/:batch" component={BatchDetail}/><Route path="/districts" component={Districts}/><Route path="/districts/:district" component={DistrictDetail}/><Route path="/jobs" component={Jobs}/><Route path="/gallery" component={Gallery}/><Route path="/about" component={About}/><Route path="/contact" component={Contact}/><Route component={NotFound}/></Switch></SiteShell>;
 }
 
+function AdminAccessGate() {
+  const auth = trpc.auth.me.useQuery(undefined, { retry: false });
+  const [, setLocation] = useLocation();
+  const hasAccess = auth.data?.role === "admin" || auth.data?.role === "editor";
+  useEffect(() => { if (!auth.isLoading && !hasAccess) setLocation("/admin/login"); }, [auth.isLoading, hasAccess, setLocation]);
+  if (auth.isLoading) return <main className="admin-access-check">Checking secure administrator access…</main>;
+  if (!hasAccess) return null;
+  return <Admin />;
+}
+
 function Router() {
-  return <Switch><Route path="/admin/login" component={AdminLogin}/><Route path="/admin" component={Admin}/><Route path="/admin/:section" component={Admin}/><Route component={PublicRouter}/></Switch>;
+  return <Switch><Route path="/admin/login" component={AdminLogin}/><Route path="/admin" component={AdminAccessGate}/><Route path="/admin/:section" component={AdminAccessGate}/><Route component={PublicRouter}/></Switch>;
 }
 
 export default function App() {

@@ -23,7 +23,8 @@ describe("direct Admin access", () => {
   });
 
   it("keeps the login form frontend-ready without simulating credential validation", () => {
-    expect(loginSource).toContain("No credentials have been submitted yet.");
+    expect(loginSource).toContain("The email or password you entered is invalid.");
+    expect(loginSource).not.toContain("Sign-in is ready for the authentication backend.");
     expect(loginSource).not.toContain('setLocation("/admin")');
   });
 });

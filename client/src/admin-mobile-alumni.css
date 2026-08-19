@@ -1,0 +1,17 @@
+/* Mobile presentation only: preserve the existing Alumni Management table data and actions as stacked records. */
+@media(max-width:760px){
+  .admin-panel .admin-alumni-table{display:block;min-width:0!important}
+  .admin-alumni-table thead{display:none}
+  .admin-alumni-table tbody{display:grid;gap:10px}
+  .admin-alumni-table tbody tr{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid #d9e6eb!important;border-left:3px solid #36c8df!important;border-radius:8px;padding:10px;background:#fff}
+  .admin-alumni-table tbody td{display:block!important;min-width:0;padding:7px 8px!important;border:0!important;color:#456879}
+  .admin-alumni-table tbody td:before{content:attr(data-label);display:block;margin-bottom:3px;color:#7891a0;font-size:8px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+  .admin-alumni-table tbody td.admin-person{grid-column:1/-1;padding:4px 8px 11px!important;border-bottom:1px solid #e6eef2!important}
+  .admin-alumni-table tbody td.admin-person:before{display:none}
+  .admin-alumni-table tbody td:last-child{display:flex;align-items:center;gap:7px;grid-column:1/-1;padding-top:10px!important;border-top:1px solid #e6eef2!important}
+  .admin-alumni-table tbody td:last-child:before{margin:0 4px 0 0}
+  .admin-alumni-table tbody td:nth-child(5){grid-column:1/-1}
+  .admin-alumni-table tbody td:nth-child(5) small{display:block}
+  .admin-alumni-table .table-link{padding:3px 5px}
+  .admin-alumni-table .status{margin-top:1px}
+}

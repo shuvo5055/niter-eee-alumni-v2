@@ -14,6 +14,7 @@ import "./header-footer-refinement.css";
 import "./admin.css";
 import "./admin-institutional-refinement.css";
 import "./admin-mobile-alumni.css";
+import "./admin-login.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";
@@ -33,13 +34,14 @@ import Contact from "./pages/Contact";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
+import AdminLogin from "./pages/AdminLogin";
 
 function PublicRouter() {
   return <SiteShell><Switch><Route path="/" component={Home}/><Route path="/alumni" component={Alumni}/><Route path="/alumni/:slug" component={Profile}/><Route path="/batches" component={Batches}/><Route path="/batches/:batch" component={BatchDetail}/><Route path="/districts" component={Districts}/><Route path="/districts/:district" component={DistrictDetail}/><Route path="/jobs" component={Jobs}/><Route path="/gallery" component={Gallery}/><Route path="/about" component={About}/><Route path="/contact" component={Contact}/><Route component={NotFound}/></Switch></SiteShell>;
 }
 
 function Router() {
-  return <Switch><Route path="/admin" component={Admin}/><Route path="/admin/:section" component={Admin}/><Route component={PublicRouter}/></Switch>;
+  return <Switch><Route path="/admin/login" component={AdminLogin}/><Route path="/admin" component={Admin}/><Route path="/admin/:section" component={Admin}/><Route component={PublicRouter}/></Switch>;
 }
 
 export default function App() {

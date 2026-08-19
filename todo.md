@@ -131,3 +131,8 @@
 - [x] Make existing Admin dashboard data and management actions available directly without client authentication state.
 - [x] Verify `/admin` and public routes at desktop and mobile widths with no login prompt, redirect, blank page, or console error.
 - [x] Publish the restored no-login Admin dashboard in a new checkpoint.
+- [x] Create the dedicated NITER EEE Alumni Association Admin Login route and branded academic login card.
+- [x] Add responsive email, password visibility, remember-me, forgot-password, loading, and frontend-ready sign-in interaction states without changing backend authentication.
+- [x] Verify the Login page and existing Admin dashboard locally at desktop and mobile widths.
+- [x] Replace the non-validating Login redirect with a clear authentication-backend placeholder state.
+- [x] Publish the Admin Login page update in a new checkpoint.

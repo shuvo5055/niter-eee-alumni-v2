@@ -163,3 +163,12 @@
 - [x] Preserve Jobs filters, live opportunities, alumni results, and the District Directory repair while removing only the requested Jobs heading.
 - [x] Build and locally verify the Jobs and District pages at desktop and mobile widths.
 - [x] Publish the verified Jobs and District heading removals in a new checkpoint.
+- [x] Review the attached content and map its applicable requirements to the existing Admin interface.
+- [x] Apply the attached Admin content while preserving secure authentication, existing data workflows, and NITER EEE Alumni styling.
+- [x] Build and locally verify the Admin update through protected-route checks, responsive styling review, production build, and automated regression coverage.
+- [x] Define normalized Excel column aliases, required fields, identity matching rules, and safe row-level validation output.
+- [x] Add protected transactional import preview and commit procedures that upsert alumni by Student ID, create or match batches and districts, prevent duplicates, and write audit entries.
+- [x] Add the Alumni Management Excel template download, .xlsx/.xls uploader, column mapper, preview, errors table, confirmation flow, and success summary.
+- [x] Add focused tests for column mapping, validation errors, duplicate/update detection, and failed-import rollback behavior.
+- [x] Verify the Excel import workflow through protected-route checks, responsive implementation review, build, and automated regression coverage.
+- [x] Publish the verified Excel bulk-import feature in a new checkpoint.

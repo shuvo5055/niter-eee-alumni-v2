@@ -16,6 +16,7 @@ import "./admin-institutional-refinement.css";
 import "./admin-mobile-alumni.css";
 import "./admin-mobile-sidebar.css";
 import "./admin-login.css";
+import "./admin-excel-import.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";

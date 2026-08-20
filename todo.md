@@ -206,3 +206,5 @@
 - [x] Route the stable logo endpoint through the production API namespace after the top-level static path fell through to the application HTML in deployment.
 - [x] Bundle the compact approved official logo from permanent project asset storage into the Vite production build after the platform intercepted custom image routes.
 - [x] Replace the Docker-unavailable external asset import with a direct client-public official-logo asset that is copied unchanged into every production build.
+- [x] Restore the previous EEE-specific Hero branding and remove only the NITER logo added inside the Hero section.
+- [x] Verify the restored Hero composition at desktop and mobile sizes without changing Header, navigation, cards, filters, Footer, or other sections.

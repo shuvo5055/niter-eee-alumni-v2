@@ -13,7 +13,7 @@ export default function Profile({ params }: { params: { slug: string } }) {
   const legacyPerson = getAlumni(params.slug);
   const person = managed.data ? {
     name: managed.data.fullName,
-    photo: toPublicImageUrl(managed.data.photoUrl || legacyPerson?.photo),
+    photo: toPublicImageUrl(managed.data.photoUrl),
     studentId: managed.data.studentId || "-",
     district: managed.data.districtName || "-",
     degree: managed.data.bsc || "-",

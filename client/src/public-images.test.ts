@@ -9,9 +9,11 @@ describe("public image URL handling", () => {
     expect(toPublicImageUrl("https://cdn.example.org/test.jpg")).toBe("https://cdn.example.org/test.jpg");
   });
 
-  it("uses a managed fallback for empty and legacy Unsplash sources", () => {
+  it("uses a neutral, non-institutional fallback for empty and legacy Unsplash sources", () => {
     expect(toPublicImageUrl()).toBe(ALUMNI_IMAGE_FALLBACK_URL);
     expect(toPublicImageUrl("https://images.unsplash.com/photo-legacy")).toBe(ALUMNI_IMAGE_FALLBACK_URL);
+    expect(ALUMNI_IMAGE_FALLBACK_URL).toContain("data:image/svg+xml");
+    expect(ALUMNI_IMAGE_FALLBACK_URL).not.toBe(NITER_OFFICIAL_LOGO_URL);
   });
 
   it("keeps shared NITER branding on the stable same-origin route and legacy portraits on managed project storage", () => {

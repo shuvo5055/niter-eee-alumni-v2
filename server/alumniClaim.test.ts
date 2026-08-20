@@ -51,4 +51,11 @@ describe("alumni self-claim security", () => {
     expect(routers).toContain("record.claimLockedUntil && record.claimLockedUntil <= now ? 0 : record.claimFailedAttempts ?? 0");
     expect(routers).toContain("The requested email is already assigned to another alumni record.");
   });
+
+  it("stores an uploaded personal photo in the claimant's pending review record before it can be published", () => {
+    const routers = readFileSync(new URL("./routers.ts", import.meta.url), "utf8");
+    expect(routers).toContain("profile_photo_uploaded");
+    expect(routers).toContain("photoUrl: result.url");
+    expect(routers).toContain("pendingReview: true");
+  });
 });

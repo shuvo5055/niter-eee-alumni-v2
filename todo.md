@@ -210,3 +210,10 @@
 - [x] Verify the restored Hero composition at desktop and mobile sizes without changing Header, navigation, cards, filters, Footer, or other sections.
 - [x] Compare the current Home Hero with the prior approved premium EEE composition and restore the exact visual treatment only within the Hero.
 - [x] Verify the exact restored premium Hero at desktop and mobile sizes, then publish the Hero-only correction.
+- [x] Restore the reference right-side Hero network/circuit artwork, engineering overlays, glow points, and outlined EEE mark without changing left-side content or non-Hero sections.
+- [x] Verify the restored right-side Hero artwork at desktop and mobile sizes, then publish the Hero-only correction.
+- [x] Trace and repair alumni photo upload → storage → database → public card/profile rendering so each alumni’s own photo is used.
+- [x] Replace NITER-logo photo fallback with a neutral placeholder only for alumni who have no uploaded personal photo.
+- [x] Verify uploaded personal photo consistency across alumni cards and profiles at desktop and mobile sizes before publication.
+- [x] Recreate the prior right-side EEE Hero artwork directly in CSS and remove the temporary oversized Hero image from the project build output.
+- [x] Verify the code-only premium Hero and publish the unblocked profile-photo repair without requesting user media uploads.

@@ -126,7 +126,18 @@ export const appRouter = router({
     }),
     uploadPhoto: alumniProcedure.input(z.object({ fileName: z.string().max(160), mimeType: z.string().regex(/^image\/(jpeg|png|webp)$/), dataBase64: z.string().min(16).max(7_000_000) })).mutation(async ({ ctx, input }) => {
       const base64 = input.dataBase64.replace(/^data:image\/[a-zA-Z+]+;base64,/, "");
-      return storagePut(`alumni-claims/${ctx.alumniSession.alumniId}/${input.fileName}`, Buffer.from(base64, "base64"), input.mimeType);
+      const result = await storagePut(`alumni-claims/${ctx.alumniSession.alumniId}/${input.fileName}`, Buffer.from(base64, "base64"), input.mimeType);
+      const db = await requireDb();
+      const alumniId = ctx.alumniSession.alumniId;
+      const [record] = await db.select({ fullName: alumni.fullName }).from(alumni).where(eq(alumni.id, alumniId)).limit(1);
+      if (!record) throw new TRPCError({ code: "UNAUTHORIZED", message: "Alumni sign-in is required." });
+      const [pending] = await db.select({ id: alumniProfileChanges.id, proposedData: alumniProfileChanges.proposedData }).from(alumniProfileChanges).where(and(eq(alumniProfileChanges.alumniId, alumniId), eq(alumniProfileChanges.status, "pending"))).limit(1);
+      const existingDraft = pending?.proposedData && typeof pending.proposedData === "object" ? pending.proposedData as Record<string, unknown> : {};
+      const proposedData = { ...existingDraft, fullName: typeof existingDraft.fullName === "string" && existingDraft.fullName.trim() ? existingDraft.fullName : record.fullName, photoUrl: result.url };
+      if (pending) await db.update(alumniProfileChanges).set({ proposedData, updatedAt: new Date() }).where(eq(alumniProfileChanges.id, pending.id));
+      else await db.insert(alumniProfileChanges).values({ alumniId, submittedByAlumniId: alumniId, proposedData, status: "pending" });
+      await db.insert((await import("../drizzle/schema")).activityLogs).values({ actorId: null, action: "profile_photo_uploaded", entityType: "alumni", entityId: String(alumniId) });
+      return { ...result, pendingReview: true };
     }),
   }),
   publicData: router({

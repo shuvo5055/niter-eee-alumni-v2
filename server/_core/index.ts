@@ -17,7 +17,7 @@ const OFFICIAL_NITER_LOGO_KEY = "niter-official-logo_ca7597f4.jpg";
  * URL used internally to retrieve the immutable logo from project storage.
  */
 function registerStableBrandAssets(app: express.Express) {
-  app.get("/static/niter-official-logo.jpg", async (_req, res) => {
+  app.get("/api/brand/niter-official-logo.jpg", async (_req, res) => {
     try {
       const signedUrl = await storageGetSignedUrl(OFFICIAL_NITER_LOGO_KEY);
       const upstream = await fetch(signedUrl);

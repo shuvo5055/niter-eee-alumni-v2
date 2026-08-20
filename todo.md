@@ -203,3 +203,4 @@
 - [ ] Determine whether `nzc.manus.space` can be restored or redirected to the current deployment so the user's existing public link opens working images.
 - [x] Replace redirect-based NITER logo delivery with a permanent project-bundled static asset shared by Header, Footer, Login, and all other logo placements.
 - [ ] Verify the deployed logo asset remains available after repeated reloads on desktop and mobile.
+- [x] Route the stable logo endpoint through the production API namespace after the top-level static path fell through to the application HTML in deployment.

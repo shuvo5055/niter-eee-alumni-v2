@@ -1,5 +1,5 @@
 /** Stable same-origin route backed by the immutable project logo asset. */
-export const NITER_OFFICIAL_LOGO_URL = "/static/niter-official-logo.jpg";
+export const NITER_OFFICIAL_LOGO_URL = "/api/brand/niter-official-logo.jpg";
 export const ALUMNI_IMAGE_FALLBACK_URL = NITER_OFFICIAL_LOGO_URL;
 
 export function toPublicImageUrl(value?: string | null, fallback = ALUMNI_IMAGE_FALLBACK_URL) {

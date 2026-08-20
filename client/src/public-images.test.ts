@@ -18,7 +18,7 @@ describe("public image URL handling", () => {
     const shell = readFileSync(new URL("./components/SiteShell.tsx", import.meta.url), "utf8");
     const alumniData = readFileSync(new URL("./data/alumni.ts", import.meta.url), "utf8");
     expect(shell).toContain("NITER_OFFICIAL_LOGO_URL");
-    expect(NITER_OFFICIAL_LOGO_URL).toBe("/static/niter-official-logo.jpg");
+    expect(NITER_OFFICIAL_LOGO_URL).toBe("/api/brand/niter-official-logo.jpg");
     expect(alumniData).not.toContain("images.unsplash.com");
     expect(alumniData).toContain("/manus-storage/tanvir-ahmed_2b6cf4dc.jpg");
   });

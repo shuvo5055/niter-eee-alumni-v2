@@ -18,6 +18,14 @@ const requireUser = t.middleware(async opts => {
 
 export const protectedProcedure = t.procedure.use(requireUser);
 
+const requireAlumniSession = t.middleware(async opts => {
+  const { ctx, next } = opts;
+  if (!ctx.alumniSession) throw new TRPCError({ code: "UNAUTHORIZED", message: "Alumni sign-in is required." });
+  return next({ ctx: { ...ctx, alumniSession: ctx.alumniSession } });
+});
+
+export const alumniProcedure = t.procedure.use(requireAlumniSession);
+
 const requireEditor = t.middleware(async opts => {
   const { ctx, next } = opts;
   if (!ctx.user) throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });

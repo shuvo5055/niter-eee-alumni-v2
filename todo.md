@@ -172,3 +172,23 @@
 - [x] Add focused tests for column mapping, validation errors, duplicate/update detection, and failed-import rollback behavior.
 - [x] Verify the Excel import workflow through protected-route checks, responsive implementation review, build, and automated regression coverage.
 - [x] Publish the verified Excel bulk-import feature in a new checkpoint.
+- [x] Inspect the attached source-data file and document its record types, columns, and usable Alumni/Admin fields.
+- [ ] Map source values to existing schema fields and identify all potential Student ID, email, or profile-URL duplicates without overwriting existing records.
+- [ ] Import only safe non-duplicate source records while retaining existing search, filtering, Excel import, verification, approval, and audit behavior.
+- [ ] Verify all integrated records and Admin workflows, then publish the source-data integration in a new checkpoint.
+- [x] Audit the current alumni schema, credential session, Excel importer, and Admin workflow for compatible self-claim integration points.
+- [x] Superseded: design OTP-related claim structures; the latest requirement explicitly removes OTP verification.
+- [x] Superseded: configure transactional email for OTP delivery; the latest requirement explicitly removes OTP verification.
+- [x] Implement secure self-claim, alumni-session, pending profile-change, and approval/rejection procedures.
+- [x] Add public profile claim/update screens and Admin review controls while preserving approved public data.
+- [x] Add regression coverage for ownership, no-OTP email/ID matching, password hashing, private-field protection, rate limiting, and Excel-import compatibility.
+- [ ] Verify and publish the alumni self-claim workflow without overwriting existing data.
+- [x] Superseded: obtain OTP email-service credentials; the latest requirement explicitly removes OTP verification.
+- [x] Inspect the third attached file and reconcile its latest no-OTP Email + Password + Alumni ID claim requirements with the current architecture.
+- [x] Replace the superseded OTP plan with additive claim credentials, alumni sessions, pending profile changes, and Admin review data structures.
+- [x] Implement secure no-OTP claim authentication, ownership checks, profile-update submission, and Admin approval/rejection without duplicate alumni records.
+- [x] Add responsive public claim/update screens and Admin review controls while preserving approved public data, Excel import, directory search, and filters.
+- [ ] Test the complete claim → authentication → pending update → approval → public profile flow and publish the verified feature.
+- [ ] Obtain or import at least one real alumni record with both registered email and Alumni ID before completing non-destructive end-to-end claim verification.
+- [x] Repair the Admin alumni-list query syntax and verify private contact fields remain excluded from public alumni responses.
+- [x] Normalize administrator-entered alumni email addresses and reset expired claim-lock attempt counters before the next failed sign-in.

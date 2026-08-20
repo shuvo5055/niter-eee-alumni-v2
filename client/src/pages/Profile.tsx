@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { ArrowLeft, Facebook, Linkedin, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
 import { getAlumni } from "@/data/alumni";
 import { trpc } from "@/lib/trpc";
+import AlumniClaimPanel from "@/components/AlumniClaimPanel";
 
 const displayValue = (value?: string) => value?.trim() || "-";
 
@@ -78,6 +79,7 @@ export default function Profile({ params }: { params: { slug: string } }) {
           </div>
           <div className="profile-hero__badge"><ShieldCheck size={18} /><span>PUBLIC ALUMNI<br />RECORD</span></div>
         </div>
+        {managed.data && <AlumniClaimPanel slug={managed.data.slug} />}
 
         <div className="profile-grid">
           <section className="profile-section profile-section--personal">

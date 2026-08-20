@@ -1,15 +1,16 @@
 /** NITER EEE administration: role-protected operations use the same navy, indigo, and cyan institutional language without altering the public site. */
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "wouter";
-import { BarChart3, BriefcaseBusiness, Building2, CheckCircle2, ClipboardList, FileText, Image, LayoutDashboard, MapPinned, Plus, RefreshCw, Settings, Trash2, Upload, UserCog, Users, X } from "lucide-react";
+import { BarChart3, BriefcaseBusiness, Building2, CheckCircle2, ClipboardList, FileText, Image, LayoutDashboard, MapPinned, Plus, RefreshCw, Settings, ShieldCheck, Trash2, Upload, UserCog, Users, X } from "lucide-react";
 import { toast } from "sonner";
 import DashboardLayout, { type DashboardMenuItem } from "@/components/DashboardLayout";
 import AdminOverview from "@/components/AdminOverview";
 import { trpc } from "@/lib/trpc";
 import { alumni as legacyAlumni } from "@/data/alumni";
 import AlumniExcelImport from "@/components/AlumniExcelImport";
+import AdminProfileReviews from "@/components/AdminProfileReviews";
 
-type Section = "dashboard" | "alumni" | "batches" | "districts" | "jobs" | "gallery" | "content" | "users" | "activity";
+type Section = "dashboard" | "alumni" | "batches" | "districts" | "jobs" | "gallery" | "content" | "reviews" | "users" | "activity";
 const nav: DashboardMenuItem[] = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
   { icon: Users, label: "Alumni Management", path: "/admin/alumni", children: [{ label: "All Alumni", path: "/admin/alumni" }, { label: "Add Alumni", path: "/admin/alumni" }, { label: "Import Alumni", path: "/admin/alumni?import=excel" }] },
@@ -18,6 +19,7 @@ const nav: DashboardMenuItem[] = [
   { icon: BriefcaseBusiness, label: "Job Management", path: "/admin/jobs", children: [{ label: "All Jobs", path: "/admin/jobs" }, { label: "Add Job", path: "/admin/jobs" }] },
   { icon: Image, label: "Gallery", path: "/admin/gallery" },
   { icon: FileText, label: "Content Management", path: "/admin/content" },
+  { icon: ShieldCheck, label: "Profile Reviews", path: "/admin/reviews" },
   { icon: UserCog, label: "Users & Roles", path: "/admin/users" },
   { icon: ClipboardList, label: "Activity Log", path: "/admin/activity" },
 ];
@@ -47,6 +49,7 @@ function AdminWorkspace({ section, isSuperAdmin, adminName }: { section: Section
   if (section === "jobs") return <JobManager />;
   if (section === "gallery") return <GalleryManager />;
   if (section === "content") return <ContentManager />;
+  if (section === "reviews") return <AdminProfileReviews enabled={isSuperAdmin} />;
   if (section === "users") return <UsersManager enabled={isSuperAdmin} />;
   if (section === "activity") return <ActivityManager enabled={isSuperAdmin} />;
   return <Overview adminName={adminName} />;

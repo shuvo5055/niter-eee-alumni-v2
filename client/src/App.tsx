@@ -15,6 +15,8 @@ import "./admin.css";
 import "./admin-institutional-refinement.css";
 import "./admin-mobile-alumni.css";
 import "./admin-mobile-sidebar.css";
+import "./alumni-claim.css";
+import "./admin-profile-reviews.css";
 import "./admin-login.css";
 import "./admin-excel-import.css";
 import { Toaster } from "@/components/ui/sonner";

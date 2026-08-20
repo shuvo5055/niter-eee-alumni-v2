@@ -64,6 +64,11 @@ export const alumni = mysqlTable("alumni", {
   city: varchar("city", { length: 120 }),
   industry: varchar("industry", { length: 160 }),
   status: mysqlEnum("status", ["draft", "published"]).default("draft").notNull(),
+  passwordHash: varchar("passwordHash", { length: 255 }),
+  claimed: boolean("claimed").default(false).notNull(),
+  claimedAt: timestamp("claimedAt"),
+  claimFailedAttempts: int("claimFailedAttempts").default(0).notNull(),
+  claimLockedUntil: timestamp("claimLockedUntil"),
   createdBy: int("createdBy"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -74,6 +79,22 @@ export const alumni = mysqlTable("alumni", {
   batchIndex: index("alumni_batch_idx").on(table.batchId),
   districtIndex: index("alumni_district_idx").on(table.districtId),
   statusIndex: index("alumni_status_idx").on(table.status),
+}));
+
+export const alumniProfileChanges = mysqlTable("alumniProfileChanges", {
+  id: int("id").autoincrement().primaryKey(),
+  alumniId: int("alumniId").notNull(),
+  submittedByAlumniId: int("submittedByAlumniId").notNull(),
+  proposedData: json("proposedData").notNull(),
+  status: mysqlEnum("status", ["pending", "approved", "rejected"]).default("pending").notNull(),
+  reviewNotes: text("reviewNotes"),
+  reviewedBy: int("reviewedBy"),
+  reviewedAt: timestamp("reviewedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => ({
+  alumniIndex: index("alumni_profile_changes_alumni_idx").on(table.alumniId),
+  statusIndex: index("alumni_profile_changes_status_idx").on(table.status),
 }));
 
 export const jobs = mysqlTable("jobs", {

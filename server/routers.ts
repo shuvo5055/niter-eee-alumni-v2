@@ -2,21 +2,22 @@ import { and, count, desc, eq, like, or } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
-import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
+import { ALUMNI_SESSION_COOKIE, COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
-import { adminProcedure, editorProcedure, publicProcedure, router } from "./_core/trpc";
+import { adminProcedure, alumniProcedure, editorProcedure, publicProcedure, router } from "./_core/trpc";
 import { systemRouter } from "./_core/systemRouter";
 import { getDb, recordActivity, upsertUser } from "./db";
 import { sdk } from "./_core/sdk";
-import { alumni, batches, districts, galleryItems, jobs, siteContent, users } from "../drizzle/schema";
+import { alumni, alumniProfileChanges, batches, districts, galleryItems, jobs, siteContent, users } from "../drizzle/schema";
 import { storagePut } from "./storage";
 import { alumniExcelRowInput, commitAlumniExcelImport, previewAlumniExcelImport } from "./alumniImport";
+import { alumniClaimIdentityInput, alumniClaimSetupInput, alumniClaimSignInInput, alumniProfileDraftInput, hashAlumniPassword, verifyAlumniPassword } from "./alumniClaim";
 
 const optionalText = z.string().trim().max(5000).optional().nullable();
 const alumniInput = z.object({
   id: z.number().int().optional(), fullName: z.string().trim().min(2).max(200), slug: z.string().trim().min(2).max(160),
   batchId: z.number().int().optional().nullable(), districtId: z.number().int().optional().nullable(), session: optionalText,
-  studentId: optionalText, email: z.string().trim().email().max(320).optional().nullable(), phone: optionalText, address: optionalText, graduationYear: z.number().int().min(1950).max(2100).optional().nullable(), bloodGroup: optionalText, photoUrl: optionalText, school: optionalText, college: optionalText,
+  studentId: optionalText, email: z.string().trim().email().max(320).transform(value => value.toLowerCase()).optional().nullable(), phone: optionalText, address: optionalText, graduationYear: z.number().int().min(1950).max(2100).optional().nullable(), bloodGroup: optionalText, photoUrl: optionalText, school: optionalText, college: optionalText,
   bsc: optionalText, msc: optionalText, skill: optionalText, researchActivities: optionalText,
   currentOrganization: optionalText, currentDesignation: optionalText, currentDuration: optionalText,
   previousOrganization: optionalText, previousDesignation: optionalText, previousDuration: optionalText,
@@ -33,15 +34,22 @@ const parseDate = (value?: string | null) => value ? new Date(value) : null;
 const hashValue = (value: string) => createHash("sha256").update(value).digest();
 const matchesSecret = (provided: string, configured: string) => timingSafeEqual(hashValue(provided), hashValue(configured));
 const credentialAdminOpenId = (email: string) => `credential-admin-${createHash("sha256").update(email).digest("hex").slice(0, 40)}`;
+const ALUMNI_SESSION_MS = 1000 * 60 * 60 * 24 * 30;
+const claimFailureMessage = "We could not verify your alumni information. Please check your details or contact the administrator.";
+const setAlumniSession = async (ctx: any, alumniId: number) => {
+  const token = await sdk.createSessionToken(`alumni-claim-${alumniId}`, { expiresInMs: ALUMNI_SESSION_MS, name: "Alumni Claim" });
+  ctx.res.cookie(ALUMNI_SESSION_COOKIE, token, { ...getSessionCookieOptions(ctx.req), maxAge: ALUMNI_SESSION_MS });
+};
 
 const publicAlumniSelect = {
-  id: alumni.id, slug: alumni.slug, fullName: alumni.fullName, session: alumni.session, studentId: alumni.studentId, email: alumni.email, phone: alumni.phone, address: alumni.address, graduationYear: alumni.graduationYear, bloodGroup: alumni.bloodGroup, photoUrl: alumni.photoUrl,
+  id: alumni.id, slug: alumni.slug, fullName: alumni.fullName, session: alumni.session, studentId: alumni.studentId, graduationYear: alumni.graduationYear, bloodGroup: alumni.bloodGroup, photoUrl: alumni.photoUrl,
   school: alumni.school, college: alumni.college, bsc: alumni.bsc, msc: alumni.msc, skill: alumni.skill, researchActivities: alumni.researchActivities,
   currentOrganization: alumni.currentOrganization, currentDesignation: alumni.currentDesignation, currentDuration: alumni.currentDuration,
   previousOrganization: alumni.previousOrganization, previousDesignation: alumni.previousDesignation, previousDuration: alumni.previousDuration,
   whatsapp: alumni.whatsapp, facebook: alumni.facebook, linkedin: alumni.linkedin, country: alumni.country, city: alumni.city, industry: alumni.industry,
   batchNumber: batches.batchNumber, districtName: districts.name, createdAt: alumni.createdAt,
 };
+const adminAlumniSelect = { ...publicAlumniSelect, email: alumni.email, phone: alumni.phone, address: alumni.address, claimed: alumni.claimed, claimedAt: alumni.claimedAt };
 
 export const appRouter = router({
   system: systemRouter,
@@ -60,6 +68,61 @@ export const appRouter = router({
       return { success: true } as const;
     }),
     logout: publicProcedure.mutation(({ ctx }) => { ctx.res.clearCookie(COOKIE_NAME, { ...getSessionCookieOptions(ctx.req), maxAge: -1 }); return { success: true } as const; }),
+  }),
+  alumniClaim: router({
+    me: publicProcedure.query(async ({ ctx }) => {
+      if (!ctx.alumniSession) return null;
+      const db = await requireDb();
+      const [record] = await db.select({ id: alumni.id, slug: alumni.slug, fullName: alumni.fullName, email: alumni.email, studentId: alumni.studentId, claimed: alumni.claimed }).from(alumni).where(eq(alumni.id, ctx.alumniSession.alumniId)).limit(1);
+      return record ?? null;
+    }),
+    setupPassword: publicProcedure.input(alumniClaimSetupInput).mutation(async ({ ctx, input }) => {
+      const db = await requireDb();
+      const [record] = await db.select().from(alumni).where(and(eq(alumni.email, input.email), eq(alumni.studentId, input.studentId))).limit(1);
+      if (!record || record.passwordHash || record.claimed) throw new TRPCError({ code: "UNAUTHORIZED", message: claimFailureMessage });
+      await db.update(alumni).set({ passwordHash: hashAlumniPassword(input.password), claimed: true, claimedAt: new Date(), claimFailedAttempts: 0, claimLockedUntil: null }).where(eq(alumni.id, record.id));
+      await db.insert((await import("../drizzle/schema")).activityLogs).values({ actorId: null, action: "claimed", entityType: "alumni", entityId: String(record.id), details: { source: "first_time_claim" } });
+      await setAlumniSession(ctx, record.id);
+      return { success: true, slug: record.slug } as const;
+    }),
+    signIn: publicProcedure.input(alumniClaimSignInInput).mutation(async ({ ctx, input }) => {
+      const db = await requireDb();
+      const matchConditions = [eq(alumni.email, input.email)];
+      if (input.studentId?.trim()) matchConditions.push(eq(alumni.studentId, input.studentId.trim()));
+      const [record] = await db.select().from(alumni).where(and(...matchConditions)).limit(1);
+      const now = new Date();
+      if (!record || !record.passwordHash || (record.claimLockedUntil && record.claimLockedUntil > now) || !verifyAlumniPassword(input.password, record.passwordHash)) {
+        if (record && (!record.claimLockedUntil || record.claimLockedUntil <= now)) {
+          const attempts = (record.claimLockedUntil && record.claimLockedUntil <= now ? 0 : record.claimFailedAttempts ?? 0) + 1;
+          await db.update(alumni).set({ claimFailedAttempts: attempts, claimLockedUntil: attempts >= 5 ? new Date(Date.now() + 15 * 60 * 1000) : null }).where(eq(alumni.id, record.id));
+        }
+        throw new TRPCError({ code: "UNAUTHORIZED", message: claimFailureMessage });
+      }
+      await db.update(alumni).set({ claimed: true, claimedAt: record.claimedAt ?? now, claimFailedAttempts: 0, claimLockedUntil: null }).where(eq(alumni.id, record.id));
+      await setAlumniSession(ctx, record.id);
+      return { success: true, slug: record.slug } as const;
+    }),
+    signOut: publicProcedure.mutation(({ ctx }) => { ctx.res.clearCookie(ALUMNI_SESSION_COOKIE, { ...getSessionCookieOptions(ctx.req), maxAge: -1 }); return { success: true } as const; }),
+    profile: alumniProcedure.query(async ({ ctx }) => {
+      const db = await requireDb();
+      const [record] = await db.select().from(alumni).where(eq(alumni.id, ctx.alumniSession.alumniId)).limit(1);
+      if (!record) throw new TRPCError({ code: "UNAUTHORIZED", message: "Alumni sign-in is required." });
+      const [pending] = await db.select({ id: alumniProfileChanges.id, status: alumniProfileChanges.status, createdAt: alumniProfileChanges.createdAt }).from(alumniProfileChanges).where(and(eq(alumniProfileChanges.alumniId, record.id), eq(alumniProfileChanges.status, "pending"))).limit(1);
+      return { record, pendingChange: pending ?? null };
+    }),
+    submitProfileChange: alumniProcedure.input(alumniProfileDraftInput).mutation(async ({ ctx, input }) => {
+      const db = await requireDb();
+      const alumniId = ctx.alumniSession.alumniId;
+      const [existing] = await db.select({ id: alumniProfileChanges.id }).from(alumniProfileChanges).where(and(eq(alumniProfileChanges.alumniId, alumniId), eq(alumniProfileChanges.status, "pending"))).limit(1);
+      if (existing) await db.update(alumniProfileChanges).set({ proposedData: input, updatedAt: new Date() }).where(eq(alumniProfileChanges.id, existing.id));
+      else await db.insert(alumniProfileChanges).values({ alumniId, submittedByAlumniId: alumniId, proposedData: input, status: "pending" });
+      await db.insert((await import("../drizzle/schema")).activityLogs).values({ actorId: null, action: "profile_change_submitted", entityType: "alumni", entityId: String(alumniId) });
+      return { success: true } as const;
+    }),
+    uploadPhoto: alumniProcedure.input(z.object({ fileName: z.string().max(160), mimeType: z.string().regex(/^image\/(jpeg|png|webp)$/), dataBase64: z.string().min(16).max(7_000_000) })).mutation(async ({ ctx, input }) => {
+      const base64 = input.dataBase64.replace(/^data:image\/[a-zA-Z+]+;base64,/, "");
+      return storagePut(`alumni-claims/${ctx.alumniSession.alumniId}/${input.fileName}`, Buffer.from(base64, "base64"), input.mimeType);
+    }),
   }),
   publicData: router({
     alumniList: publicProcedure.input(z.object({ search: z.string().optional(), batch: z.number().optional(), batchNumber: z.number().optional(), district: z.string().optional() }).optional()).query(async ({ input }) => {
@@ -95,7 +158,7 @@ export const appRouter = router({
       return { counts: { alumni: alumniCount?.value ?? 0, batches: batchCount?.value ?? 0, districts: districtCount?.value ?? 0, jobs: jobCount?.value ?? 0, users: userCount?.value ?? 0 }, recentAlumni, recentJobs, byBatch, byDistrict };
     }),
     alumni: router({
-      list: editorProcedure.input(z.object({ search: z.string().optional(), batchId: z.number().optional(), districtId: z.number().optional(), organization: z.string().optional() }).optional()).query(async ({ input }) => { const db = await requireDb(); const conditions = []; if (input?.search?.trim()) { const term = `%${input.search.trim()}%`; conditions.push(or(like(alumni.fullName, term), like(alumni.studentId, term), like(alumni.currentOrganization, term))!); } if (input?.batchId) conditions.push(eq(alumni.batchId, input.batchId)); if (input?.districtId) conditions.push(eq(alumni.districtId, input.districtId)); if (input?.organization?.trim()) conditions.push(like(alumni.currentOrganization, `%${input.organization.trim()}%`)); return db.select({ ...publicAlumniSelect, status: alumni.status, updatedAt: alumni.updatedAt }).from(alumni).leftJoin(batches, eq(alumni.batchId, batches.id)).leftJoin(districts, eq(alumni.districtId, districts.id)).where(conditions.length ? and(...conditions) : undefined).orderBy(desc(alumni.updatedAt)); }),
+      list: editorProcedure.input(z.object({ search: z.string().optional(), batchId: z.number().optional(), districtId: z.number().optional(), organization: z.string().optional() }).optional()).query(async ({ input }) => { const db = await requireDb(); const conditions = []; if (input?.search?.trim()) { const term = `%${input.search.trim()}%`; conditions.push(or(like(alumni.fullName, term), like(alumni.studentId, term), like(alumni.currentOrganization, term))!); } if (input?.batchId) conditions.push(eq(alumni.batchId, input.batchId)); if (input?.districtId) conditions.push(eq(alumni.districtId, input.districtId)); if (input?.organization?.trim()) conditions.push(like(alumni.currentOrganization, `%${input.organization.trim()}%`)); return db.select({ ...adminAlumniSelect, status: alumni.status, updatedAt: alumni.updatedAt }).from(alumni).leftJoin(batches, eq(alumni.batchId, batches.id)).leftJoin(districts, eq(alumni.districtId, districts.id)).where(conditions.length ? and(...conditions) : undefined).orderBy(desc(alumni.updatedAt)); }),
       save: editorProcedure.input(alumniInput).mutation(async ({ ctx, input }) => { const db = await requireDb(); const { id, ...values } = input; if (id) { await db.update(alumni).set(values).where(eq(alumni.id, id)); await recordActivity({ actorId: ctx.user.id, action: "updated", entityType: "alumni", entityId: String(id), details: { fullName: input.fullName } }); return { id }; } const result = await db.insert(alumni).values({ ...values, createdBy: ctx.user.id }); const insertedId = Number(result[0].insertId); await recordActivity({ actorId: ctx.user.id, action: "created", entityType: "alumni", entityId: String(insertedId), details: { fullName: input.fullName } }); return { id: insertedId }; }),
       delete: editorProcedure.input(z.object({ id: z.number().int() })).mutation(async ({ ctx, input }) => { const db = await requireDb(); await db.delete(alumni).where(eq(alumni.id, input.id)); await recordActivity({ actorId: ctx.user.id, action: "deleted", entityType: "alumni", entityId: String(input.id) }); return { success: true }; }),
       importLegacy: editorProcedure.input(z.array(legacyAlumniInput).max(1000)).mutation(async ({ ctx, input }) => { const db = await requireDb(); for (const row of input) { await db.insert(batches).values({ batchNumber: row.batchNumber, displayName: `Batch ${row.batchNumber}` }).onDuplicateKeyUpdate({ set: { batchNumber: row.batchNumber } }); await db.insert(districts).values({ name: row.districtName }).onDuplicateKeyUpdate({ set: { name: row.districtName } }); const [batch] = await db.select().from(batches).where(eq(batches.batchNumber, row.batchNumber)).limit(1); const [district] = await db.select().from(districts).where(eq(districts.name, row.districtName)).limit(1); const values={slug:row.slug,fullName:row.fullName,batchId:batch?.id,districtId:district?.id,session:row.session,studentId:row.studentId,bloodGroup:row.bloodGroup,photoUrl:row.photoUrl,school:row.school,college:row.college,bsc:row.bsc,msc:row.msc,skill:row.skill,researchActivities:row.researchActivities,currentOrganization:row.organization,currentDesignation:row.designation,currentDuration:row.currentDuration,previousOrganization:row.previousOrganization,previousDesignation:row.previousDesignation,previousDuration:row.previousDuration,whatsapp:row.whatsapp,facebook:row.facebook,linkedin:row.linkedin,industry:row.industry,country:row.country??"Bangladesh",city:row.city,status:"published" as const,createdBy:ctx.user.id}; await db.insert(alumni).values(values).onDuplicateKeyUpdate({ set: values }); } await recordActivity({ actorId: ctx.user.id, action: "imported", entityType: "alumni", details: { count: input.length } }); return { imported: input.length }; }),
@@ -109,6 +172,24 @@ export const appRouter = router({
     content: router({ list: editorProcedure.query(async () => (await requireDb()).select().from(siteContent).orderBy(siteContent.key)), save: editorProcedure.input(z.object({ key: z.string().trim().min(2).max(120), value: z.record(z.string(), z.unknown()) })).mutation(async ({ ctx, input }) => { const db = await requireDb(); await db.insert(siteContent).values({ key: input.key, value: input.value, updatedBy: ctx.user.id }).onDuplicateKeyUpdate({ set: { value: input.value, updatedBy: ctx.user.id } }); await recordActivity({ actorId: ctx.user.id, action: "updated", entityType: "content", entityId: input.key }); return { success: true }; }) }),
     users: router({ list: adminProcedure.query(async () => (await requireDb()).select({ id: users.id, name: users.name, email: users.email, role: users.role, createdAt: users.createdAt, lastSignedIn: users.lastSignedIn }).from(users).orderBy(desc(users.lastSignedIn))), setRole: adminProcedure.input(z.object({ id: z.number().int(), role: z.enum(["user", "editor", "admin"]) })).mutation(async ({ ctx, input }) => { const db = await requireDb(); if (ctx.user.id === input.id && input.role !== "admin") throw new TRPCError({ code: "BAD_REQUEST", message: "You cannot remove your own administrator access." }); await db.update(users).set({ role: input.role }).where(eq(users.id, input.id)); await recordActivity({ actorId: ctx.user.id, action: "role_changed", entityType: "user", entityId: String(input.id), details: { role: input.role } }); return { success: true }; }) }),
     activity: adminProcedure.query(async () => (await requireDb()).select().from((await import("../drizzle/schema")).activityLogs).orderBy(desc((await import("../drizzle/schema")).activityLogs.createdAt)).limit(100)),
+    profileChanges: router({
+      list: adminProcedure.query(async () => {
+        const db = await requireDb();
+        return db.select({ id: alumniProfileChanges.id, alumniId: alumniProfileChanges.alumniId, proposedData: alumniProfileChanges.proposedData, status: alumniProfileChanges.status, reviewNotes: alumniProfileChanges.reviewNotes, createdAt: alumniProfileChanges.createdAt, fullName: alumni.fullName, slug: alumni.slug, studentId: alumni.studentId, email: alumni.email }).from(alumniProfileChanges).leftJoin(alumni, eq(alumniProfileChanges.alumniId, alumni.id)).orderBy(desc(alumniProfileChanges.createdAt));
+      }),
+      review: adminProcedure.input(z.object({ id: z.number().int(), decision: z.enum(["approved", "rejected"]), notes: z.string().trim().max(1000).optional().nullable() })).mutation(async ({ ctx, input }) => {
+        const db = await requireDb();
+        const [change] = await db.select().from(alumniProfileChanges).where(and(eq(alumniProfileChanges.id, input.id), eq(alumniProfileChanges.status, "pending"))).limit(1);
+        if (!change) throw new TRPCError({ code: "NOT_FOUND", message: "This profile change is no longer pending." });
+        if (input.decision === "approved") {
+          const proposedData = alumniProfileDraftInput.parse(change.proposedData);
+          await db.update(alumni).set(proposedData).where(eq(alumni.id, change.alumniId));
+        }
+        await db.update(alumniProfileChanges).set({ status: input.decision, reviewNotes: input.notes ?? null, reviewedBy: ctx.user.id, reviewedAt: new Date() }).where(eq(alumniProfileChanges.id, change.id));
+        await recordActivity({ actorId: ctx.user.id, action: `profile_change_${input.decision}`, entityType: "alumni", entityId: String(change.alumniId), details: { changeId: change.id } });
+        return { success: true } as const;
+      }),
+    }),
     uploadPhoto: editorProcedure.input(z.object({ fileName: z.string().max(160), mimeType: z.string().regex(/^image\/(jpeg|png|webp)$/), dataBase64: z.string().min(16).max(7_000_000) })).mutation(async ({ ctx, input }) => { const base64 = input.dataBase64.replace(/^data:image\/[a-zA-Z+]+;base64,/, ""); const result = await storagePut(`alumni/${ctx.user.id}/${input.fileName}`, Buffer.from(base64, "base64"), input.mimeType); return result; }),
   }),
 });

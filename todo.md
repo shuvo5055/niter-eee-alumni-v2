@@ -197,3 +197,4 @@
 - [ ] Revise self-claim regression coverage and complete non-destructive verification using a real registered-email record.
 - [x] Trace and repair broken Header/Footer NITER logo and alumni photo URLs across nested public routes, desktop, mobile, database records, and Excel imports.
 - [x] Verify production-safe image loading and successful image requests on Homepage, Alumni directory, and individual profile pages before publication.
+- [x] Normalize Admin alumni-list and dashboard portrait rendering with the same managed storage URL and error-fallback helper.

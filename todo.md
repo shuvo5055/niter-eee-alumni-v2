@@ -202,9 +202,11 @@
 - [ ] Restore compatibility for the legacy Header/Footer logo and affected alumni photo keys still requested by the mobile browser's active public bundle.
 - [ ] Determine whether `nzc.manus.space` can be restored or redirected to the current deployment so the user's existing public link opens working images.
 - [x] Replace redirect-based NITER logo delivery with a permanent project-bundled static asset shared by Header, Footer, Login, and all other logo placements.
-- [ ] Verify the deployed logo asset remains available after repeated reloads on desktop and mobile.
+- [x] Verify the deployed logo asset remains available after repeated reloads on desktop and mobile.
 - [x] Route the stable logo endpoint through the production API namespace after the top-level static path fell through to the application HTML in deployment.
 - [x] Bundle the compact approved official logo from permanent project asset storage into the Vite production build after the platform intercepted custom image routes.
 - [x] Replace the Docker-unavailable external asset import with a direct client-public official-logo asset that is copied unchanged into every production build.
 - [x] Restore the previous EEE-specific Hero branding and remove only the NITER logo added inside the Hero section.
 - [x] Verify the restored Hero composition at desktop and mobile sizes without changing Header, navigation, cards, filters, Footer, or other sections.
+- [x] Compare the current Home Hero with the prior approved premium EEE composition and restore the exact visual treatment only within the Hero.
+- [x] Verify the exact restored premium Hero at desktop and mobile sizes, then publish the Hero-only correction.

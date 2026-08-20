@@ -22,11 +22,13 @@ export default function Home(){
       <div className="container hero__inner">
         <div className="hero__copy">
           <p className="eyebrow eyebrow--light"><Network size={15}/> NITER EEE / ALUMNI NETWORK</p>
+          <h1>Built on <em>connection.</em><br/>Powered by<br/>every journey.</h1>
           <p className="hero__lede">{homepage.heroDescription||"A platform for connecting NITER EEE alumni, exploring professional paths, and preserving the memories that built our department."}</p>
           <div className="hero__buttons">
-            <Link href="/alumni" className="button button--signal" style={{backgroundColor:"#21b6d7",color:"#000000"}}>Explore alumnni<ArrowRight size={18}/></Link>
-            <Link href="/batches" className="button button--ghost" style={{backgroundColor:"#21b6d7",color:"#000000"}}>Find your batch<ArrowRight size={18}/></Link>
+            <Link href="/alumni" className="button button--signal">Explore alumni <ArrowRight size={18}/></Link>
+            <Link href="/batches" className="button button--ghost">Find your batch <ArrowRight size={18}/></Link>
           </div>
+          <div className="hero__footnote"><span/><p>One department. Many disciplines.<br/>A lasting professional network.</p></div>
         </div>
         <div className="hero__stat-mark"><span>EEE</span><small>EST. 2026<br/>ALUMNI ARCHIVE</small></div>
       </div>

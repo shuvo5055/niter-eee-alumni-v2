@@ -33,5 +33,6 @@ describe("alumni Excel import preview", () => {
     const source = readFileSync(new URL("./alumniImport.ts", import.meta.url), "utf8");
     expect(source).toContain("db.transaction(async");
     expect(source).toContain("await tx.insert(activityLogs)");
+    expect(source).toContain("const current = byMail || byId");
   });
 });

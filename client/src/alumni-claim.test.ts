@@ -11,11 +11,13 @@ describe("alumni claim experience", () => {
     expect(profile).toContain("profile-grid");
   });
 
-  it("provides first-time claim, sign-in, private draft, and approval-safe messaging", () => {
+  it("provides email-only first-time claim, sign-in, and an approval-safe email-change request", () => {
     expect(claimPanel).toContain("First-time claim");
     expect(claimPanel).toContain("Sign in to profile");
     expect(claimPanel).toContain("Submit update for review");
-    expect(claimPanel).toContain("Registered email and Alumni ID are protected.");
+    expect(claimPanel).toContain("Registered email (changes require approval)");
+    expect(claimPanel).toContain("Your registered email stays private. Any change requires administrator approval.");
+    expect(claimPanel).not.toContain("Alumni ID");
   });
 
   it("adds an Administrator review destination without removing existing management routes", () => {

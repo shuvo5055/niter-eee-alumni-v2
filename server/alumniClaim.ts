@@ -8,21 +8,17 @@ export const normalizeAlumniEmail = (email: string) => email.trim().toLowerCase(
 
 export const alumniClaimIdentityInput = z.object({
   email: z.string().trim().email().max(320).transform(normalizeAlumniEmail),
-  studentId: z.string().trim().min(2).max(80),
 });
 
 export const alumniClaimSetupInput = alumniClaimIdentityInput.extend({
   password: z.string().min(8).max(256),
 });
 
-export const alumniClaimSignInInput = z.object({
-  email: z.string().trim().email().max(320).transform(normalizeAlumniEmail),
-  password: z.string().min(1).max(256),
-  studentId: z.string().trim().max(80).optional(),
-});
+export const alumniClaimSignInInput = alumniClaimIdentityInput.extend({ password: z.string().min(1).max(256) });
 
 export const alumniProfileDraftInput = z.object({
   fullName: z.string().trim().min(2).max(200),
+  email: z.string().trim().email().max(320).transform(normalizeAlumniEmail).optional(),
   batchId: z.number().int().positive().nullable().optional(),
   districtId: z.number().int().positive().nullable().optional(),
   session: nullableShortText,

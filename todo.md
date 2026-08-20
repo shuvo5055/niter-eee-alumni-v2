@@ -182,13 +182,16 @@
 - [x] Implement secure self-claim, alumni-session, pending profile-change, and approval/rejection procedures.
 - [x] Add public profile claim/update screens and Admin review controls while preserving approved public data.
 - [x] Add regression coverage for ownership, no-OTP email/ID matching, password hashing, private-field protection, rate limiting, and Excel-import compatibility.
-- [ ] Verify and publish the alumni self-claim workflow without overwriting existing data.
+- [ ] Verify and publish the email-only alumni self-claim workflow without overwriting existing data.
 - [x] Superseded: obtain OTP email-service credentials; the latest requirement explicitly removes OTP verification.
 - [x] Inspect the third attached file and reconcile its latest no-OTP Email + Password + Alumni ID claim requirements with the current architecture.
 - [x] Replace the superseded OTP plan with additive claim credentials, alumni sessions, pending profile changes, and Admin review data structures.
 - [x] Implement secure no-OTP claim authentication, ownership checks, profile-update submission, and Admin approval/rejection without duplicate alumni records.
 - [x] Add responsive public claim/update screens and Admin review controls while preserving approved public data, Excel import, directory search, and filters.
-- [ ] Test the complete claim → authentication → pending update → approval → public profile flow and publish the verified feature.
-- [ ] Obtain or import at least one real alumni record with both registered email and Alumni ID before completing non-destructive end-to-end claim verification.
+- [ ] Test the complete email + password claim → authentication → pending update → approval → public profile flow and publish the verified feature.
+- [ ] Obtain or import at least one real alumni record with a registered email before completing non-destructive end-to-end claim verification.
 - [x] Repair the Admin alumni-list query syntax and verify private contact fields remain excluded from public alumni responses.
 - [x] Normalize administrator-entered alumni email addresses and reset expired claim-lock attempt counters before the next failed sign-in.
+- [x] Replace Alumni ID-based first-time claim with registered-email-plus-password-only setup and sign-in.
+- [x] Route an alumni-requested email change through the existing pending Admin review process rather than allowing direct email changes.
+- [ ] Revise self-claim regression coverage and complete non-destructive verification using a real registered-email record.

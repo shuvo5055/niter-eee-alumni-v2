@@ -78,7 +78,7 @@ export const appRouter = router({
     }),
     setupPassword: publicProcedure.input(alumniClaimSetupInput).mutation(async ({ ctx, input }) => {
       const db = await requireDb();
-      const [record] = await db.select().from(alumni).where(and(eq(alumni.email, input.email), eq(alumni.studentId, input.studentId))).limit(1);
+      const [record] = await db.select().from(alumni).where(eq(alumni.email, input.email)).limit(1);
       if (!record || record.passwordHash || record.claimed) throw new TRPCError({ code: "UNAUTHORIZED", message: claimFailureMessage });
       await db.update(alumni).set({ passwordHash: hashAlumniPassword(input.password), claimed: true, claimedAt: new Date(), claimFailedAttempts: 0, claimLockedUntil: null }).where(eq(alumni.id, record.id));
       await db.insert((await import("../drizzle/schema")).activityLogs).values({ actorId: null, action: "claimed", entityType: "alumni", entityId: String(record.id), details: { source: "first_time_claim" } });
@@ -87,9 +87,7 @@ export const appRouter = router({
     }),
     signIn: publicProcedure.input(alumniClaimSignInInput).mutation(async ({ ctx, input }) => {
       const db = await requireDb();
-      const matchConditions = [eq(alumni.email, input.email)];
-      if (input.studentId?.trim()) matchConditions.push(eq(alumni.studentId, input.studentId.trim()));
-      const [record] = await db.select().from(alumni).where(and(...matchConditions)).limit(1);
+      const [record] = await db.select().from(alumni).where(eq(alumni.email, input.email)).limit(1);
       const now = new Date();
       if (!record || !record.passwordHash || (record.claimLockedUntil && record.claimLockedUntil > now) || !verifyAlumniPassword(input.password, record.passwordHash)) {
         if (record && (!record.claimLockedUntil || record.claimLockedUntil <= now)) {
@@ -183,6 +181,10 @@ export const appRouter = router({
         if (!change) throw new TRPCError({ code: "NOT_FOUND", message: "This profile change is no longer pending." });
         if (input.decision === "approved") {
           const proposedData = alumniProfileDraftInput.parse(change.proposedData);
+          if (proposedData.email) {
+            const [emailOwner] = await db.select({ id: alumni.id }).from(alumni).where(eq(alumni.email, proposedData.email)).limit(1);
+            if (emailOwner && emailOwner.id !== change.alumniId) throw new TRPCError({ code: "BAD_REQUEST", message: "The requested email is already assigned to another alumni record." });
+          }
           await db.update(alumni).set(proposedData).where(eq(alumni.id, change.alumniId));
         }
         await db.update(alumniProfileChanges).set({ status: input.decision, reviewNotes: input.notes ?? null, reviewedBy: ctx.user.id, reviewedAt: new Date() }).where(eq(alumniProfileChanges.id, change.id));

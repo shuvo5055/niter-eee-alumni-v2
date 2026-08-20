@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { alumniClaimIdentityInput, alumniClaimSetupInput, hashAlumniPassword, normalizeAlumniEmail, verifyAlumniPassword } from "./alumniClaim";
+import { alumniClaimIdentityInput, alumniClaimSetupInput, alumniProfileDraftInput, hashAlumniPassword, normalizeAlumniEmail, verifyAlumniPassword } from "./alumniClaim";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 
@@ -17,10 +17,16 @@ describe("alumni self-claim security", () => {
     expect(verifyAlumniPassword("wrong password", hash)).toBe(false);
   });
 
-  it("requires a valid existing-record email, Alumni ID, and secure first-time password", () => {
-    expect(alumniClaimIdentityInput.safeParse({ email: "bad", studentId: "EE-1" }).success).toBe(false);
-    expect(alumniClaimSetupInput.safeParse({ email: "alumni@niter.edu.bd", studentId: "EE-1", password: "short" }).success).toBe(false);
-    expect(alumniClaimSetupInput.safeParse({ email: "alumni@niter.edu.bd", studentId: "EE-1", password: "claim-password-2026" }).success).toBe(true);
+  it("requires only a valid registered email and secure first-time password", () => {
+    expect(alumniClaimIdentityInput.safeParse({ email: "bad" }).success).toBe(false);
+    expect(alumniClaimIdentityInput.safeParse({ email: " alumni@niter.edu.bd " }).success).toBe(true);
+    expect(alumniClaimSetupInput.safeParse({ email: "alumni@niter.edu.bd", password: "short" }).success).toBe(false);
+    expect(alumniClaimSetupInput.safeParse({ email: "alumni@niter.edu.bd", password: "claim-password-2026" }).success).toBe(true);
+  });
+
+  it("normalizes an alumni-requested email change for pending Administrator review", () => {
+    const parsed = alumniProfileDraftInput.parse({ fullName: "Verified Alumni", email: " NEW.EMAIL@NITER.EDU.BD " });
+    expect(parsed.email).toBe("new.email@niter.edu.bd");
   });
 
   it("rejects anonymous claimant profile edits and anonymous Admin review access", async () => {
@@ -43,5 +49,6 @@ describe("alumni self-claim security", () => {
     expect(publicSelection).not.toContain("address: alumni.address");
     expect(routers).toContain("const adminAlumniSelect = { ...publicAlumniSelect, email: alumni.email, phone: alumni.phone, address: alumni.address");
     expect(routers).toContain("record.claimLockedUntil && record.claimLockedUntil <= now ? 0 : record.claimFailedAttempts ?? 0");
+    expect(routers).toContain("The requested email is already assigned to another alumni record.");
   });
 });

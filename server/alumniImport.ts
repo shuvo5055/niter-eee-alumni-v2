@@ -42,7 +42,7 @@ async function buildImportPlan(db: any, rows: AlumniExcelRow[]) {
     if (studentKey) seenStudentIds.add(studentKey); if (emailKey) seenEmails.add(emailKey);
     const byId = studentKey ? byStudentId.get(studentKey) : undefined; const byMail = emailKey ? byEmail.get(emailKey) : undefined;
     if (byId && byMail && byId.id !== byMail.id) { issues.push({ rowNumber: row.rowNumber, problem: "Conflicting identity match", correction: "Use the Student ID and email that belong to the same alumnus." }); continue; }
-    const current = byId || byMail;
+    const current = byMail || byId;
     validRows.push({ ...row, action: current ? "update" : "new", existingId: current?.id, slug: current?.slug || importedSlug(row) });
   }
   const batchNumbers = new Set(validRows.map(row => row.batchNumber!));

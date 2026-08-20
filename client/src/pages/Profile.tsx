@@ -4,6 +4,7 @@ import { ArrowLeft, Facebook, Linkedin, MapPin, MessageCircle, ShieldCheck } fro
 import { getAlumni } from "@/data/alumni";
 import { trpc } from "@/lib/trpc";
 import AlumniClaimPanel from "@/components/AlumniClaimPanel";
+import { toPublicImageUrl, useManagedImageFallback } from "@/lib/publicImages";
 
 const displayValue = (value?: string) => value?.trim() || "-";
 
@@ -12,7 +13,7 @@ export default function Profile({ params }: { params: { slug: string } }) {
   const legacyPerson = getAlumni(params.slug);
   const person = managed.data ? {
     name: managed.data.fullName,
-    photo: managed.data.photoUrl || legacyPerson?.photo || "https://images.unsplash.com/photo-1535713875002-cad84cf45f1d?auto=format&fit=crop&w=640&q=85",
+    photo: toPublicImageUrl(managed.data.photoUrl || legacyPerson?.photo),
     studentId: managed.data.studentId || "-",
     district: managed.data.districtName || "-",
     degree: managed.data.bsc || "-",
@@ -66,7 +67,7 @@ export default function Profile({ params }: { params: { slug: string } }) {
 
         <div className="profile-hero">
           <div className="profile-hero__portrait" style={{ width: "190px", height: "190px", borderRadius: "50%", overflow: "hidden", justifySelf: "center", alignSelf: "center" }}>
-            <img src={person.photo} alt={`Portrait of ${person.name}`} style={{ width: "100%", height: "100%", borderRadius: "50%" }} />
+            <img src={toPublicImageUrl(person.photo)} onError={useManagedImageFallback} alt={`Portrait of ${person.name}`} style={{ width: "100%", height: "100%", borderRadius: "50%" }} />
           </div>
           <div className="profile-hero__info" style={{ transform: "translateY(-22px)" }}>
             <h1>{person.name}</h1>

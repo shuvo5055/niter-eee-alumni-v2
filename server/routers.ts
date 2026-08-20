@@ -14,10 +14,17 @@ import { alumniExcelRowInput, commitAlumniExcelImport, previewAlumniExcelImport 
 import { alumniClaimIdentityInput, alumniClaimSetupInput, alumniClaimSignInInput, alumniProfileDraftInput, hashAlumniPassword, verifyAlumniPassword } from "./alumniClaim";
 
 const optionalText = z.string().trim().max(5000).optional().nullable();
+const normalizeManagedPhotoUrl = (value: string) => {
+  if (value.startsWith("/manus-storage/")) return value;
+  if (value.startsWith("manus-storage/")) return `/${value}`;
+  if (/^https?:\/\//i.test(value)) return value;
+  return `/manus-storage/${value.replace(/^\/+/, "")}`;
+};
+const optionalPhotoUrl = z.string().trim().max(5000).transform(normalizeManagedPhotoUrl).optional().nullable();
 const alumniInput = z.object({
   id: z.number().int().optional(), fullName: z.string().trim().min(2).max(200), slug: z.string().trim().min(2).max(160),
   batchId: z.number().int().optional().nullable(), districtId: z.number().int().optional().nullable(), session: optionalText,
-  studentId: optionalText, email: z.string().trim().email().max(320).transform(value => value.toLowerCase()).optional().nullable(), phone: optionalText, address: optionalText, graduationYear: z.number().int().min(1950).max(2100).optional().nullable(), bloodGroup: optionalText, photoUrl: optionalText, school: optionalText, college: optionalText,
+  studentId: optionalText, email: z.string().trim().email().max(320).transform(value => value.toLowerCase()).optional().nullable(), phone: optionalText, address: optionalText, graduationYear: z.number().int().min(1950).max(2100).optional().nullable(), bloodGroup: optionalText, photoUrl: optionalPhotoUrl, school: optionalText, college: optionalText,
   bsc: optionalText, msc: optionalText, skill: optionalText, researchActivities: optionalText,
   currentOrganization: optionalText, currentDesignation: optionalText, currentDuration: optionalText,
   previousOrganization: optionalText, previousDesignation: optionalText, previousDuration: optionalText,
@@ -28,7 +35,7 @@ const batchInput = z.object({ id: z.number().int().optional(), batchNumber: z.nu
 const districtInput = z.object({ id: z.number().int().optional(), name: z.string().trim().min(2).max(120), division: optionalText, isActive: z.boolean().default(true) });
 const jobInput = z.object({ id: z.number().int().optional(), title: z.string().trim().min(2).max(220), organization: z.string().trim().min(2).max(220), location: optionalText, employmentType: optionalText, description: optionalText, requirements: optionalText, applicationLink: optionalText, applicationContact: optionalText, deadline: z.string().optional().nullable(), status: z.enum(["draft", "published"]).default("draft") });
 const galleryInput = z.object({ id: z.number().int().optional(), title: z.string().trim().min(2).max(220), category: z.string().trim().min(2).max(120), imageUrl: z.string().trim().min(1), eventDate: z.string().optional().nullable(), status: z.enum(["draft", "published"]).default("draft") });
-const legacyAlumniInput = z.object({ slug: z.string().min(2).max(160), fullName: z.string().min(2).max(200), batchNumber: z.number().int().min(1), districtName: z.string().min(2).max(120), studentId: optionalText, photoUrl: optionalText, organization: optionalText, designation: optionalText, industry: optionalText, country: optionalText, city: optionalText, session: optionalText, bloodGroup: optionalText, school: optionalText, college: optionalText, bsc: optionalText, msc: optionalText, skill: optionalText, researchActivities: optionalText, currentDuration: optionalText, previousOrganization: optionalText, previousDesignation: optionalText, previousDuration: optionalText, whatsapp: optionalText, facebook: optionalText, linkedin: optionalText });
+const legacyAlumniInput = z.object({ slug: z.string().min(2).max(160), fullName: z.string().min(2).max(200), batchNumber: z.number().int().min(1), districtName: z.string().min(2).max(120), studentId: optionalText, photoUrl: optionalPhotoUrl, organization: optionalText, designation: optionalText, industry: optionalText, country: optionalText, city: optionalText, session: optionalText, bloodGroup: optionalText, school: optionalText, college: optionalText, bsc: optionalText, msc: optionalText, skill: optionalText, researchActivities: optionalText, currentDuration: optionalText, previousOrganization: optionalText, previousDesignation: optionalText, previousDuration: optionalText, whatsapp: optionalText, facebook: optionalText, linkedin: optionalText });
 const requireDb = async () => { const db = await getDb(); if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database is unavailable" }); return db; };
 const parseDate = (value?: string | null) => value ? new Date(value) : null;
 const hashValue = (value: string) => createHash("sha256").update(value).digest();

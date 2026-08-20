@@ -20,6 +20,14 @@ type ValidRow = AlumniExcelRow & { action: "new" | "update"; existingId?: number
 const clean = (value?: string | null) => value?.trim() || null;
 const normalizedEmail = (value?: string | null) => clean(value)?.toLowerCase() || null;
 const normalizeKey = (value?: string | null) => clean(value)?.toLowerCase() || "";
+const normalizePhotoUrl = (value?: string | null) => {
+  const source = clean(value);
+  if (!source) return null;
+  if (source.startsWith("/manus-storage/")) return source;
+  if (source.startsWith("manus-storage/")) return `/${source}`;
+  if (/^https?:\/\//i.test(source)) return source;
+  return `/manus-storage/${source.replace(/^\/+/, "")}`;
+};
 const slugify = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 const importedSlug = (row: AlumniExcelRow) => `${slugify(clean(row.fullName) || "alumnus")}-${slugify(clean(row.studentId) || normalizedEmail(row.email) || String(row.rowNumber))}`.slice(0, 160);
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,7 +40,7 @@ async function buildImportPlan(db: any, rows: AlumniExcelRow[]) {
   const issues: ImportIssue[] = []; const validRows: ValidRow[] = [];
 
   for (const source of rows) {
-    const row = { ...source, fullName: clean(source.fullName), studentId: clean(source.studentId), email: normalizedEmail(source.email), districtName: clean(source.districtName), session: clean(source.session), currentOrganization: clean(source.currentOrganization), currentDesignation: clean(source.currentDesignation), address: clean(source.address), linkedin: clean(source.linkedin), photoUrl: clean(source.photoUrl), country: clean(source.country), city: clean(source.city), industry: clean(source.industry), bloodGroup: clean(source.bloodGroup), school: clean(source.school), college: clean(source.college), bsc: clean(source.bsc), msc: clean(source.msc), skill: clean(source.skill), researchActivities: clean(source.researchActivities), currentDuration: clean(source.currentDuration), previousOrganization: clean(source.previousOrganization), previousDesignation: clean(source.previousDesignation), previousDuration: clean(source.previousDuration), whatsapp: clean(source.whatsapp), facebook: clean(source.facebook), phone: clean(source.phone) };
+    const row = { ...source, fullName: clean(source.fullName), studentId: clean(source.studentId), email: normalizedEmail(source.email), districtName: clean(source.districtName), session: clean(source.session), currentOrganization: clean(source.currentOrganization), currentDesignation: clean(source.currentDesignation), address: clean(source.address), linkedin: clean(source.linkedin), photoUrl: normalizePhotoUrl(source.photoUrl), country: clean(source.country), city: clean(source.city), industry: clean(source.industry), bloodGroup: clean(source.bloodGroup), school: clean(source.school), college: clean(source.college), bsc: clean(source.bsc), msc: clean(source.msc), skill: clean(source.skill), researchActivities: clean(source.researchActivities), currentDuration: clean(source.currentDuration), previousOrganization: clean(source.previousOrganization), previousDesignation: clean(source.previousDesignation), previousDuration: clean(source.previousDuration), whatsapp: clean(source.whatsapp), facebook: clean(source.facebook), phone: clean(source.phone) };
     if (!row.fullName || row.fullName.length < 2) { issues.push({ rowNumber: row.rowNumber, problem: "Missing alumni name", correction: "Provide a full name with at least two characters." }); continue; }
     if (!row.batchNumber) { issues.push({ rowNumber: row.rowNumber, problem: "Missing or invalid batch", correction: "Provide a numeric batch between 1 and 99." }); continue; }
     if (!row.studentId && !row.email) { issues.push({ rowNumber: row.rowNumber, problem: "Missing unique identity", correction: "Provide a Student ID or email address." }); continue; }

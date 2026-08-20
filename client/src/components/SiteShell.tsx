@@ -4,8 +4,9 @@
 import {useEffect,useState} from "react";
 import {Link,useLocation} from "wouter";
 import {Menu,X,ArrowUpRight,MapPin,Mail,Linkedin,Facebook} from "lucide-react";
+import { NITER_OFFICIAL_LOGO_URL } from "@/lib/publicImages";
 
-const officialLogo="/manus-storage/niter-official-logo_b5db41d0.jpg";
+const officialLogo=NITER_OFFICIAL_LOGO_URL;
 const navLinks=[["Home","/"],["Alumni","/alumni"],["Batch","/batches"],["District","/districts"],["Job","/jobs"],["About","/about"],["Contact","/contact"]];
 
 export function Header(){

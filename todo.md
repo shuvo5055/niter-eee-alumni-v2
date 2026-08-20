@@ -195,3 +195,5 @@
 - [x] Replace Alumni ID-based first-time claim with registered-email-plus-password-only setup and sign-in.
 - [x] Route an alumni-requested email change through the existing pending Admin review process rather than allowing direct email changes.
 - [ ] Revise self-claim regression coverage and complete non-destructive verification using a real registered-email record.
+- [x] Trace and repair broken Header/Footer NITER logo and alumni photo URLs across nested public routes, desktop, mobile, database records, and Excel imports.
+- [x] Verify production-safe image loading and successful image requests on Homepage, Alumni directory, and individual profile pages before publication.

@@ -34,5 +34,7 @@ describe("alumni Excel import preview", () => {
     expect(source).toContain("db.transaction(async");
     expect(source).toContain("await tx.insert(activityLogs)");
     expect(source).toContain("const current = byMail || byId");
+    expect(source).toContain("const normalizePhotoUrl");
+    expect(source).toContain("photoUrl: normalizePhotoUrl(source.photoUrl)");
   });
 });

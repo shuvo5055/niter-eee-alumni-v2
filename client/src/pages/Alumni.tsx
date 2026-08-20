@@ -7,8 +7,9 @@ import DirectoryControls from "@/components/DirectoryControls";
 import { alumni as legacyAlumni } from "@/data/alumni";
 import { PageHero } from "@/components/SiteShell";
 import { trpc } from "@/lib/trpc";
+import { toPublicImageUrl } from "@/lib/publicImages";
 
-const toCardRecord = (person: any) => ({ id: String(person.id), slug: person.slug, name: person.fullName, batch: person.batchNumber ?? "-", position: person.currentDesignation || "-", organization: person.currentOrganization || "-", district: person.districtName || "-", country: person.country || "Bangladesh", city: person.city || "-", industry: person.industry || "-", graduationYear: 0, studentId: person.studentId || "-", degree: person.bsc || "-", photo: person.photoUrl || "https://images.unsplash.com/photo-1535713875002-cad84cf45f1d?auto=format&fit=crop&w=640&q=85", category: person.industry || "Other", addedAt: new Date(person.createdAt).getTime() });
+const toCardRecord = (person: any) => ({ id: String(person.id), slug: person.slug, name: person.fullName, batch: person.batchNumber ?? "-", position: person.currentDesignation || "-", organization: person.currentOrganization || "-", district: person.districtName || "-", country: person.country || "Bangladesh", city: person.city || "-", industry: person.industry || "-", graduationYear: 0, studentId: person.studentId || "-", degree: person.bsc || "-", photo: toPublicImageUrl(person.photoUrl), category: person.industry || "Other", addedAt: new Date(person.createdAt).getTime() });
 
 export default function Alumni() {
   const [location] = useLocation(); const urlQuery = new URLSearchParams(location.split("?")[1] || "").get("q") || "";

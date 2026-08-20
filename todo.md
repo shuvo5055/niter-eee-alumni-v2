@@ -156,3 +156,10 @@
 - [x] Preserve the intended removal of batch number and “EEE BATCH” labels while resolving invalid color/style markup.
 - [x] Build and locally verify the Batch Directory at desktop and mobile widths, then publish the approved edit.
 - [x] Publish the verified Batch Directory visual-edit repair in a new checkpoint.
+- [x] Locate and remove the requested “Start with a place.” District Directory heading after the visual-editor target failed.
+- [x] Build and locally verify the District Directory at desktop and mobile widths, then publish the repair.
+- [x] Publish the verified District Directory heading removal in a new checkpoint.
+- [x] Inspect the generated Jobs visual edits and remove the empty heading markup left after “Find a field.” and “Meet its people.” were cleared.
+- [x] Preserve Jobs filters, live opportunities, alumni results, and the District Directory repair while removing only the requested Jobs heading.
+- [x] Build and locally verify the Jobs and District pages at desktop and mobile widths.
+- [x] Publish the verified Jobs and District heading removals in a new checkpoint.

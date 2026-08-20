@@ -152,3 +152,7 @@
 - [x] Apply a mobile-only solid navy sidebar and separate backdrop stacking fix without changing desktop styles.
 - [x] Verify the Admin sidebar’s mobile Sheet class forwarding, opaque background, z-index separation, and desktop isolation through local viewport checks and regression tests.
 - [x] Publish the verified mobile Admin sidebar opacity fix in a new checkpoint.
+- [x] Inspect the generated Batch Directory visual edits for invalid JSX, duplicate styles, and conflicting display changes.
+- [x] Preserve the intended removal of batch number and “EEE BATCH” labels while resolving invalid color/style markup.
+- [x] Build and locally verify the Batch Directory at desktop and mobile widths, then publish the approved edit.
+- [x] Publish the verified Batch Directory visual-edit repair in a new checkpoint.

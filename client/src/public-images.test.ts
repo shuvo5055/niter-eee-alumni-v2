@@ -14,11 +14,11 @@ describe("public image URL handling", () => {
     expect(toPublicImageUrl("https://images.unsplash.com/photo-legacy")).toBe(ALUMNI_IMAGE_FALLBACK_URL);
   });
 
-  it("keeps the shared NITER branding and legacy sample portraits on managed project storage", () => {
+  it("keeps shared NITER branding on the stable same-origin route and legacy portraits on managed project storage", () => {
     const shell = readFileSync(new URL("./components/SiteShell.tsx", import.meta.url), "utf8");
     const alumniData = readFileSync(new URL("./data/alumni.ts", import.meta.url), "utf8");
     expect(shell).toContain("NITER_OFFICIAL_LOGO_URL");
-    expect(NITER_OFFICIAL_LOGO_URL).toBe("/manus-storage/niter-official-logo_ca7597f4.jpg");
+    expect(NITER_OFFICIAL_LOGO_URL).toBe("/static/niter-official-logo.jpg");
     expect(alumniData).not.toContain("images.unsplash.com");
     expect(alumniData).toContain("/manus-storage/tanvir-ahmed_2b6cf4dc.jpg");
   });

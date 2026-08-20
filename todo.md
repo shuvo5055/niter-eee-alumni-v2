@@ -198,3 +198,8 @@
 - [x] Trace and repair broken Header/Footer NITER logo and alumni photo URLs across nested public routes, desktop, mobile, database records, and Excel imports.
 - [x] Verify production-safe image loading and successful image requests on Homepage, Alumni directory, and individual profile pages before publication.
 - [x] Normalize Admin alumni-list and dashboard portrait rendering with the same managed storage URL and error-fallback helper.
+- [ ] Reproduce the user-reported published-site logo and alumni-image failure, then correct the exact production delivery path without changing unrelated features.
+- [ ] Restore compatibility for the legacy Header/Footer logo and affected alumni photo keys still requested by the mobile browser's active public bundle.
+- [ ] Determine whether `nzc.manus.space` can be restored or redirected to the current deployment so the user's existing public link opens working images.
+- [x] Replace redirect-based NITER logo delivery with a permanent project-bundled static asset shared by Header, Footer, Login, and all other logo placements.
+- [ ] Verify the deployed logo asset remains available after repeated reloads on desktop and mobile.

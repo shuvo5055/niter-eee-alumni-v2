@@ -2,6 +2,7 @@ import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from "lucide-
 import { FormEvent, useState } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { NITER_OFFICIAL_LOGO_URL } from "@/lib/publicImages";
 
 export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +30,7 @@ export default function AdminLogin() {
   return <main className="alumni-admin-login" aria-labelledby="admin-login-heading">
     <section className="alumni-admin-login__card">
       <header className="alumni-admin-login__brand">
-        <img src="/manus-storage/niter-official-logo_b5db41d0.jpg" alt="National Institute of Textile Engineering and Research logo" />
+        <img src={NITER_OFFICIAL_LOGO_URL} alt="National Institute of Textile Engineering and Research logo" />
         <div><p>NITER EEE ALUMNI ASSOCIATION</p><span>Alumni Association Administration</span></div>
       </header>
 

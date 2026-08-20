@@ -3,6 +3,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarInset, Si
 import { Bell, ChevronDown, ChevronRight, LayoutDashboard, LogOut, PanelLeft, ShieldCheck, Users } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useLocation } from "wouter";
+import { NITER_OFFICIAL_LOGO_URL } from "@/lib/publicImages";
 
 export type DashboardMenuItem = {
   icon: typeof LayoutDashboard;
@@ -29,7 +30,7 @@ function AdminDashboardFrame({ children, menuItems, adminName, onSignOut }: { ch
     <Sidebar collapsible="icon" className="admin-sidebar border-r-0">
       <SidebarHeader className="admin-sidebar__brand">
         <button className="admin-brand" onClick={() => setLocation("/admin")} aria-label="Open admin dashboard">
-          <img src="/manus-storage/niter-official-logo_b5db41d0.jpg" alt="NITER logo" />
+          <img src={NITER_OFFICIAL_LOGO_URL} alt="NITER logo" />
           <span><strong>NITER EEE</strong><small>ALUMNI ADMIN</small></span>
         </button>
       </SidebarHeader>

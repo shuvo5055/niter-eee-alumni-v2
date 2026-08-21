@@ -54,7 +54,7 @@ const publicAlumniSelect = {
   currentOrganization: alumni.currentOrganization, currentDesignation: alumni.currentDesignation, currentDuration: alumni.currentDuration,
   previousOrganization: alumni.previousOrganization, previousDesignation: alumni.previousDesignation, previousDuration: alumni.previousDuration,
   whatsapp: alumni.whatsapp, facebook: alumni.facebook, linkedin: alumni.linkedin, country: alumni.country, city: alumni.city, industry: alumni.industry,
-  batchNumber: batches.batchNumber, districtName: districts.name, createdAt: alumni.createdAt,
+  batchNumber: batches.batchNumber, districtName: districts.name, createdAt: alumni.createdAt, updatedAt: alumni.updatedAt,
 };
 const adminAlumniSelect = { ...publicAlumniSelect, email: alumni.email, phone: alumni.phone, address: alumni.address, claimed: alumni.claimed, claimedAt: alumni.claimedAt };
 

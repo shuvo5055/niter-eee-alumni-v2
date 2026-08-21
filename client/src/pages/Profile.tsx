@@ -13,7 +13,8 @@ export default function Profile({ params }: { params: { slug: string } }) {
   const legacyPerson = getAlumni(params.slug);
   const person = managed.data ? {
     name: managed.data.fullName,
-    photo: toPublicImageUrl(managed.data.photoUrl),
+    photo: managed.data.photoUrl,
+    photoRevision: managed.data.updatedAt,
     studentId: managed.data.studentId || "-",
     district: managed.data.districtName || "-",
     degree: managed.data.bsc || "-",
@@ -35,6 +36,7 @@ export default function Profile({ params }: { params: { slug: string } }) {
   if (!person) return <section className="not-found-page"><div><p className="eyebrow">LOADING RECORD</p><h1>Opening alumni profile…</h1></div></section>;
 
   const profile = person.profile ?? {};
+  const photoRevision = "photoRevision" in person ? person.photoRevision : null;
   const contacts = profile.contacts ?? {};
   const academicRows = [
     ["School", displayValue(profile.school)],
@@ -67,7 +69,7 @@ export default function Profile({ params }: { params: { slug: string } }) {
 
         <div className="profile-hero">
           <div className="profile-hero__portrait" style={{ width: "190px", height: "190px", borderRadius: "50%", overflow: "hidden", justifySelf: "center", alignSelf: "center" }}>
-            <img src={toPublicImageUrl(person.photo)} onError={useManagedImageFallback} alt={`Portrait of ${person.name}`} style={{ width: "100%", height: "100%", borderRadius: "50%" }} />
+            <img key={toPublicImageUrl(person.photo, undefined, photoRevision)} src={toPublicImageUrl(person.photo, undefined, photoRevision)} onError={useManagedImageFallback} alt={`Portrait of ${person.name}`} style={{ width: "100%", height: "100%", borderRadius: "50%" }} />
           </div>
           <div className="profile-hero__info" style={{ transform: "translateY(-22px)" }}>
             <h1>{person.name}</h1>

@@ -16,6 +16,16 @@ describe("public image URL handling", () => {
     expect(ALUMNI_IMAGE_FALLBACK_URL).not.toBe(NITER_OFFICIAL_LOGO_URL);
   });
 
+  it("keeps a supplied personal portrait intact and gives each photo revision a distinct cache-safe URL", () => {
+    const first = toPublicImageUrl("/manus-storage/alumni-claims/14/photo.jpg", ALUMNI_IMAGE_FALLBACK_URL, "2026-08-21T10:00:00.000Z");
+    const second = toPublicImageUrl("/manus-storage/alumni-claims/27/photo.jpg", ALUMNI_IMAGE_FALLBACK_URL, "2026-08-21T10:01:00.000Z");
+    expect(first).toContain("alumni-claims/14/photo.jpg");
+    expect(first).toContain("v=2026-08-21T10%3A00%3A00.000Z");
+    expect(second).toContain("alumni-claims/27/photo.jpg");
+    expect(second).not.toBe(first);
+    expect(toPublicImageUrl(ALUMNI_IMAGE_FALLBACK_URL)).toBe(ALUMNI_IMAGE_FALLBACK_URL);
+  });
+
   it("keeps shared NITER branding on the stable same-origin route and legacy portraits on managed project storage", () => {
     const shell = readFileSync(new URL("./components/SiteShell.tsx", import.meta.url), "utf8");
     const alumniData = readFileSync(new URL("./data/alumni.ts", import.meta.url), "utf8");
@@ -25,5 +35,14 @@ describe("public image URL handling", () => {
     expect(NITER_OFFICIAL_LOGO_URL).not.toContain("api/brand");
     expect(alumniData).not.toContain("images.unsplash.com");
     expect(alumniData).toContain("/manus-storage/tanvir-ahmed_2b6cf4dc.jpg");
+  });
+
+  it("binds public cards to managed alumni records once the database query has resolved", () => {
+    const home = readFileSync(new URL("./pages/Home.tsx", import.meta.url), "utf8");
+    const directory = readFileSync(new URL("./pages/Alumni.tsx", import.meta.url), "utf8");
+    expect(home).toContain("const managedAlumni=trpc.publicData.alumniList.useQuery()");
+    expect(home).toContain("photoRevision:person.updatedAt");
+    expect(directory).toContain("const source = managed.data ? managed.data.map(toCardRecord) : legacyAlumni");
+    expect(directory).toContain("photoRevision: person.updatedAt");
   });
 });

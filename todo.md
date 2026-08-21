@@ -217,3 +217,5 @@
 - [x] Verify uploaded personal photo consistency across alumni cards and profiles at desktop and mobile sizes before publication.
 - [x] Recreate the prior right-side EEE Hero artwork directly in CSS and remove the temporary oversized Hero image from the project build output.
 - [x] Verify the code-only premium Hero and publish the unblocked profile-photo repair without requesting user media uploads.
+- [x] Audit and repair uploaded alumni photo cache invalidation, canonical URL persistence, and immediate alumni-specific card/profile refresh behavior.
+- [x] Add multi-record regression coverage for unique photo ownership, refresh persistence, and neutral fallback behavior before publication.

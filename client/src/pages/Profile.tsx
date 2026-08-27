@@ -1,7 +1,6 @@
 /** Circuit Archive design system: one shared alumni profile template renders each record’s own academic, career, and contact information. */
 import { Link } from "wouter";
 import { ArrowLeft, Facebook, Linkedin, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
-import { getAlumni } from "@/data/alumni";
 import { trpc } from "@/lib/trpc";
 import AlumniClaimPanel from "@/components/AlumniClaimPanel";
 import { toPublicImageUrl, useManagedImageFallback } from "@/lib/publicImages";
@@ -10,8 +9,7 @@ const displayValue = (value?: string) => value?.trim() || "-";
 
 export default function Profile({ params }: { params: { slug: string } }) {
   const managed = trpc.publicData.alumniBySlug.useQuery({ slug: params.slug });
-  const legacyPerson = getAlumni(params.slug);
-  const person = managed.data ? {
+  const person = managed.data?.slug === params.slug ? {
     name: managed.data.fullName,
     photo: managed.data.photoUrl,
     photoRevision: managed.data.updatedAt,
@@ -28,12 +26,12 @@ export default function Profile({ params }: { params: { slug: string } }) {
       previousWork: { organization: managed.data.previousOrganization || "-", designation: managed.data.previousDesignation || "-", duration: managed.data.previousDuration || "-" },
       contacts: { whatsapp: managed.data.whatsapp || undefined, facebook: managed.data.facebook || undefined, linkedin: managed.data.linkedin || undefined },
     },
-  } : legacyPerson;
+  } : null;
 
-  if (!person && !managed.isLoading) {
+  if (managed.isFetching || managed.isLoading) return <section className="not-found-page"><div><p className="eyebrow">LOADING RECORD</p><h1>Opening alumni profile…</h1></div></section>;
+  if (!person) {
     return <section className="not-found-page"><div><p className="eyebrow">RECORD NOT FOUND</p><h1>This profile is not in the public archive.</h1><Link href="/alumni" className="button button--navy">Back to alumni</Link></div></section>;
   }
-  if (!person) return <section className="not-found-page"><div><p className="eyebrow">LOADING RECORD</p><h1>Opening alumni profile…</h1></div></section>;
 
   const profile = person.profile ?? {};
   const photoRevision = "photoRevision" in person ? person.photoRevision : null;

@@ -42,7 +42,7 @@ describe("public image URL handling", () => {
     const directory = readFileSync(new URL("./pages/Alumni.tsx", import.meta.url), "utf8");
     expect(home).toContain("const managedAlumni=trpc.publicData.alumniList.useQuery()");
     expect(home).toContain("photoRevision:person.updatedAt");
-    expect(directory).toContain("const source = managed.data ? managed.data.map(toCardRecord) : legacyAlumni");
+    expect(directory).toContain("const source = managed.data?.map(toCardRecord) ?? []");
     expect(directory).toContain("photoRevision: person.updatedAt");
   });
 });

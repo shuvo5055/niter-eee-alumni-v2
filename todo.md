@@ -219,3 +219,6 @@
 - [x] Verify the code-only premium Hero and publish the unblocked profile-photo repair without requesting user media uploads.
 - [x] Audit and repair uploaded alumni photo cache invalidation, canonical URL persistence, and immediate alumni-specific card/profile refresh behavior.
 - [x] Add multi-record regression coverage for unique photo ownership, refresh persistence, and neutral fallback behavior before publication.
+- [x] Remove demo alumni fallback rendering from all production public listing, batch, district, job, gallery, search, and profile flows.
+- [x] Add consistent loading skeletons and database-backed empty states so no demo cards flash during initial or filter-specific loading.
+- [x] Verify database-only alumni rendering for refresh, every batch, district, job, search, and cross-page navigation before publication.

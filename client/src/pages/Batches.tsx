@@ -1,20 +1,13 @@
 /** Circuit Archive batch index: administrator-managed batches automatically take over after the legacy directory is imported. */
 import { Link } from "wouter";
 import { ArrowUpRight, Users } from "lucide-react";
-import { batches as legacyBatches, alumni as legacyAlumni } from "@/data/alumni";
 import { PageHero } from "@/components/SiteShell";
 import { trpc } from "@/lib/trpc";
+import { DirectoryLoading } from "@/components/DirectoryLoading";
 
 export default function Batches() {
   const managed = trpc.publicData.batchDirectory.useQuery();
-  const records = managed.data?.length
-    ? managed.data
-    : legacyBatches.map(batch => ({
-        id: batch,
-        batchNumber: batch,
-        session: null,
-        alumniCount: legacyAlumni.filter(person => person.batch === batch).length || Math.max(13, 50 - (batch - 8) * 4),
-      }));
+  const records = managed.data ?? [];
 
   return <>
     <PageHero
@@ -30,7 +23,7 @@ export default function Batches() {
             <h2>NITER EEE, <em>by batch.</em></h2>
           </div>
         </div>
-        <div className="batch-grid">
+        {managed.isFetching ? <DirectoryLoading label="Loading verified batch records…" /> : records.length ? <div className="batch-grid">
           {records.map(batch => <Link href={`/batches/${batch.batchNumber}`} className="batch-card" key={batch.id} style={{ color: "#ffffff" }}>
             <div>
               <h3 style={{ color: "#000000" }}>Batch {batch.batchNumber}</h3>
@@ -38,7 +31,7 @@ export default function Batches() {
             </div>
             <ArrowUpRight className="batch-card__arrow" size={20} />
           </Link>)}
-        </div>
+        </div> : <div className="empty-state"><p className="eyebrow">BATCH DIRECTORY</p><h2>No batch records are available.</h2><p>Published batches will appear here when they are added to the alumni directory.</p></div>}
       </div>
     </section>
   </>;

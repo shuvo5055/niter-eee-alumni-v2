@@ -20,6 +20,7 @@ import "./admin-profile-reviews.css";
 import "./admin-login.css";
 import "./admin-excel-import.css";
 import "./hero-code-artwork.css";
+import "./data-loading-states.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";

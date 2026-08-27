@@ -30,7 +30,7 @@ export function Footer(){return <footer className="site-footer official-footer">
   <div className="official-footer__texture" aria-hidden="true"><i/><i/><i/><i/></div>
   <div className="container official-footer__grid">
     <section className="official-footer__brand">
-      <div className="official-footer__identity"><img className="official-niter-logo official-footer__logo" src={officialLogo} alt="Official NITER logo"/><div><strong>NITER EEE Alumni</strong><span>Department of Electrical and<br/>Electronic Engineering</span></div></div>
+      <div className="official-footer__identity"><svg className="official-niter-logo official-footer__logo" viewBox="0 0 250 262" role="img" aria-label="Official NITER logo"><filter id="footer-logo-remove-black" colorInterpolationFilters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 1.25 1.25 1.25 0 -0.12"/></filter><image href={officialLogo} width="250" height="262" filter="url(#footer-logo-remove-black)"/></svg><div><strong>NITER EEE Alumni</strong><span>Department of Electrical and<br/>Electronic Engineering</span></div></div>
       <p>Connecting NITER EEE alumni, building professional networks, and strengthening our alumni community.</p>
       <div className="footer-social official-footer__social"><a href="#contact" aria-label="Email NITER EEE Alumni"><Mail size={17}/></a><a href="#contact" aria-label="LinkedIn"><Linkedin size={17}/></a><a href="#contact" aria-label="Facebook"><Facebook size={17}/></a></div>
     </section>

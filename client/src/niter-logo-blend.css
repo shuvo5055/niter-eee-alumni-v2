@@ -1,3 +1,3 @@
 /* Official NITER logo treatment: visually integrates the unaltered JPEG’s dark field into the navy header without modifying the source asset. */
 .thesis-institute-lockup__logo{background:transparent!important;mix-blend-mode:screen}
-.official-footer__logo{background:transparent!important}
+.official-footer__logo{background:transparent!important;mix-blend-mode:normal;overflow:visible}

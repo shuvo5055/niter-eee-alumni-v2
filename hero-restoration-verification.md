@@ -13,3 +13,7 @@ The active deployment’s computed Hero background points to `/manus-storage/nit
 ## Production rendering investigation
 
 The published CSS now resolves the selected detailed first-release artwork as the computed `.hero__image` background. However, an active-domain visual capture still painted the old flat Hero field, indicating that resolving a redirect-backed storage URL in CSS is unreliable for the first paint despite a valid `200 image/webp` response. The next repair will use a production-safe immutable Hero asset reference rather than relying on the redirect-backed CSS background at render time.
+
+## Latest checkpoint deployment state
+
+The production page inspected after checkpoint `8e23a043` did not yet contain the new `.hero__artwork` element, while the local preview did. This demonstrates that the active public deployment is still serving an older published checkpoint; saving a checkpoint alone does not replace the live release. The latest checkpoint contains the explicit Hero artwork layer that renders correctly in the preview.

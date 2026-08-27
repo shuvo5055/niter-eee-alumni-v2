@@ -243,3 +243,5 @@
 - [x] Trace the exact deployed page, stylesheet, and Hero-image delivery path received by the user’s mobile browser before declaring the visual issue resolved.
 - [ ] Attempt to attach `nzc.manus.space` to the active project deployment so it can serve the current detailed Hero visual.
 - [x] Trace and repair the production-only Hero visual regression so publishing retains the selected detailed circuit-network artwork rather than the older light/dark style.
+- [ ] Make the approved detailed right-side Hero artwork available through a production-safe build asset and verify exact live parity with the Dashboard/Preview.
+- [x] Remove only the black background treatment from the official NITER logo in the shared footer and verify the header logo remains unchanged.

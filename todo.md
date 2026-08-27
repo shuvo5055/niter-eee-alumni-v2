@@ -233,3 +233,5 @@
 - [x] Verify the mirrored Hero at desktop and mobile sizes, then publish the Hero-only update.
 - [x] Restore the Home Hero from the reversed composition to the original first-created Circuit Archive layout and artwork balance.
 - [x] Verify the restored original-style Hero at desktop and mobile sizes, then publish the correction.
+- [x] Locate the exact first publicly revealed Home Hero design in project history rather than using a later restoration variant.
+- [x] Restore only that first-release Hero implementation and verify it at desktop and mobile sizes before publication.

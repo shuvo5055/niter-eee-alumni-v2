@@ -21,10 +21,6 @@ export default function Home(){
     <section className="hero">
       <div className="hero__image" aria-hidden="true"/>
       <div className="hero__grid" aria-hidden="true"/>
-      <svg className="hero__network" aria-hidden="true" viewBox="0 0 760 580" preserveAspectRatio="xMidYMid slice">
-        <g className="hero__network-lines"><path d="M42 490 170 390 258 430 364 274 498 332 612 142 742 212"/><path d="M112 556 214 478 308 515 428 390 558 434 704 336"/><path d="M154 118 276 198 370 130 500 206 640 84"/><path d="M280 18 340 116 464 74 554 150 686 106"/><path d="M64 306 196 272 284 336 404 238 512 272 640 222 746 288"/><path d="M172 390 196 272 276 198 340 116"/><path d="M308 515 284 336 364 274 370 130"/><path d="M498 332 512 272 500 206 464 74"/><path d="M612 142 640 222 640 84"/></g>
-        <g className="hero__network-nodes"><circle cx="42" cy="490" r="5"/><circle cx="170" cy="390" r="7"/><circle cx="258" cy="430" r="4"/><circle cx="364" cy="274" r="6"/><circle cx="498" cy="332" r="5"/><circle cx="612" cy="142" r="7"/><circle cx="742" cy="212" r="4"/><circle cx="214" cy="478" r="4"/><circle cx="428" cy="390" r="5"/><circle cx="558" cy="434" r="4"/><circle cx="154" cy="118" r="4"/><circle cx="276" cy="198" r="6"/><circle cx="370" cy="130" r="4"/><circle cx="500" cy="206" r="6"/><circle cx="640" cy="84" r="5"/></g>
-      </svg>
       <div className="container hero__inner">
         <div className="hero__copy">
           <p className="eyebrow eyebrow--light"><Network size={15}/> NITER EEE / ALUMNI NETWORK</p>

@@ -1,6 +1,6 @@
-import { and, count, desc, eq, like, or } from "drizzle-orm";
+import { and, count, desc, eq, gt, isNull, like, or } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { createHash, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import { ALUMNI_SESSION_COOKIE, COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
@@ -8,10 +8,11 @@ import { adminProcedure, alumniProcedure, editorProcedure, publicProcedure, rout
 import { systemRouter } from "./_core/systemRouter";
 import { getDb, recordActivity, upsertUser } from "./db";
 import { sdk } from "./_core/sdk";
-import { alumni, alumniProfileChanges, batches, districts, galleryItems, jobs, siteContent, users } from "../drizzle/schema";
+import { alumni, alumniProfileChanges, batchAccessAttempts, batchAlumniSubmissions, batches, batchSubmissionAccess, districts, galleryItems, jobs, siteContent, users } from "../drizzle/schema";
 import { storagePut } from "./storage";
 import { alumniExcelRowInput, commitAlumniExcelImport, previewAlumniExcelImport } from "./alumniImport";
 import { alumniClaimIdentityInput, alumniClaimSetupInput, alumniClaimSignInInput, alumniProfileDraftInput, hashAlumniPassword, verifyAlumniPassword } from "./alumniClaim";
+import { verifyBatchAccessCode } from "./batchAccess";
 
 const optionalText = z.string().trim().max(5000).optional().nullable();
 const optionalEmail = z.string().trim().max(320).refine(value => !value || z.string().email().safeParse(value).success, "Enter a valid email address.").transform(value => value ? value.toLowerCase() : undefined).optional().nullable();
@@ -63,9 +64,74 @@ const publicAlumniSelect = {
 const adminAlumniSelect = { ...publicAlumniSelect, email: alumni.email, phone: alumni.phone, address: alumni.address, claimed: alumni.claimed, claimedAt: alumni.claimedAt };
 // Email is intentionally restricted to a single public profile response so directory listings never expose contact details in bulk.
 const publicProfileAlumniSelect = { ...publicAlumniSelect, email: alumni.email };
+const publicSubmissionInput = z.object({
+  accessToken: z.string().trim().min(24).max(160),
+  fullName: z.string().trim().min(2).max(200),
+  email: z.string().trim().email().max(320).transform(value => value.toLowerCase()),
+  studentId: optionalText, phone: optionalText, districtId: z.number().int().positive().nullable().optional(), session: optionalText,
+  bloodGroup: optionalText, school: optionalText, college: optionalText, bsc: optionalText, msc: optionalText, skill: optionalText, researchActivities: optionalText,
+  currentOrganization: optionalText, currentDesignation: optionalText, currentDuration: optionalText, previousOrganization: optionalText, previousDesignation: optionalText, previousDuration: optionalText,
+  whatsapp: optionalText, facebook: optionalText, linkedin: optionalText, country: optionalText, city: optionalText, industry: optionalText, photoUrl: z.string().trim().max(5000).optional().nullable(),
+});
+const submissionFingerprint = (ctx: { req: { headers: Record<string, unknown> } }) => {
+  const forwarded = ctx.req.headers["x-forwarded-for"];
+  const ip = Array.isArray(forwarded) ? forwarded[0] : typeof forwarded === "string" ? forwarded.split(",")[0] : "";
+  const agent = typeof ctx.req.headers["user-agent"] === "string" ? ctx.req.headers["user-agent"] : "";
+  return createHash("sha256").update(`${ip}|${agent}`).digest("hex");
+};
+const hashSubmissionToken = (token: string) => createHash("sha256").update(token).digest("hex");
+const isSupportedImage = (bytes: Buffer, mimeType: string) => (mimeType === "image/jpeg" && bytes.subarray(0, 3).equals(Buffer.from([0xff, 0xd8, 0xff]))) || (mimeType === "image/png" && bytes.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) || (mimeType === "image/webp" && bytes.subarray(0, 4).toString() === "RIFF" && bytes.subarray(8, 12).toString() === "WEBP");
 
 export const appRouter = router({
   system: systemRouter,
+  batchSubmission: router({
+    verifyAccessCode: publicProcedure.input(z.object({ batchNumber: z.number().int().min(1).max(99), accessCode: z.string().trim().min(1).max(160) })).mutation(async ({ ctx, input }) => {
+      const db = await requireDb();
+      const [batch] = await db.select({ id: batches.id }).from(batches).where(and(eq(batches.batchNumber, input.batchNumber), eq(batches.isActive, true))).limit(1);
+      if (!batch) return { verified: false } as const;
+      const fingerprintHash = submissionFingerprint(ctx);
+      const [attempt] = await db.select().from(batchAccessAttempts).where(and(eq(batchAccessAttempts.batchId, batch.id), eq(batchAccessAttempts.fingerprintHash, fingerprintHash))).limit(1);
+      const now = new Date();
+      if (attempt?.lockedUntil && attempt.lockedUntil > now) return { verified: false } as const;
+      if (!verifyBatchAccessCode(input.batchNumber, input.accessCode)) {
+        const withinWindow = attempt?.updatedAt && attempt.updatedAt.getTime() >= Date.now() - 15 * 60 * 1000;
+        const failures = (withinWindow ? attempt?.failedAttempts ?? 0 : 0) + 1;
+        const lockedUntil = failures >= 5 ? new Date(Date.now() + 15 * 60 * 1000) : null;
+        if (attempt) await db.update(batchAccessAttempts).set({ failedAttempts: failures, lockedUntil }).where(eq(batchAccessAttempts.id, attempt.id));
+        else await db.insert(batchAccessAttempts).values({ batchId: batch.id, fingerprintHash, failedAttempts: failures, lockedUntil });
+        return { verified: false } as const;
+      }
+      if (attempt) await db.update(batchAccessAttempts).set({ failedAttempts: 0, lockedUntil: null }).where(eq(batchAccessAttempts.id, attempt.id));
+      const accessToken = randomBytes(32).toString("base64url");
+      const expiresAt = new Date(Date.now() + 20 * 60 * 1000);
+      await db.insert(batchSubmissionAccess).values({ batchId: batch.id, tokenHash: hashSubmissionToken(accessToken), expiresAt });
+      return { verified: true, accessToken, expiresAt } as const;
+    }),
+    submit: publicProcedure.input(publicSubmissionInput).mutation(async ({ input }) => {
+      const db = await requireDb();
+      const [access] = await db.select().from(batchSubmissionAccess).where(and(eq(batchSubmissionAccess.tokenHash, hashSubmissionToken(input.accessToken)), gt(batchSubmissionAccess.expiresAt, new Date()), isNull(batchSubmissionAccess.usedAt))).limit(1);
+      if (!access) throw new TRPCError({ code: "UNAUTHORIZED", message: "Your verified access has expired. Please verify the batch access code again." });
+      if (input.photoUrl && !input.photoUrl.startsWith(`/manus-storage/batch-submissions/${access.batchId}/`)) throw new TRPCError({ code: "BAD_REQUEST", message: "Profile photo must be uploaded through the verified submission form." });
+      const consumeResult = await db.update(batchSubmissionAccess).set({ usedAt: new Date() }).where(and(eq(batchSubmissionAccess.id, access.id), isNull(batchSubmissionAccess.usedAt)));
+      if (Number(consumeResult[0].affectedRows) !== 1) throw new TRPCError({ code: "CONFLICT", message: "This verified access was already used. Please verify the batch access code again." });
+      const [existingAlumnus] = await db.select({ id: alumni.id }).from(alumni).where(or(eq(alumni.email, input.email), input.studentId ? eq(alumni.studentId, input.studentId) : undefined)).limit(1);
+      if (existingAlumnus) throw new TRPCError({ code: "CONFLICT", message: "An alumni record with this email or Student ID already exists. Use Claim / Update My Profile instead." });
+      const [pendingDuplicate] = await db.select({ id: batchAlumniSubmissions.id }).from(batchAlumniSubmissions).where(and(eq(batchAlumniSubmissions.status, "pending"), or(eq(batchAlumniSubmissions.email, input.email), input.studentId ? eq(batchAlumniSubmissions.studentId, input.studentId) : undefined))).limit(1);
+      if (pendingDuplicate) throw new TRPCError({ code: "CONFLICT", message: "A submission with this email or Student ID is already pending administrator review." });
+      const { accessToken, districtId, photoUrl, ...submittedData } = input;
+      await db.insert(batchAlumniSubmissions).values({ batchId: access.batchId, districtId: districtId ?? null, fullName: input.fullName, email: input.email, studentId: input.studentId ?? null, phone: input.phone ?? null, photoUrl: photoUrl ?? null, submittedData: { ...submittedData, districtId: districtId ?? null, photoUrl: photoUrl ?? null }, status: "pending" });
+      return { success: true } as const;
+    }),
+    uploadPhoto: publicProcedure.input(z.object({ accessToken: z.string().trim().min(24).max(160), fileName: z.string().max(160), mimeType: z.string().regex(/^image\/(jpeg|png|webp)$/), dataBase64: z.string().min(16).max(7_000_000) })).mutation(async ({ input }) => {
+      const db = await requireDb();
+      const [access] = await db.select({ id: batchSubmissionAccess.id, batchId: batchSubmissionAccess.batchId }).from(batchSubmissionAccess).where(and(eq(batchSubmissionAccess.tokenHash, hashSubmissionToken(input.accessToken)), gt(batchSubmissionAccess.expiresAt, new Date()), isNull(batchSubmissionAccess.usedAt))).limit(1);
+      if (!access) throw new TRPCError({ code: "UNAUTHORIZED", message: "Your verified access has expired. Please verify the batch access code again." });
+      const base64 = input.dataBase64.replace(/^data:image\/[a-zA-Z+]+;base64,/, "");
+      const bytes = Buffer.from(base64, "base64");
+      if (bytes.length === 0 || bytes.length > 5_000_000 || !isSupportedImage(bytes, input.mimeType)) throw new TRPCError({ code: "BAD_REQUEST", message: "Upload a valid JPG, PNG, or WebP image smaller than 5 MB." });
+      return storagePut(`batch-submissions/${access.batchId}/${input.fileName}`, bytes, input.mimeType);
+    }),
+  }),
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     signIn: publicProcedure.input(z.object({ email: z.string().trim().email().max(320), password: z.string().min(1).max(256), remember: z.boolean().default(false) })).mutation(async ({ ctx, input }) => {
@@ -213,6 +279,40 @@ export const appRouter = router({
         }
         await db.update(alumniProfileChanges).set({ status: input.decision, reviewNotes: input.notes ?? null, reviewedBy: ctx.user.id, reviewedAt: new Date() }).where(eq(alumniProfileChanges.id, change.id));
         await recordActivity({ actorId: ctx.user.id, action: `profile_change_${input.decision}`, entityType: "alumni", entityId: String(change.alumniId), details: { changeId: change.id } });
+        return { success: true } as const;
+      }),
+    }),
+    batchSubmissions: router({
+      list: adminProcedure.query(async () => {
+        const db = await requireDb();
+        return db.select({ id: batchAlumniSubmissions.id, batchId: batchAlumniSubmissions.batchId, batchNumber: batches.batchNumber, fullName: batchAlumniSubmissions.fullName, email: batchAlumniSubmissions.email, studentId: batchAlumniSubmissions.studentId, phone: batchAlumniSubmissions.phone, photoUrl: batchAlumniSubmissions.photoUrl, submittedData: batchAlumniSubmissions.submittedData, status: batchAlumniSubmissions.status, reviewerNotes: batchAlumniSubmissions.reviewerNotes, createdAt: batchAlumniSubmissions.createdAt }).from(batchAlumniSubmissions).leftJoin(batches, eq(batchAlumniSubmissions.batchId, batches.id)).orderBy(desc(batchAlumniSubmissions.createdAt));
+      }),
+      update: adminProcedure.input(z.object({ id: z.number().int(), fullName: z.string().trim().min(2).max(200), email: z.string().trim().email().max(320).transform(value => value.toLowerCase()), studentId: optionalText, phone: optionalText, districtId: z.number().int().positive().nullable().optional(), submittedData: z.record(z.string(), z.unknown()) })).mutation(async ({ ctx, input }) => {
+        const db = await requireDb();
+        const [submission] = await db.select({ status: batchAlumniSubmissions.status, photoUrl: batchAlumniSubmissions.photoUrl }).from(batchAlumniSubmissions).where(eq(batchAlumniSubmissions.id, input.id)).limit(1);
+        if (!submission || submission.status !== "pending") throw new TRPCError({ code: "CONFLICT", message: "Only pending public submissions can be edited." });
+        await db.update(batchAlumniSubmissions).set({ fullName: input.fullName, email: input.email, studentId: input.studentId ?? null, phone: input.phone ?? null, districtId: input.districtId ?? null, submittedData: { ...input.submittedData, photoUrl: submission.photoUrl } }).where(eq(batchAlumniSubmissions.id, input.id));
+        await recordActivity({ actorId: ctx.user.id, action: "batch_submission_edited", entityType: "batch_submission", entityId: String(input.id) });
+        return { success: true } as const;
+      }),
+      review: adminProcedure.input(z.object({ id: z.number().int(), decision: z.enum(["approved", "rejected"]), notes: z.string().trim().max(1000).optional().nullable() })).mutation(async ({ ctx, input }) => {
+        const db = await requireDb();
+        const [submission] = await db.select().from(batchAlumniSubmissions).where(and(eq(batchAlumniSubmissions.id, input.id), eq(batchAlumniSubmissions.status, "pending"))).limit(1);
+        if (!submission) throw new TRPCError({ code: "NOT_FOUND", message: "This public submission is no longer pending." });
+        let approvedAlumniId: number | null = null;
+        if (input.decision === "approved") {
+          const matchingConditions = [eq(alumni.email, submission.email)];
+          if (submission.studentId) matchingConditions.push(eq(alumni.studentId, submission.studentId));
+          const [existing] = await db.select({ id: alumni.id }).from(alumni).where(or(...matchingConditions)).limit(1);
+          if (existing) throw new TRPCError({ code: "CONFLICT", message: "A matching alumni record already exists. Resolve the duplicate before approval." });
+          const data = submission.submittedData && typeof submission.submittedData === "object" ? submission.submittedData as Record<string, unknown> : {};
+          const field = (key: string) => typeof data[key] === "string" ? data[key] : null;
+          const safeSlug = `${submission.fullName.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "alumni"}-submission-${submission.id}`;
+          const result = await db.insert(alumni).values({ fullName: submission.fullName, slug: safeSlug, batchId: submission.batchId, districtId: submission.districtId, email: submission.email, studentId: submission.studentId, phone: submission.phone, photoUrl: submission.photoUrl, session: field("session"), bloodGroup: field("bloodGroup"), school: field("school"), college: field("college"), bsc: field("bsc"), msc: field("msc"), skill: field("skill"), researchActivities: field("researchActivities"), currentOrganization: field("currentOrganization"), currentDesignation: field("currentDesignation"), currentDuration: field("currentDuration"), previousOrganization: field("previousOrganization"), previousDesignation: field("previousDesignation"), previousDuration: field("previousDuration"), whatsapp: field("whatsapp"), facebook: field("facebook"), linkedin: field("linkedin"), country: field("country") || "Bangladesh", city: field("city"), industry: field("industry"), status: "published", createdBy: ctx.user.id });
+          approvedAlumniId = Number(result[0].insertId);
+        }
+        await db.update(batchAlumniSubmissions).set({ status: input.decision, reviewerNotes: input.notes ?? null, reviewedBy: ctx.user.id, reviewedAt: new Date(), approvedAlumniId }).where(eq(batchAlumniSubmissions.id, submission.id));
+        await recordActivity({ actorId: ctx.user.id, action: `batch_submission_${input.decision}`, entityType: "batch_submission", entityId: String(submission.id), details: { approvedAlumniId } });
         return { success: true } as const;
       }),
     }),

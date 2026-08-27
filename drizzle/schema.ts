@@ -97,6 +97,56 @@ export const alumniProfileChanges = mysqlTable("alumniProfileChanges", {
   statusIndex: index("alumni_profile_changes_status_idx").on(table.status),
 }));
 
+/** Short-lived server-verified grants used only to submit a new record for a selected batch. */
+export const batchSubmissionAccess = mysqlTable("batchSubmissionAccess", {
+  id: int("id").autoincrement().primaryKey(),
+  batchId: int("batchId").notNull(),
+  tokenHash: varchar("tokenHash", { length: 64 }).notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  usedAt: timestamp("usedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => ({
+  tokenHashUnique: uniqueIndex("batch_submission_access_token_uq").on(table.tokenHash),
+  batchExpiryIndex: index("batch_submission_access_batch_expiry_idx").on(table.batchId, table.expiresAt),
+}));
+
+/** Rate-limit state contains a hashed request fingerprint rather than a raw IP address. */
+export const batchAccessAttempts = mysqlTable("batchAccessAttempts", {
+  id: int("id").autoincrement().primaryKey(),
+  batchId: int("batchId").notNull(),
+  fingerprintHash: varchar("fingerprintHash", { length: 64 }).notNull(),
+  failedAttempts: int("failedAttempts").default(0).notNull(),
+  lockedUntil: timestamp("lockedUntil"),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => ({
+  batchFingerprintUnique: uniqueIndex("batch_access_attempts_fingerprint_uq").on(table.batchId, table.fingerprintHash),
+}));
+
+/** New public entries are isolated from canonical alumni data until an Administrator approves them. */
+export const batchAlumniSubmissions = mysqlTable("batchAlumniSubmissions", {
+  id: int("id").autoincrement().primaryKey(),
+  batchId: int("batchId").notNull(),
+  districtId: int("districtId"),
+  fullName: varchar("fullName", { length: 200 }).notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  studentId: varchar("studentId", { length: 80 }),
+  phone: varchar("phone", { length: 80 }),
+  photoUrl: text("photoUrl"),
+  submittedData: json("submittedData").notNull(),
+  status: mysqlEnum("status", ["pending", "approved", "rejected"]).default("pending").notNull(),
+  reviewerNotes: text("reviewerNotes"),
+  reviewedBy: int("reviewedBy"),
+  reviewedAt: timestamp("reviewedAt"),
+  approvedAlumniId: int("approvedAlumniId"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => ({
+  statusIndex: index("batch_alumni_submissions_status_idx").on(table.status),
+  batchIndex: index("batch_alumni_submissions_batch_idx").on(table.batchId),
+  emailIndex: index("batch_alumni_submissions_email_idx").on(table.email),
+  studentIdIndex: index("batch_alumni_submissions_student_id_idx").on(table.studentId),
+}));
+
 export const jobs = mysqlTable("jobs", {
   id: int("id").autoincrement().primaryKey(),
   title: varchar("title", { length: 220 }).notNull(),

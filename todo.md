@@ -249,3 +249,8 @@
 - [x] Add the shared profile Email action using a valid per-alumnus `mailto:` target, hiding it safely when no email exists.
 - [x] Enable normalized, validated alumni email editing through existing claim submissions and Administrator Alumni Management.
 - [x] Verify email privacy, mailto safety, desktop/mobile contact layout, and the existing public/Admin data contracts before publication.
+- [x] Audit Batch detail routes, current alumni claim/review tables, photo upload handling, and existing duplicate protections for the requested public submission workflow.
+- [x] Configure server-only hashed Batch 11–16 access-code verification and rate limiting without exposing access codes in client bundles or public database responses.
+- [x] Add a Batch Detail “Upload Your Information” access-code step and a validated, batch-locked public submission form.
+- [x] Store new public submissions as pending, including managed photo references, and add Administrator approve, reject, and edit review actions without changing existing records.
+- [x] Test batch-code isolation, duplicate prevention, pending-to-public approval, image validation, privacy, and desktop/mobile behavior before publication.

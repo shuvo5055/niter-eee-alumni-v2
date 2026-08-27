@@ -9,8 +9,9 @@ import { trpc } from "@/lib/trpc";
 import { alumni as legacyAlumni } from "@/data/alumni";
 import AlumniExcelImport from "@/components/AlumniExcelImport";
 import AdminProfileReviews from "@/components/AdminProfileReviews";
+import AdminBatchSubmissions from "@/components/AdminBatchSubmissions";
 
-type Section = "dashboard" | "alumni" | "batches" | "districts" | "jobs" | "gallery" | "content" | "reviews" | "users" | "activity";
+type Section = "dashboard" | "alumni" | "batches" | "districts" | "jobs" | "gallery" | "content" | "reviews" | "submissions" | "users" | "activity";
 const nav: DashboardMenuItem[] = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
   { icon: Users, label: "Alumni Management", path: "/admin/alumni", children: [{ label: "All Alumni", path: "/admin/alumni" }, { label: "Add Alumni", path: "/admin/alumni" }, { label: "Import Alumni", path: "/admin/alumni?import=excel" }] },
@@ -20,6 +21,7 @@ const nav: DashboardMenuItem[] = [
   { icon: Image, label: "Gallery", path: "/admin/gallery" },
   { icon: FileText, label: "Content Management", path: "/admin/content" },
   { icon: ShieldCheck, label: "Profile Reviews", path: "/admin/reviews" },
+  { icon: ClipboardList, label: "Public Submissions", path: "/admin/submissions" },
   { icon: UserCog, label: "Users & Roles", path: "/admin/users" },
   { icon: ClipboardList, label: "Activity Log", path: "/admin/activity" },
 ];
@@ -50,6 +52,7 @@ function AdminWorkspace({ section, isSuperAdmin, adminName }: { section: Section
   if (section === "gallery") return <GalleryManager />;
   if (section === "content") return <ContentManager />;
   if (section === "reviews") return <AdminProfileReviews enabled={isSuperAdmin} />;
+  if (section === "submissions") return <AdminBatchSubmissions enabled={isSuperAdmin} />;
   if (section === "users") return <UsersManager enabled={isSuperAdmin} />;
   if (section === "activity") return <ActivityManager enabled={isSuperAdmin} />;
   return <Overview adminName={adminName} />;

@@ -235,3 +235,11 @@
 - [x] Verify the restored original-style Hero at desktop and mobile sizes, then publish the correction.
 - [x] Locate the exact first publicly revealed Home Hero design in project history rather than using a later restoration variant.
 - [x] Restore only that first-release Hero implementation and verify it at desktop and mobile sizes before publication.
+- [x] Verify the reported `nzc.manus.space` hostname against the active project deployment and explain any stale-version discrepancy.
+- [x] Identify the exact first-reveal Hero visual theme rather than a later dark circuit variant, then restore only that original visual treatment.
+- [x] Confirm and retain the selected detailed first-release circuit-network Hero artwork on the right side of the original layout.
+- [x] Diagnose why the older flat Hero visual remains visible on the reported mobile page instead of the selected detailed circuit-network artwork.
+- [ ] Verify the live project serves the selected detailed circuit-network Hero visual after any delivery correction.
+- [x] Trace the exact deployed page, stylesheet, and Hero-image delivery path received by the user’s mobile browser before declaring the visual issue resolved.
+- [ ] Attempt to attach `nzc.manus.space` to the active project deployment so it can serve the current detailed Hero visual.
+- [ ] Trace and repair the production-only Hero visual regression so publishing retains the selected detailed circuit-network artwork rather than the older light/dark style.

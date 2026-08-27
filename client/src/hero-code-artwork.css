@@ -1,7 +1,7 @@
 .hero__image {
-  background-image: linear-gradient(90deg, rgba(4, 35, 54, 0.99) 0%, rgba(4, 35, 54, 0.96) 38%, rgba(4, 35, 54, 0.43) 67%, rgba(4, 35, 54, 0.2)), url("/manus-storage/niter-eee-alumni-hero_08acf207.png");
-  background-position: center;
-  background-size: cover;
+  background-image: linear-gradient(90deg, rgba(4, 35, 54, 0.99) 0%, rgba(4, 35, 54, 0.96) 38%, rgba(4, 35, 54, 0.43) 67%, rgba(4, 35, 54, 0.2)), url("/manus-storage/niter-eee-alumni-hero_08acf207.png") !important;
+  background-position: center !important;
+  background-size: cover !important;
 }
 
 .hero__grid {
@@ -13,7 +13,7 @@
 
 @media (max-width: 780px) {
   .hero__image {
-    background-image: linear-gradient(90deg, rgba(4, 35, 54, 0.97), rgba(4, 35, 54, 0.82)), url("/manus-storage/niter-eee-alumni-hero_08acf207.png");
-    background-position: 68% center;
+    background-image: linear-gradient(90deg, rgba(4, 35, 54, 0.97), rgba(4, 35, 54, 0.82)), url("/manus-storage/niter-eee-alumni-hero_08acf207.png") !important;
+    background-position: 68% center !important;
   }
 }

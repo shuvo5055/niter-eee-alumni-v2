@@ -11,6 +11,7 @@ describe("first-release Home Hero composition", () => {
     expect(home).not.toContain("hero__network");
     expect(artwork).not.toContain("hero--reverse");
     expect(artwork).toContain('url("/manus-storage/niter-eee-alumni-hero_08acf207.png")');
+    expect(artwork).toContain('url("/manus-storage/niter-eee-alumni-hero_08acf207.png") !important');
     expect(artwork).toContain("mask-image: linear-gradient(90deg, #000, transparent 71%)");
     expect(artwork).toContain("background-position: 68% center");
 

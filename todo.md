@@ -231,3 +231,5 @@
 - [x] Reverse only the Home Hero desktop visual layout, content placement, artwork balance, controls, and decorative hierarchy.
 - [x] Add a logical mobile stacking order for the reversed Hero without changing any shared branding or non-Hero sections.
 - [x] Verify the mirrored Hero at desktop and mobile sizes, then publish the Hero-only update.
+- [x] Restore the Home Hero from the reversed composition to the original first-created Circuit Archive layout and artwork balance.
+- [x] Verify the restored original-style Hero at desktop and mobile sizes, then publish the correction.

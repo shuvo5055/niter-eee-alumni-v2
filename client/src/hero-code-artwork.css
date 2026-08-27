@@ -36,31 +36,6 @@
 
 .hero__inner { z-index: 2; }
 
-/* The Home Hero deliberately reverses the original Circuit Archive composition:
-   the engineering field anchors the left while the familiar editorial copy moves right. */
-.hero--reverse .hero__image {
-  background: radial-gradient(circle at 16% 29%, rgba(60, 207, 224, 0.24), transparent 18%), radial-gradient(circle at 30% 72%, rgba(30, 122, 156, 0.2), transparent 32%), linear-gradient(256deg, #042336 0%, #052b40 42%, #06354c 69%, #072b44 100%);
-}
-
-.hero--reverse .hero__grid {
-  mask-image: linear-gradient(90deg, transparent 14%, #000 51% 100%);
-}
-
-.hero--reverse .hero__network {
-  left: -4%;
-  right: auto;
-  transform: scaleX(-1);
-}
-
-.hero--reverse .hero__inner {
-  flex-direction: row-reverse;
-}
-
-.hero--reverse .hero__stat-mark {
-  align-items: flex-start;
-  text-align: left;
-}
-
 @media (max-width: 780px) {
   .hero__image {
     background: radial-gradient(circle at 88% 30%, rgba(55, 202, 222, 0.2), transparent 28%), linear-gradient(112deg, rgba(4, 35, 54, 0.99), rgba(4, 35, 54, 0.84));
@@ -74,31 +49,4 @@
     opacity: 0.37;
   }
 
-  .hero--reverse .hero__image {
-    background: radial-gradient(circle at 12% 25%, rgba(55, 202, 222, 0.2), transparent 28%), linear-gradient(248deg, rgba(4, 35, 54, 0.99), rgba(4, 35, 54, 0.84));
-  }
-
-  .hero--reverse .hero__network {
-    left: -49%;
-    right: auto;
-    transform: scaleX(-1);
-  }
-
-  .hero--reverse .hero__inner {
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-end;
-  }
-
-  .hero--reverse .hero__copy {
-    order: 2;
-    width: 100%;
-  }
-
-  .hero--reverse .hero__stat-mark {
-    display: flex;
-    order: 1;
-    align-self: flex-start;
-    margin-bottom: 3rem;
-  }
 }

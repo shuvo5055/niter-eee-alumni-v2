@@ -18,7 +18,7 @@ export default function Home(){
   const results=useMemo(()=>directoryAlumni.filter(person=>`${person.name} ${person.batch} ${person.district} ${person.position} ${person.organization}`.toLowerCase().includes(query.toLowerCase())).slice(0,3),[directoryAlumni,query]);
   const submit=(event:React.FormEvent)=>{event.preventDefault();setLocation(query.trim()?`/alumni?q=${encodeURIComponent(query.trim())}`:"/alumni")};
   return <>
-    <section className="hero hero--reverse">
+    <section className="hero">
       <div className="hero__image" aria-hidden="true"/>
       <div className="hero__grid" aria-hidden="true"/>
       <svg className="hero__network" aria-hidden="true" viewBox="0 0 760 580" preserveAspectRatio="xMidYMid slice">

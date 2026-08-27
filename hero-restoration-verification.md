@@ -9,3 +9,7 @@ The global stylesheet had been loading after the Hero stylesheet and overriding 
 On 27 August 2026, the screenshot hostname `nzc.manus.space` returned a platform maintenance page and is not mapped to this project’s deployment. The active NITER EEE Alumni deployment hostname is `nitalumni-bpznsmzc.manus.space`. A browser cached page or an older session using `nzc.manus.space` cannot reflect source changes published to the active project hostname.
 
 The active deployment’s computed Hero background points to `/manus-storage/niter-eee-alumni-hero_08acf207.png`, and a no-cache browser request to that same active-domain path returned `200 image/webp`.
+
+## Production rendering investigation
+
+The published CSS now resolves the selected detailed first-release artwork as the computed `.hero__image` background. However, an active-domain visual capture still painted the old flat Hero field, indicating that resolving a redirect-backed storage URL in CSS is unreliable for the first paint despite a valid `200 image/webp` response. The next repair will use a production-safe immutable Hero asset reference rather than relying on the redirect-backed CSS background at render time.

@@ -242,4 +242,4 @@
 - [ ] Verify the live project serves the selected detailed circuit-network Hero visual after any delivery correction.
 - [x] Trace the exact deployed page, stylesheet, and Hero-image delivery path received by the user’s mobile browser before declaring the visual issue resolved.
 - [ ] Attempt to attach `nzc.manus.space` to the active project deployment so it can serve the current detailed Hero visual.
-- [ ] Trace and repair the production-only Hero visual regression so publishing retains the selected detailed circuit-network artwork rather than the older light/dark style.
+- [x] Trace and repair the production-only Hero visual regression so publishing retains the selected detailed circuit-network artwork rather than the older light/dark style.

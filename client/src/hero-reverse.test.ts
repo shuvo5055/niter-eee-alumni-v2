@@ -9,9 +9,13 @@ describe("first-release Home Hero composition", () => {
     expect(home).toContain('className="hero"');
     expect(home).not.toContain("hero--reverse");
     expect(home).not.toContain("hero__network");
+    expect(home).toContain('src="/manus-storage/niter-eee-alumni-hero_08acf207.png"');
+    expect(home).toContain('fetchPriority="high"');
     expect(artwork).not.toContain("hero--reverse");
-    expect(artwork).toContain('url("/manus-storage/niter-eee-alumni-hero_08acf207.png")');
-    expect(artwork).toContain('url("/manus-storage/niter-eee-alumni-hero_08acf207.png") !important');
+    expect(artwork).toContain(".hero__artwork");
+    expect(artwork).toContain("object-position: 68% center");
+    expect(artwork).toContain(".hero__inner");
+    expect(artwork).toContain("z-index: 2");
     expect(artwork).toContain("mask-image: linear-gradient(90deg, #000, transparent 71%)");
     expect(artwork).toContain("background-position: 68% center");
 

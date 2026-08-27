@@ -19,6 +19,7 @@ export default function Home(){
   const submit=(event:React.FormEvent)=>{event.preventDefault();setLocation(query.trim()?`/alumni?q=${encodeURIComponent(query.trim())}`:"/alumni")};
   return <>
     <section className="hero">
+      <img className="hero__artwork" src="/manus-storage/niter-eee-alumni-hero_08acf207.png" alt="" aria-hidden="true" fetchPriority="high" />
       <div className="hero__image" aria-hidden="true"/>
       <div className="hero__grid" aria-hidden="true"/>
       <div className="container hero__inner">

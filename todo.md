@@ -227,3 +227,7 @@
 - [x] Verify actual stored personal-photo delivery after navigation and refresh, then publish the durable persistence repair.
 - [x] Preserve an approved canonical personal photo when an Excel import or Administrator edit submits no new photo value.
 - [x] Restore the affected approved photo reference from the verified review history without changing any other alumni data.
+- [x] Inspect the current and original premium EEE Hero implementations to define an accurate mirrored composition.
+- [x] Reverse only the Home Hero desktop visual layout, content placement, artwork balance, controls, and decorative hierarchy.
+- [x] Add a logical mobile stacking order for the reversed Hero without changing any shared branding or non-Hero sections.
+- [x] Verify the mirrored Hero at desktop and mobile sizes, then publish the Hero-only update.

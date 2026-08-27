@@ -14,6 +14,7 @@ import { alumniExcelRowInput, commitAlumniExcelImport, previewAlumniExcelImport 
 import { alumniClaimIdentityInput, alumniClaimSetupInput, alumniClaimSignInInput, alumniProfileDraftInput, hashAlumniPassword, verifyAlumniPassword } from "./alumniClaim";
 
 const optionalText = z.string().trim().max(5000).optional().nullable();
+const optionalEmail = z.string().trim().max(320).refine(value => !value || z.string().email().safeParse(value).success, "Enter a valid email address.").transform(value => value ? value.toLowerCase() : undefined).optional().nullable();
 const normalizeManagedPhotoUrl = (value: string) => {
   if (value.startsWith("/manus-storage/")) return value;
   if (value.startsWith("manus-storage/")) return `/${value}`;
@@ -27,7 +28,7 @@ const optionalPhotoUrl = z.preprocess(
 const alumniInput = z.object({
   id: z.number().int().optional(), fullName: z.string().trim().min(2).max(200), slug: z.string().trim().min(2).max(160),
   batchId: z.number().int().optional().nullable(), districtId: z.number().int().optional().nullable(), session: optionalText,
-  studentId: optionalText, email: z.string().trim().email().max(320).transform(value => value.toLowerCase()).optional().nullable(), phone: optionalText, address: optionalText, graduationYear: z.number().int().min(1950).max(2100).optional().nullable(), bloodGroup: optionalText, photoUrl: optionalPhotoUrl, school: optionalText, college: optionalText,
+  studentId: optionalText, email: optionalEmail, phone: optionalText, address: optionalText, graduationYear: z.number().int().min(1950).max(2100).optional().nullable(), bloodGroup: optionalText, photoUrl: optionalPhotoUrl, school: optionalText, college: optionalText,
   bsc: optionalText, msc: optionalText, skill: optionalText, researchActivities: optionalText,
   currentOrganization: optionalText, currentDesignation: optionalText, currentDuration: optionalText,
   previousOrganization: optionalText, previousDesignation: optionalText, previousDuration: optionalText,
@@ -60,6 +61,8 @@ const publicAlumniSelect = {
   batchNumber: batches.batchNumber, districtName: districts.name, createdAt: alumni.createdAt, updatedAt: alumni.updatedAt,
 };
 const adminAlumniSelect = { ...publicAlumniSelect, email: alumni.email, phone: alumni.phone, address: alumni.address, claimed: alumni.claimed, claimedAt: alumni.claimedAt };
+// Email is intentionally restricted to a single public profile response so directory listings never expose contact details in bulk.
+const publicProfileAlumniSelect = { ...publicAlumniSelect, email: alumni.email };
 
 export const appRouter = router({
   system: systemRouter,
@@ -155,7 +158,7 @@ export const appRouter = router({
     }),
     alumniBySlug: publicProcedure.input(z.object({ slug: z.string() })).query(async ({ input }) => {
       const db = await requireDb();
-      const rows = await db.select(publicAlumniSelect).from(alumni).leftJoin(batches, eq(alumni.batchId, batches.id)).leftJoin(districts, eq(alumni.districtId, districts.id)).where(and(eq(alumni.slug, input.slug), eq(alumni.status, "published"))).limit(1);
+      const rows = await db.select(publicProfileAlumniSelect).from(alumni).leftJoin(batches, eq(alumni.batchId, batches.id)).leftJoin(districts, eq(alumni.districtId, districts.id)).where(and(eq(alumni.slug, input.slug), eq(alumni.status, "published"))).limit(1);
       return rows[0] ?? null;
     }),
     batchDirectory: publicProcedure.query(async () => { const db = await requireDb(); return db.select({ id: batches.id, batchNumber: batches.batchNumber, session: batches.session, alumniCount: count(alumni.id) }).from(batches).leftJoin(alumni, and(eq(alumni.batchId, batches.id), eq(alumni.status, "published"))).where(eq(batches.isActive, true)).groupBy(batches.id, batches.batchNumber, batches.session).orderBy(batches.batchNumber); }),

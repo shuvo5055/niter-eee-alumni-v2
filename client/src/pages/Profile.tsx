@@ -1,6 +1,6 @@
 /** Circuit Archive design system: one shared alumni profile template renders each record’s own academic, career, and contact information. */
 import { Link } from "wouter";
-import { ArrowLeft, Facebook, Linkedin, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Facebook, Linkedin, Mail, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import AlumniClaimPanel from "@/components/AlumniClaimPanel";
 import { toPublicImageUrl, useManagedImageFallback } from "@/lib/publicImages";
@@ -24,7 +24,7 @@ export default function Profile({ params }: { params: { slug: string } }) {
       session: managed.data.session || "-", bloodGroup: managed.data.bloodGroup || "-", school: managed.data.school || "-", college: managed.data.college || "-", bsc: managed.data.bsc || "-", msc: managed.data.msc || "-", skill: managed.data.skill || "-", researchActivities: managed.data.researchActivities || "-",
       currentWork: { organization: managed.data.currentOrganization || "-", designation: managed.data.currentDesignation || "-", duration: managed.data.currentDuration || "-" },
       previousWork: { organization: managed.data.previousOrganization || "-", designation: managed.data.previousDesignation || "-", duration: managed.data.previousDuration || "-" },
-      contacts: { whatsapp: managed.data.whatsapp || undefined, facebook: managed.data.facebook || undefined, linkedin: managed.data.linkedin || undefined },
+      contacts: { whatsapp: managed.data.whatsapp || undefined, facebook: managed.data.facebook || undefined, linkedin: managed.data.linkedin || undefined, email: managed.data.email || undefined },
     },
   } : null;
 
@@ -54,10 +54,12 @@ export default function Profile({ params }: { params: { slug: string } }) {
     ["Designation", displayValue(profile.previousWork?.designation)],
     ["Duration", displayValue(profile.previousWork?.duration)],
   ];
+  const contactEmail = typeof contacts.email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contacts.email.trim()) ? contacts.email.trim() : undefined;
   const socialLinks = [
     { label: "WhatsApp", href: contacts.whatsapp || "https://wa.me/", icon: MessageCircle },
     { label: "Facebook", href: contacts.facebook || "https://www.facebook.com/", icon: Facebook },
     { label: "LinkedIn", href: contacts.linkedin || "https://www.linkedin.com/", icon: Linkedin },
+    ...(contactEmail ? [{ label: "Email", href: `mailto:${contactEmail}`, icon: Mail }] : []),
   ];
 
   return (
@@ -104,7 +106,7 @@ export default function Profile({ params }: { params: { slug: string } }) {
 
           <div style={{ gridColumn: "1 / -1", display: "flex", alignItems: "center", gap: "18px", flexWrap: "wrap", padding: "20px 29px", borderRight: "1px solid #d6dedb", borderBottom: "1px solid #d6dedb", background: "#fffdf8" }}>
             <span className="eyebrow">CONTACT:</span>
-            {socialLinks.map(({ label, href, icon: Icon }) => <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label} style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#17546a", fontSize: "11px", fontWeight: 800 }}><Icon size={17} />{label}</a>)}
+            {socialLinks.map(({ label, href, icon: Icon }) => <a key={label} href={href} {...(href.startsWith("mailto:") ? {} : { target: "_blank", rel: "noreferrer" })} aria-label={label} style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#17546a", fontSize: "11px", fontWeight: 800 }}><Icon size={17} />{label}</a>)}
           </div>
         </div>
       </div>

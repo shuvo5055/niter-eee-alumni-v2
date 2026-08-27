@@ -3,6 +3,7 @@ import { z } from "zod";
 
 const nullableText = z.string().trim().max(5000).optional().nullable();
 const nullableShortText = z.string().trim().max(500).optional().nullable();
+const optionalEmail = z.string().trim().max(320).refine(value => !value || z.string().email().safeParse(value).success, "Enter a valid email address.").transform(value => value ? value.toLowerCase() : undefined).optional();
 
 export const normalizeAlumniEmail = (email: string) => email.trim().toLowerCase();
 
@@ -18,7 +19,7 @@ export const alumniClaimSignInInput = alumniClaimIdentityInput.extend({ password
 
 export const alumniProfileDraftInput = z.object({
   fullName: z.string().trim().min(2).max(200),
-  email: z.string().trim().email().max(320).transform(normalizeAlumniEmail).optional(),
+  email: optionalEmail,
   batchId: z.number().int().positive().nullable().optional(),
   districtId: z.number().int().positive().nullable().optional(),
   session: nullableShortText,

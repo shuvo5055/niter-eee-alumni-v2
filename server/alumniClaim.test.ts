@@ -27,6 +27,7 @@ describe("alumni self-claim security", () => {
   it("normalizes an alumni-requested email change for pending Administrator review", () => {
     const parsed = alumniProfileDraftInput.parse({ fullName: "Verified Alumni", email: " NEW.EMAIL@NITER.EDU.BD " });
     expect(parsed.email).toBe("new.email@niter.edu.bd");
+    expect(alumniProfileDraftInput.parse({ fullName: "Verified Alumni", email: "   " }).email).toBeUndefined();
   });
 
   it("rejects anonymous claimant profile edits and anonymous Admin review access", async () => {
@@ -48,6 +49,8 @@ describe("alumni self-claim security", () => {
     expect(publicSelection).not.toContain("phone: alumni.phone");
     expect(publicSelection).not.toContain("address: alumni.address");
     expect(routers).toContain("const adminAlumniSelect = { ...publicAlumniSelect, email: alumni.email, phone: alumni.phone, address: alumni.address");
+    expect(routers).toContain("const publicProfileAlumniSelect = { ...publicAlumniSelect, email: alumni.email }");
+    expect(routers).toContain("db.select(publicProfileAlumniSelect)");
     expect(routers).toContain("record.claimLockedUntil && record.claimLockedUntil <= now ? 0 : record.claimFailedAttempts ?? 0");
     expect(routers).toContain("The requested email is already assigned to another alumni record.");
   });

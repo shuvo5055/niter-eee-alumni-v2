@@ -245,3 +245,7 @@
 - [x] Trace and repair the production-only Hero visual regression so publishing retains the selected detailed circuit-network artwork rather than the older light/dark style.
 - [ ] Make the approved detailed right-side Hero artwork available through a production-safe build asset and verify exact live parity with the Dashboard/Preview.
 - [x] Remove only the black background treatment from the official NITER logo in the shared footer and verify the header logo remains unchanged.
+- [x] Audit existing alumni email storage, validation, privacy filtering, shared profile contacts, claim forms, and Admin edit flows.
+- [x] Add the shared profile Email action using a valid per-alumnus `mailto:` target, hiding it safely when no email exists.
+- [x] Enable normalized, validated alumni email editing through existing claim submissions and Administrator Alumni Management.
+- [x] Verify email privacy, mailto safety, desktop/mobile contact layout, and the existing public/Admin data contracts before publication.

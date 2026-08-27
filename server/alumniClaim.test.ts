@@ -57,5 +57,13 @@ describe("alumni self-claim security", () => {
     expect(routers).toContain("profile_photo_uploaded");
     expect(routers).toContain("photoUrl: result.url");
     expect(routers).toContain("pendingReview: true");
+    expect(routers).toContain("proposedData: alumniProfileChanges.proposedData");
+  });
+
+  it("does not turn blank photo form values or blank administrator updates into broken storage references", () => {
+    const routers = readFileSync(new URL("./routers.ts", import.meta.url), "utf8");
+    expect(routers).toContain('typeof value === "string" && !value.trim() ? undefined : value');
+    expect(routers).toContain("const updateValues = photoUrl === undefined ? values : { ...values, photoUrl }");
+    expect(routers).toContain("onDuplicateKeyUpdate({ set: photoUrl === undefined ? valuesWithoutPhoto : values })");
   });
 });

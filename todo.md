@@ -222,3 +222,8 @@
 - [x] Remove demo alumni fallback rendering from all production public listing, batch, district, job, gallery, search, and profile flows.
 - [x] Add consistent loading skeletons and database-backed empty states so no demo cards flash during initial or filter-specific loading.
 - [x] Verify database-only alumni rendering for refresh, every batch, district, job, search, and cross-page navigation before publication.
+- [x] Audit the current alumni photo storage key, database persistence, Admin approval transfer, and post-refresh retrieval for durable personal-photo delivery.
+- [x] Repair any temporary URL, expiring storage URL, or missing canonical record update in the alumni photo flow.
+- [x] Verify actual stored personal-photo delivery after navigation and refresh, then publish the durable persistence repair.
+- [x] Preserve an approved canonical personal photo when an Excel import or Administrator edit submits no new photo value.
+- [x] Restore the affected approved photo reference from the verified review history without changing any other alumni data.

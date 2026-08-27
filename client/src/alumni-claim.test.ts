@@ -17,6 +17,7 @@ describe("alumni claim experience", () => {
     expect(claimPanel).toContain("Submit update for review");
     expect(claimPanel).toContain("Registered email (changes require approval)");
     expect(claimPanel).toContain("Your registered email stays private. Any change requires administrator approval.");
+    expect(claimPanel).toContain("pendingDraft.photoUrl");
     expect(claimPanel).not.toContain("Alumni ID");
   });
 

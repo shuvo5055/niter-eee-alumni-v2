@@ -29,12 +29,14 @@ describe("alumni Excel import preview", () => {
     expect(result.validRows.map(row => row.action)).toEqual(["update", "new"]);
   });
 
-  it("keeps commit logic transaction-backed so failed imports do not partially write", () => {
+  it("keeps commit logic transaction-backed, preserves approved photos when a spreadsheet cell is blank, and accepts a supplied replacement", () => {
     const source = readFileSync(new URL("./alumniImport.ts", import.meta.url), "utf8");
     expect(source).toContain("db.transaction(async");
     expect(source).toContain("await tx.insert(activityLogs)");
     expect(source).toContain("const current = byMail || byId");
     expect(source).toContain("const normalizePhotoUrl");
     expect(source).toContain("photoUrl: normalizePhotoUrl(source.photoUrl)");
+    expect(source).toContain("const { photoUrl, ...valuesWithoutPhoto } = values");
+    expect(source).toContain("set(photoUrl ? values : valuesWithoutPhoto)");
   });
 });

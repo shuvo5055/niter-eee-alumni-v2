@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { alumniClaimIdentityInput, alumniClaimSetupInput, alumniProfileDraftInput, hashAlumniPassword, normalizeAlumniEmail, verifyAlumniPassword } from "./alumniClaim";
+import { alumniClaimIdentityInput, alumniClaimSignInInput, alumniProfileDraftInput, hashAlumniPassword, normalizeAlumniEmail, verifyAlumniPassword } from "./alumniClaim";
 import { appRouter } from "./routers";
 import type { TrpcContext } from "./_core/context";
 
@@ -17,11 +17,10 @@ describe("alumni self-claim security", () => {
     expect(verifyAlumniPassword("wrong password", hash)).toBe(false);
   });
 
-  it("requires only a valid registered email and secure first-time password", () => {
+  it("accepts only a valid registered email and an existing-password sign-in payload", () => {
     expect(alumniClaimIdentityInput.safeParse({ email: "bad" }).success).toBe(false);
     expect(alumniClaimIdentityInput.safeParse({ email: " alumni@niter.edu.bd " }).success).toBe(true);
-    expect(alumniClaimSetupInput.safeParse({ email: "alumni@niter.edu.bd", password: "short" }).success).toBe(false);
-    expect(alumniClaimSetupInput.safeParse({ email: "alumni@niter.edu.bd", password: "claim-password-2026" }).success).toBe(true);
+    expect(alumniClaimSignInInput.safeParse({ email: "alumni@niter.edu.bd", password: "existing-password" }).success).toBe(true);
   });
 
   it("normalizes an alumni-requested email change for pending Administrator review", () => {
@@ -68,5 +67,11 @@ describe("alumni self-claim security", () => {
     expect(routers).toContain('typeof value === "string" && !value.trim() ? undefined : value');
     expect(routers).toContain("const updateValues = photoUrl === undefined ? values : { ...values, photoUrl }");
     expect(routers).toContain("onDuplicateKeyUpdate({ set: photoUrl === undefined ? valuesWithoutPhoto : values })");
+  });
+
+  it("keeps first-time setup absent from the public ownership router", () => {
+    const routers = readFileSync(new URL("./routers.ts", import.meta.url), "utf8");
+    expect(routers).not.toContain("setupPassword:");
+    expect(routers).not.toContain("first_time_claim");
   });
 });

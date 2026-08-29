@@ -11,10 +11,6 @@ export const alumniClaimIdentityInput = z.object({
   email: z.string().trim().email().max(320).transform(normalizeAlumniEmail),
 });
 
-export const alumniClaimSetupInput = alumniClaimIdentityInput.extend({
-  password: z.string().min(8).max(256),
-});
-
 export const alumniClaimSignInInput = alumniClaimIdentityInput.extend({ password: z.string().min(1).max(256) });
 
 export const alumniProfileDraftInput = z.object({

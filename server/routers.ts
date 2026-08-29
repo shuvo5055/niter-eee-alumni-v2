@@ -11,7 +11,7 @@ import { sdk } from "./_core/sdk";
 import { alumni, alumniProfileChanges, batchAccessAttempts, batchAlumniSubmissions, batches, batchSubmissionAccess, districts, galleryItems, jobs, siteContent, users } from "../drizzle/schema";
 import { storagePut } from "./storage";
 import { alumniExcelRowInput, commitAlumniExcelImport, previewAlumniExcelImport } from "./alumniImport";
-import { alumniClaimIdentityInput, alumniClaimSetupInput, alumniClaimSignInInput, alumniProfileDraftInput, hashAlumniPassword, verifyAlumniPassword } from "./alumniClaim";
+import { alumniClaimSignInInput, alumniProfileDraftInput, verifyAlumniPassword } from "./alumniClaim";
 import { verifyBatchAccessCode } from "./batchAccess";
 
 const optionalText = z.string().trim().max(5000).optional().nullable();
@@ -154,15 +154,6 @@ export const appRouter = router({
       const db = await requireDb();
       const [record] = await db.select({ id: alumni.id, slug: alumni.slug, fullName: alumni.fullName, email: alumni.email, studentId: alumni.studentId, claimed: alumni.claimed }).from(alumni).where(eq(alumni.id, ctx.alumniSession.alumniId)).limit(1);
       return record ?? null;
-    }),
-    setupPassword: publicProcedure.input(alumniClaimSetupInput).mutation(async ({ ctx, input }) => {
-      const db = await requireDb();
-      const [record] = await db.select().from(alumni).where(eq(alumni.email, input.email)).limit(1);
-      if (!record || record.passwordHash || record.claimed) throw new TRPCError({ code: "UNAUTHORIZED", message: claimFailureMessage });
-      await db.update(alumni).set({ passwordHash: hashAlumniPassword(input.password), claimed: true, claimedAt: new Date(), claimFailedAttempts: 0, claimLockedUntil: null }).where(eq(alumni.id, record.id));
-      await db.insert((await import("../drizzle/schema")).activityLogs).values({ actorId: null, action: "claimed", entityType: "alumni", entityId: String(record.id), details: { source: "first_time_claim" } });
-      await setAlumniSession(ctx, record.id);
-      return { success: true, slug: record.slug } as const;
     }),
     signIn: publicProcedure.input(alumniClaimSignInInput).mutation(async ({ ctx, input }) => {
       const db = await requireDb();

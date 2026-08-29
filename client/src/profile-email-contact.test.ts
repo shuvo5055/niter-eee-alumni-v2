@@ -14,6 +14,8 @@ describe("alumni profile email contact", () => {
     expect(profile).toContain('href.startsWith("mailto:")');
     expect(admin).toContain('email: ""');
     expect(admin).toContain('label="Email address" type="email"');
-    expect(claim).toContain('label="Registered email (changes require approval)" type="email"');
+    expect(claim).toContain('Registered email address');
+    expect(claim).toContain('readOnly');
+    expect(claim).not.toContain('Registered email (changes require approval)');
   });
 });

@@ -82,7 +82,7 @@ export default function Profile({ params }: { params: { slug: string } }) {
           </div>
           <div className="profile-hero__badge"><ShieldCheck size={18} /><span>PUBLIC ALUMNI<br />RECORD</span></div>
         </div>
-        {managed.data && <AlumniClaimPanel slug={managed.data.slug} />}
+        {managed.data && <AlumniClaimPanel slug={managed.data.slug} registeredEmail={managed.data.email || ""} />}
 
         <div className="profile-grid">
           <section className="profile-section profile-section--personal">

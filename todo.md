@@ -254,3 +254,9 @@
 - [x] Add a Batch Detail “Upload Your Information” access-code step and a validated, batch-locked public submission form.
 - [x] Store new public submissions as pending, including managed photo references, and add Administrator approve, reject, and edit review actions without changing existing records.
 - [x] Test batch-code isolation, duplicate prevention, pending-to-public approval, image validation, privacy, and desktop/mobile behavior before publication.
+- [x] Replace the public Profile Ownership first-time claim/registration UI with a collapsed registered-email-plus-existing-password sign-in gate.
+- [x] Keep the verified owner session restricted to the matching alumni record and preserve pending Admin approval for profile edits.
+- [x] Remove email-change, password-creation, OTP, and first-time claim controls from the public profile ownership flow without changing other profile sections.
+- [x] Add regression coverage and verify desktop/mobile ownership UI, invalid credentials, ownership isolation, and existing profile editing before publication.
+
+Audit note: the database currently contains one registered email field per alumni record; password hashes exist only for records already configured for alumni ownership, so profiles without a set password must not expose a password-creation flow.

@@ -271,3 +271,8 @@ Audit note: the database currently contains one registered email field per alumn
 - [ ] Reattach or provide `pasted_content_4.txt` before mapping source-data records; the file is not available in the active sandbox, so no source records were imported or overwritten.
 - [ ] Provide the deferred workbook and test profile with at least one real registered alumni email before non-destructive end-to-end claim → pending update → approval verification.
 - [ ] After the attachment and test record are available, complete duplicate analysis, safe source-data integration, end-to-end approval verification, and publish the resulting checkpoint.
+
+## Scope confirmation — 2026-10-11
+
+- [x] User confirmed project-file-only verification; no external attachment, workbook, test profile, live-site login, or live-site verification will be attempted in this phase.
+- [x] Preserve all source-data and real-record end-to-end items above as pending until the user supplies the missing files.

@@ -37,6 +37,7 @@ describe("alumni Excel import preview", () => {
     expect(source).toContain("const normalizePhotoUrl");
     expect(source).toContain("photoUrl: normalizePhotoUrl(source.photoUrl)");
     expect(source).toContain("const { photoUrl, ...valuesWithoutPhoto } = values");
-    expect(source).toContain("set(photoUrl ? values : valuesWithoutPhoto)");
+    expect(source).toContain("const updateValues = photoUrl ? values : valuesWithoutPhoto");
+    expect(source).toContain("set(needsInitialPassword ? { ...updateValues, passwordHash: hashAlumniPassword(row.email!) } : updateValues)");
   });
 });

@@ -35,9 +35,10 @@ describe("alumni self-claim security", () => {
     await expect(caller.admin.profileChanges.list()).rejects.toMatchObject({ code: "UNAUTHORIZED" });
   });
 
-  it("keeps Excel imports from writing claim credentials", () => {
+  it("keeps Excel imports from writing claim-attempt state while allowing guarded initial hashes", () => {
     const importer = readFileSync(new URL("./alumniImport.ts", import.meta.url), "utf8");
-    expect(importer).not.toContain("passwordHash");
+    expect(importer).toContain("hashAlumniPassword");
+    expect(importer).toContain("!current.claimed && !current.passwordHash");
     expect(importer).not.toContain("claimFailedAttempts");
   });
 

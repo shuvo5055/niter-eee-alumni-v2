@@ -276,3 +276,12 @@ Audit note: the database currently contains one registered email field per alumn
 
 - [x] User confirmed project-file-only verification; no external attachment, workbook, test profile, live-site login, or live-site verification will be attempted in this phase.
 - [x] Preserve all source-data and real-record end-to-end items above as pending until the user supplies the missing files.
+
+## Alumni credential consistency — 2026-10-11
+
+- [x] Audit every alumni record’s normalized email, claim state, and password-hash presence without exposing password material: 69 records, 0 missing emails, 64 missing hashes before repair, 5 existing scrypt hashes.
+- [x] Trace all alumni creation/import/update paths to identify inconsistent initial-password assignment.
+- [x] Add a safe non-destructive initializer that sets only missing password hashes to the record’s normalized email.
+- [x] Verify existing customized/claimed passwords are never overwritten and missing-email records are reported, not initialized: 64 initialized, 5 preserved, 0 skipped.
+- [x] Add backend regression tests for multi-record initialization, email normalization, and authentication isolation: 2 focused credential tests pass.
+- [x] Run the production build and report tested working/failing profiles: 69 records tested, 68 email-as-password successes, 1 intentional custom-password exception; all hashes are scrypt-format.

@@ -29,7 +29,7 @@ describe("alumni claim experience", () => {
 
   it("keeps the backend on existing-password sign-in and preserves owner-only pending updates", () => {
     expect(router).toContain("signIn: publicProcedure.input(alumniClaimSignInInput)");
-    expect(router).toContain("verifyAlumniPassword(input.password, record.passwordHash)");
+    expect(router).toContain("authenticateAlumniCredentials(db, input.email, input.password)");
     expect(router).toContain("submitProfileChange: alumniProcedure");
     expect(router).not.toContain("setupPassword:");
     expect(router).not.toContain("first_time_claim");

@@ -13,6 +13,7 @@ import { storagePut } from "./storage";
 import { alumniExcelRowInput, commitAlumniExcelImport, previewAlumniExcelImport } from "./alumniImport";
 import { alumniClaimSignInInput, alumniProfileDraftInput, hashAlumniPassword } from "./alumniClaim";
 import { authenticateAlumniCredentials, initializeMissingAlumniPasswords } from "./alumniCredentials";
+import { normalizeAlumniSearch, parseBatchSearch } from "../shared/alumniSearch";
 import { verifyBatchAccessCode } from "./batchAccess";
 
 const optionalText = z.string().trim().max(5000).optional().nullable();
@@ -212,7 +213,10 @@ export const appRouter = router({
       if (input?.batch) conditions.push(eq(alumni.batchId, input.batch));
       if (input?.batchNumber) conditions.push(eq(batches.batchNumber, input.batchNumber));
       if (input?.district) conditions.push(eq(districts.name, input.district));
-      if (input?.search?.trim()) { const term = `%${input.search.trim()}%`; conditions.push(or(like(alumni.fullName, term), like(alumni.currentOrganization, term), like(alumni.currentDesignation, term), like(alumni.studentId, term))!); }
+      const search = normalizeAlumniSearch(input?.search);
+      const searchedBatch = parseBatchSearch(search);
+      if (searchedBatch !== null) conditions.push(eq(batches.batchNumber, searchedBatch));
+      else if (search) { const term = `%${search}%`; conditions.push(or(like(alumni.fullName, term), like(batches.displayName, term), like(districts.name, term), like(alumni.currentOrganization, term), like(alumni.currentDesignation, term), like(alumni.industry, term), like(alumni.country, term), like(alumni.city, term))!); }
       return db.select(publicAlumniSelect).from(alumni).leftJoin(batches, eq(alumni.batchId, batches.id)).leftJoin(districts, eq(alumni.districtId, districts.id)).where(and(...conditions)).orderBy(desc(alumni.createdAt));
     }),
     alumniBySlug: publicProcedure.input(z.object({ slug: z.string() })).query(async ({ input }) => {

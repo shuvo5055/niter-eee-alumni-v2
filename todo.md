@@ -285,3 +285,14 @@ Audit note: the database currently contains one registered email field per alumn
 - [x] Verify existing customized/claimed passwords are never overwritten and missing-email records are reported, not initialized: 64 initialized, 5 preserved, 0 skipped.
 - [x] Add backend regression tests for multi-record initialization, email normalization, and authentication isolation: 2 focused credential tests pass.
 - [x] Run the production build and report tested working/failing profiles: 69 records tested, 68 email-as-password successes, 1 intentional custom-password exception; all hashes are scrypt-format.
+
+
+## Alumni directory search repair — 2026-10-13
+
+- [x] Repaired server-side search to use published database records and joined batch/district fields.
+- [x] Added exact batch normalization for `12`, `Batch 12`, and `batch-12`; numeric searches no longer match unrelated IDs or phone-like fields.
+- [x] Added case-insensitive, trimmed partial search across name, batch name, district, organization, designation, industry, country, and city.
+- [x] Kept search results on the existing Alumni Directory route and added intentional Enter/arrow submission behavior.
+- [x] Added distinct loading, API-error, no-results, and Clear Search states.
+- [x] Verification: 23 test files / 57 tests passed; production build passed.
+- [x] Live database verification: 69 published records; Batch-12 returned 19/19 Batch 12 records; Batch 99 returned 0; normalized full-name, district, and organization searches matched real records; empty query returned all 69. No published record currently has a profession value.

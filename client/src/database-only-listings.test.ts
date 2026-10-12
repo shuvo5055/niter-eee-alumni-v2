@@ -23,7 +23,8 @@ describe("database-only public listings", () => {
   });
 
   it("uses explicit empty states after managed results resolve", () => {
-    for (const file of ["./pages/Alumni.tsx", "./pages/BatchDetail.tsx", "./pages/DistrictDetail.tsx", "./pages/Jobs.tsx"]) {
+    expect(source("./pages/Alumni.tsx")).toContain("No results found");
+    for (const file of ["./pages/BatchDetail.tsx", "./pages/DistrictDetail.tsx", "./pages/Jobs.tsx"]) {
       expect(source(file)).toContain("No alumni found");
     }
     expect(source("./pages/Gallery.tsx")).toContain("No gallery records found");

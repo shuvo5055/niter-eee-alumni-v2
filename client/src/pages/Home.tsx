@@ -25,20 +25,18 @@ export default function Home(){
       <div className="container hero__inner">
         <div className="hero__copy">
           <p className="eyebrow eyebrow--light"><Network size={15}/> NITER EEE / ALUMNI NETWORK</p>
-          <h1>Built on <em>connection.</em><br/>Powered by<br/>every journey.</h1>
           <p className="hero__lede">{homepage.heroDescription||"A platform for connecting NITER EEE alumni, exploring professional paths, and preserving the memories that built our department."}</p>
           <div className="hero__buttons">
             <Link href="/alumni" className="button button--signal">Explore alumni <ArrowRight size={18}/></Link>
             <Link href="/batches" className="button button--ghost">Find your batch <ArrowRight size={18}/></Link>
           </div>
-          <div className="hero__footnote"><span/><p>One department. Many disciplines.<br/>A lasting professional network.</p></div>
         </div>
         <div className="hero__stat-mark"><span>EEE</span><small>EST. 2026<br/>ALUMNI ARCHIVE</small></div>
       </div>
     </section>
     <section className="stats-section"><div className="container stats-grid">{stats.map(({value,label,icon:Icon},index)=><div className="stat-card" key={label}><span className="stat-card__index">0{index+1}</span><Icon size={21}/><strong>{value}</strong><p>{label}</p></div>)}</div></section>
     <section className="find-section"><div className="container find-layout">
-      <div className="find-copy"><p className="eyebrow">THE DIRECTORY</p><p>Search the NITER EEE community by name, batch, district, field, or organization. Every profile is a point of connection.</p><div className="find-copy__detail"><GraduationCap size={23}/><span>Designed as a living directory that can grow with every graduate.</span></div></div>
+      <div className="find-copy"><p className="eyebrow">THE DIRECTORY</p><p>Search the NITER EEE community by name, batch, district, field, or organization. Every profile is a point of connection.</p><div className="find-copy__detail"><GraduationCap size={23}/><span></span></div></div>
       <div className="find-panel"><p className="find-panel__label">SEARCH THE NETWORK</p><form onSubmit={submit}><div className="find-search"><Search size={21}/><input value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search by name, batch, district, job or organization..."/><button aria-label="Submit alumni search"><ArrowRight size={21}/></button></div></form><div className="quick-search"><span>Try:</span>{["Batch 12","Dhaka","Power & Energy","NITER"].map(item=><button key={item} onClick={()=>setQuery(item)}>{item}</button>)}</div>{query&&<div className="quick-results"><p>{results.length?"Matching alumni in the directory":"No exact match — explore all alumni"}</p>{results.map(person=><Link href={`/alumni/${person.slug}`} key={person.id}>{person.name}<span>Batch {person.batch}</span></Link>)}</div>}</div>
     </div></section>
     <section className="featured-section"><div className="container"><div className="section-head"><Link href="/alumni" className="text-link text-link--large" aria-label="Open full directory"><ArrowRight size={17}/></Link></div>{managedAlumni.isFetching?<AlumniCardsLoading/>:directoryAlumni.length?<div className="alumni-grid alumni-grid--home">{directoryAlumni.slice(0,6).map(person=><AlumniCard person={person} key={person.id}/>)}</div>:<div className="empty-state"><p className="eyebrow">ALUMNI DIRECTORY</p><h2>No alumni records are published yet.</h2><p>Verified alumni profiles will appear here when they are available.</p></div>}</div></section>

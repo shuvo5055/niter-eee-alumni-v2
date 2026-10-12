@@ -30,4 +30,11 @@ describe("database-only public listings", () => {
     expect(source("./pages/Gallery.tsx")).toContain("No gallery records found");
     expect(source("./pages/Profile.tsx")).toContain("RECORD NOT FOUND");
   });
+
+  it("preserves homepage query-string searches when the Alumni Directory opens", () => {
+    const alumniPage = source("./pages/Alumni.tsx");
+    expect(alumniPage).toContain('import { useSearch } from "wouter"');
+    expect(alumniPage).toContain("new URLSearchParams(searchParams).get(\"q\")");
+    expect(alumniPage).not.toContain("location.split(\"?\")");
+  });
 });

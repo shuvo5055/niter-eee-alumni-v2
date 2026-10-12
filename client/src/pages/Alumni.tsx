@@ -1,6 +1,6 @@
 /** Circuit Archive directory: managed public records appear immediately after an administrator publishes them. */
 import { useMemo, useState } from "react";
-import { useLocation } from "wouter";
+import { useSearch } from "wouter";
 import { ArrowDownUp, ArrowRight, UsersRound } from "lucide-react";
 import AlumniCard from "@/components/AlumniCard";
 import DirectoryControls from "@/components/DirectoryControls";
@@ -11,8 +11,8 @@ import { AlumniCardsLoading } from "@/components/DirectoryLoading";
 const toCardRecord = (person: any) => ({ id: String(person.id), slug: person.slug, name: person.fullName, batch: person.batchNumber ?? "-", position: person.currentDesignation || "-", organization: person.currentOrganization || "-", district: person.districtName || "-", country: person.country || "Bangladesh", city: person.city || "-", industry: person.industry || "-", graduationYear: 0, studentId: person.studentId || "-", degree: person.bsc || "-", photo: person.photoUrl, photoRevision: person.updatedAt, category: person.industry || "Other", addedAt: new Date(person.createdAt).getTime() });
 
 export default function Alumni() {
-  const [location] = useLocation();
-  const urlQuery = new URLSearchParams(location.split("?")[1] || "").get("q") || "";
+  const searchParams = useSearch();
+  const urlQuery = new URLSearchParams(searchParams).get("q") || "";
   const [query, setQuery] = useState(urlQuery);
   const [batch, setBatch] = useState("all");
   const [district, setDistrict] = useState("all");

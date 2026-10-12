@@ -296,3 +296,11 @@ Audit note: the database currently contains one registered email field per alumn
 - [x] Added distinct loading, API-error, no-results, and Clear Search states.
 - [x] Verification: 23 test files / 57 tests passed; production build passed.
 - [x] Live database verification: 69 published records; Batch-12 returned 19/19 Batch 12 records; Batch 99 returned 0; normalized full-name, district, and organization searches matched real records; empty query returned all 69. No published record currently has a profession value.
+
+
+## Directory search handoff correction — 2026-10-13
+
+- [x] Reproduced the remaining failure in project code: Wouter `useLocation()` returns only the pathname, so `/alumni?q=Batch%2012` was parsed as an empty query.
+- [x] Switched `Alumni.tsx` to Wouter `useSearch()` and added a regression assertion for homepage-to-directory query preservation.
+- [x] Re-verified the source-level search implementation and database search behavior.
+- [x] Final verification after correction: 23 test files / 58 tests passed; production build passed.

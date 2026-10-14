@@ -304,3 +304,16 @@ Audit note: the database currently contains one registered email field per alumn
 - [x] Switched `Alumni.tsx` to Wouter `useSearch()` and added a regression assertion for homepage-to-directory query preservation.
 - [x] Re-verified the source-level search implementation and database search behavior.
 - [x] Final verification after correction: 23 test files / 58 tests passed; production build passed.
+
+
+## Production-readiness audit — 2026-10-14
+
+- [x] Read-only audit completed across project structure, routes, schema, authentication, authorization, storage, deployed HTTP behavior, dependency advisories, and real database records.
+- [x] Verified 69/69 alumni records are published; no blank names, missing batches, duplicate non-empty emails, or duplicate slugs in the audit snapshot.
+- [x] Verified deployed routes return HTTP 200 and deployed search results match real records: Batch 12 = 19, Batch 99 = 0, Erik Hasan = 1.
+- [x] Verified public bulk responses omit email, phone, address, password hash, and claim state.
+- [ ] **P0 release blocker:** public individual-profile API currently exposes populated email while unclaimed-profile initial passwords are derived from email; remove public email and replace the email-as-password onboarding rule before real-user launch.
+- [ ] Patch dependency backlog: 1 critical, 20 high, 52 moderate, 10 low advisories reported by `pnpm audit --prod`.
+- [ ] Add CSRF/origin protection, defense-in-depth security headers, public-read rate limiting, pagination, hardened image validation, and documented/tested backup restore.
+- [ ] Run approved staged capacity tests at 50, 100, 250, and 500 concurrent users; current audit makes no 500-user capacity claim.
+- [x] Full report saved as `production-readiness-audit-2026-10-14.md`.

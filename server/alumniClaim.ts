@@ -1,4 +1,5 @@
-import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
+import { scryptSync, timingSafeEqual } from "node:crypto";
+import { compareSync, hashSync } from "bcryptjs";
 import { z } from "zod";
 
 const nullableText = z.string().trim().max(5000).optional().nullable();
@@ -47,13 +48,14 @@ export const alumniProfileDraftInput = z.object({
 export type AlumniProfileDraft = z.infer<typeof alumniProfileDraftInput>;
 
 export function hashAlumniPassword(password: string) {
-  const salt = randomBytes(16);
-  const key = scryptSync(password, salt, 64);
-  return `scrypt$${salt.toString("hex")}$${key.toString("hex")}`;
+  return hashSync(password, 12);
 }
 
 export function verifyAlumniPassword(password: string, storedHash: string | null) {
   if (!storedHash) return false;
+  if (storedHash.startsWith("$2a$") || storedHash.startsWith("$2b$") || storedHash.startsWith("$2y$")) {
+    try { return compareSync(password, storedHash); } catch { return false; }
+  }
   const [algorithm, saltHex, keyHex] = storedHash.split("$");
   if (algorithm !== "scrypt" || !saltHex || !keyHex) return false;
   try {

@@ -1,7 +1,6 @@
 import { eq, or } from "drizzle-orm";
 import { z } from "zod";
 import { activityLogs, alumni, batches, districts } from "../drizzle/schema";
-import { hashAlumniPassword } from "./alumniClaim";
 
 const optionalText = z.string().trim().max(5000).optional().nullable();
 export const alumniExcelRowInput = z.object({
@@ -82,8 +81,7 @@ export async function previewAlumniExcelImport(db: any, rows: AlumniExcelRow[]) 
 export async function commitAlumniExcelImport(db: any, actorId: number, rows: AlumniExcelRow[]) {
   return db.transaction(async (tx: any) => {
     const plan = await buildImportPlan(tx, rows);
-    const existingCredentials: Array<{ id: number; passwordHash: string | null; claimed: boolean }> = await tx.select({ id: alumni.id, passwordHash: alumni.passwordHash, claimed: alumni.claimed }).from(alumni);
-    const batchIds = new Map<number, number>(); const districtIds = new Map<string, number>();
+        const batchIds = new Map<number, number>(); const districtIds = new Map<string, number>();
     for (const row of plan.validRows) {
       if (!batchIds.has(row.batchNumber!)) {
         await tx.insert(batches).values({ batchNumber: row.batchNumber!, session: row.session, displayName: `Batch ${row.batchNumber}`, isActive: true }).onDuplicateKeyUpdate({ set: { batchNumber: row.batchNumber! } });
@@ -100,8 +98,8 @@ export async function commitAlumniExcelImport(db: any, actorId: number, rows: Al
     let created = 0; let updated = 0;
     for (const row of plan.validRows) {
       const values = { slug: row.slug, fullName: row.fullName!, batchId: batchIds.get(row.batchNumber!) ?? null, districtId: districtIds.get(normalizeKey(row.districtName)) ?? null, session: row.session, studentId: row.studentId, email: row.email, phone: row.phone, address: row.address, graduationYear: row.graduationYear ?? null, bloodGroup: row.bloodGroup, photoUrl: row.photoUrl, school: row.school, college: row.college, bsc: row.bsc, msc: row.msc, skill: row.skill, researchActivities: row.researchActivities, currentOrganization: row.currentOrganization, currentDesignation: row.currentDesignation, currentDuration: row.currentDuration, previousOrganization: row.previousOrganization, previousDesignation: row.previousDesignation, previousDuration: row.previousDuration, whatsapp: row.whatsapp, facebook: row.facebook, linkedin: row.linkedin, country: row.country || "Bangladesh", city: row.city, industry: row.industry, status: row.status || "published" as "draft" | "published" };
-      if (row.existingId) { const { photoUrl, ...valuesWithoutPhoto } = values; const current = existingCredentials.find(record => record.id === row.existingId); const needsInitialPassword = Boolean(row.email && current && !current.claimed && !current.passwordHash); const updateValues = photoUrl ? values : valuesWithoutPhoto; await tx.update(alumni).set(needsInitialPassword ? { ...updateValues, passwordHash: hashAlumniPassword(row.email!) } : updateValues).where(eq(alumni.id, row.existingId)); updated += 1; }
-      else { await tx.insert(alumni).values({ ...values, ...(row.email ? { passwordHash: hashAlumniPassword(row.email) } : {}), createdBy: actorId }); created += 1; }
+      if (row.existingId) { const { photoUrl, ...valuesWithoutPhoto } = values; const updateValues = photoUrl ? values : valuesWithoutPhoto; await tx.update(alumni).set(updateValues).where(eq(alumni.id, row.existingId)); updated += 1; }
+      else { await tx.insert(alumni).values({ ...values, passwordHash: null, claimed: false, createdBy: actorId }); created += 1; }
     }
     await tx.insert(activityLogs).values({ actorId, action: "excel_imported", entityType: "alumni", details: { processed: rows.length, created, updated, skipped: plan.issues.length, newBatches: plan.newBatches.length, newDistricts: plan.newDistricts.length } });
     return { processed: rows.length, created, updated, skipped: plan.issues, newBatches: plan.newBatches.length, newDistricts: plan.newDistricts.length };

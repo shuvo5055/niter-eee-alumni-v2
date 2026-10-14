@@ -9,14 +9,14 @@ const router = readFileSync(new URL("../../server/routers.ts", import.meta.url),
 describe("alumni claim experience", () => {
   it("adds the ownership entry point to existing public profiles without replacing their rendering", () => {
     expect(profile).toContain("<AlumniClaimPanel");
-    expect(profile).toContain("registeredEmail={managed.data.email || \"\"}");
+    expect(profile).not.toContain("managed.data.email");
     expect(profile).toContain("profile-grid");
   });
 
-  it("shows only registered-email and existing-password sign-in before the private editor", () => {
+  it("shows email-based sign-in plus a secure one-time claim-link request before the private editor", () => {
     expect(claimPanel).toContain("Manage My Profile");
     expect(claimPanel).toContain("Registered email address");
-    expect(claimPanel).toContain("readOnly");
+    expect(claimPanel).toContain("Request secure claim link");
     expect(claimPanel).toContain("Sign in to profile");
     expect(claimPanel).toContain("Invalid registered email or password.");
     expect(claimPanel).toContain("Your registered email stays private and cannot be changed here.");
@@ -29,6 +29,7 @@ describe("alumni claim experience", () => {
 
   it("keeps the backend on existing-password sign-in and preserves owner-only pending updates", () => {
     expect(router).toContain("signIn: publicProcedure.input(alumniClaimSignInInput)");
+    expect(router).toContain("requestClaim: publicProcedure");
     expect(router).toContain("authenticateAlumniCredentials(db, input.email, input.password)");
     expect(router).toContain("submitProfileChange: alumniProcedure");
     expect(router).not.toContain("setupPassword:");

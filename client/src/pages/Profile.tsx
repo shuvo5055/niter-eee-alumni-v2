@@ -1,6 +1,6 @@
 /** Circuit Archive design system: one shared alumni profile template renders each record’s own academic, career, and contact information. */
 import { Link } from "wouter";
-import { ArrowLeft, Facebook, Linkedin, Mail, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Facebook, Linkedin, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import AlumniClaimPanel from "@/components/AlumniClaimPanel";
 import { toPublicImageUrl, useManagedImageFallback } from "@/lib/publicImages";
@@ -24,7 +24,7 @@ export default function Profile({ params }: { params: { slug: string } }) {
       session: managed.data.session || "-", bloodGroup: managed.data.bloodGroup || "-", school: managed.data.school || "-", college: managed.data.college || "-", bsc: managed.data.bsc || "-", msc: managed.data.msc || "-", skill: managed.data.skill || "-", researchActivities: managed.data.researchActivities || "-",
       currentWork: { organization: managed.data.currentOrganization || "-", designation: managed.data.currentDesignation || "-", duration: managed.data.currentDuration || "-" },
       previousWork: { organization: managed.data.previousOrganization || "-", designation: managed.data.previousDesignation || "-", duration: managed.data.previousDuration || "-" },
-      contacts: { whatsapp: managed.data.whatsapp || undefined, facebook: managed.data.facebook || undefined, linkedin: managed.data.linkedin || undefined, email: managed.data.email || undefined },
+      contacts: { whatsapp: managed.data.whatsapp || undefined, facebook: managed.data.facebook || undefined, linkedin: managed.data.linkedin || undefined },
     },
   } : null;
 
@@ -54,12 +54,10 @@ export default function Profile({ params }: { params: { slug: string } }) {
     ["Designation", displayValue(profile.previousWork?.designation)],
     ["Duration", displayValue(profile.previousWork?.duration)],
   ];
-  const contactEmail = typeof contacts.email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contacts.email.trim()) ? contacts.email.trim() : undefined;
   const socialLinks = [
     { label: "WhatsApp", href: contacts.whatsapp || "https://wa.me/", icon: MessageCircle },
     { label: "Facebook", href: contacts.facebook || "https://www.facebook.com/", icon: Facebook },
     { label: "LinkedIn", href: contacts.linkedin || "https://www.linkedin.com/", icon: Linkedin },
-    ...(contactEmail ? [{ label: "Email", href: `mailto:${contactEmail}`, icon: Mail }] : []),
   ];
 
   return (
@@ -82,7 +80,7 @@ export default function Profile({ params }: { params: { slug: string } }) {
           </div>
           <div className="profile-hero__badge"><ShieldCheck size={18} /><span>PUBLIC ALUMNI<br />RECORD</span></div>
         </div>
-        {managed.data && <AlumniClaimPanel slug={managed.data.slug} registeredEmail={managed.data.email || ""} />}
+        {managed.data && <AlumniClaimPanel slug={managed.data.slug} />}
 
         <div className="profile-grid">
           <section className="profile-section profile-section--personal">

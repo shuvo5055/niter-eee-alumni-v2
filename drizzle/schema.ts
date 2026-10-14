@@ -81,6 +81,20 @@ export const alumni = mysqlTable("alumni", {
   statusIndex: index("alumni_status_idx").on(table.status),
 }));
 
+export const accountTokens = mysqlTable("accountTokens", {
+  id: int("id").autoincrement().primaryKey(),
+  alumniId: int("alumniId").notNull(),
+  tokenHash: varchar("tokenHash", { length: 64 }).notNull(),
+  type: mysqlEnum("type", ["CLAIM", "RESET_PASSWORD"]).notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  usedAt: timestamp("usedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => ({
+  tokenHashUnique: uniqueIndex("account_tokens_hash_uq").on(table.tokenHash),
+  alumniTypeIndex: index("account_tokens_alumni_type_idx").on(table.alumniId, table.type),
+  expiryIndex: index("account_tokens_expiry_idx").on(table.expiresAt),
+}));
+
 export const alumniProfileChanges = mysqlTable("alumniProfileChanges", {
   id: int("id").autoincrement().primaryKey(),
   alumniId: int("alumniId").notNull(),

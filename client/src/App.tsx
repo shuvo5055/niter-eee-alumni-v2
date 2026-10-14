@@ -21,6 +21,7 @@ import "./admin-login.css";
 import "./admin-excel-import.css";
 import "./data-loading-states.css";
 import "./batch-submission.css";
+import "./account-security.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";
@@ -43,6 +44,7 @@ import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
+import { ClaimAccount, PasswordRecovery } from "./pages/AccountSecurity";
 import { trpc } from "./lib/trpc";
 
 function PublicRouter() {
@@ -60,7 +62,7 @@ function AdminAccessGate() {
 }
 
 function Router() {
-  return <Switch><Route path="/admin/login" component={AdminLogin}/><Route path="/admin" component={AdminAccessGate}/><Route path="/admin/:section" component={AdminAccessGate}/><Route component={PublicRouter}/></Switch>;
+  return <Switch><Route path="/admin/login" component={AdminLogin}/><Route path="/admin" component={AdminAccessGate}/><Route path="/admin/:section" component={AdminAccessGate}/><Route path="/claim-account" component={ClaimAccount}/><Route path="/claim/:token" component={ClaimAccount}/><Route path="/forgot-password" component={PasswordRecovery}/><Route path="/reset-password/:token" component={PasswordRecovery}/><Route component={PublicRouter}/></Switch>;
 }
 
 export default function App() {

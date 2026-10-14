@@ -8,11 +8,13 @@ import { adminProcedure, alumniProcedure, editorProcedure, publicProcedure, rout
 import { systemRouter } from "./_core/systemRouter";
 import { getDb, recordActivity, upsertUser } from "./db";
 import { sdk } from "./_core/sdk";
-import { alumni, alumniProfileChanges, batchAccessAttempts, batchAlumniSubmissions, batches, batchSubmissionAccess, districts, galleryItems, jobs, siteContent, users } from "../drizzle/schema";
+import { accountTokens, alumni, alumniProfileChanges, batchAccessAttempts, batchAlumniSubmissions, batches, batchSubmissionAccess, districts, galleryItems, jobs, siteContent, users } from "../drizzle/schema";
 import { storagePut } from "./storage";
 import { alumniExcelRowInput, commitAlumniExcelImport, previewAlumniExcelImport } from "./alumniImport";
-import { alumniClaimSignInInput, alumniProfileDraftInput, hashAlumniPassword } from "./alumniClaim";
-import { authenticateAlumniCredentials, initializeMissingAlumniPasswords } from "./alumniCredentials";
+import { alumniClaimIdentityInput, alumniClaimSignInInput, alumniProfileDraftInput, hashAlumniPassword } from "./alumniClaim";
+import { authenticateAlumniCredentials } from "./alumniCredentials";
+import { createRawAccountToken, hashAccountToken, tokenExpiry } from "./accountTokens";
+import { sendClaimEmail, sendPasswordResetEmail } from "./accountEmail";
 import { normalizeAlumniSearch, parseBatchSearch } from "../shared/alumniSearch";
 import { verifyBatchAccessCode } from "./batchAccess";
 
@@ -50,6 +52,17 @@ const matchesSecret = (provided: string, configured: string) => timingSafeEqual(
 const credentialAdminOpenId = (email: string) => `credential-admin-${createHash("sha256").update(email).digest("hex").slice(0, 40)}`;
 const ALUMNI_SESSION_MS = 1000 * 60 * 60 * 24 * 30;
 const claimFailureMessage = "We could not verify your alumni information. Please check your details or contact the administrator.";
+const tokenRequestWindows = new Map<string, { startedAt: number; count: number }>();
+const allowTokenRequest = (ctx: { req: { headers: Record<string, unknown> } }, scope: "claim" | "reset") => {
+  const fingerprint = submissionFingerprint(ctx);
+  const key = `${scope}:${fingerprint}`;
+  const now = Date.now();
+  const current = tokenRequestWindows.get(key);
+  if (!current || now - current.startedAt >= 60 * 60 * 1000) { tokenRequestWindows.set(key, { startedAt: now, count: 1 }); return true; }
+  if (current.count >= 5) return false;
+  current.count += 1;
+  return true;
+};
 const setAlumniSession = async (ctx: any, alumniId: number) => {
   const token = await sdk.createSessionToken(`alumni-claim-${alumniId}`, { expiresInMs: ALUMNI_SESSION_MS, name: "Alumni Claim" });
   ctx.res.cookie(ALUMNI_SESSION_COOKIE, token, { ...getSessionCookieOptions(ctx.req), maxAge: ALUMNI_SESSION_MS });
@@ -64,8 +77,7 @@ const publicAlumniSelect = {
   batchNumber: batches.batchNumber, districtName: districts.name, createdAt: alumni.createdAt, updatedAt: alumni.updatedAt,
 };
 const adminAlumniSelect = { ...publicAlumniSelect, email: alumni.email, phone: alumni.phone, address: alumni.address, claimed: alumni.claimed, claimedAt: alumni.claimedAt };
-// Email is intentionally restricted to a single public profile response so directory listings never expose contact details in bulk.
-const publicProfileAlumniSelect = { ...publicAlumniSelect, email: alumni.email };
+const publicProfileAlumniSelect = { ...publicAlumniSelect };
 const publicSubmissionInput = z.object({
   accessToken: z.string().trim().min(24).max(160),
   fullName: z.string().trim().min(2).max(200),
@@ -161,7 +173,7 @@ export const appRouter = router({
       const db = await requireDb();
       const [record] = await db.select().from(alumni).where(eq(alumni.email, input.email)).limit(1);
       const now = new Date();
-      const authenticatedRecord = record && !(record.claimLockedUntil && record.claimLockedUntil > now) ? await authenticateAlumniCredentials(db, input.email, input.password) : null;
+      const authenticatedRecord = record?.claimed && record.passwordHash && !(record.claimLockedUntil && record.claimLockedUntil > now) ? await authenticateAlumniCredentials(db, input.email, input.password) : null;
       if (!authenticatedRecord || (record?.claimLockedUntil && record.claimLockedUntil > now)) {
         if (record && (!record.claimLockedUntil || record.claimLockedUntil <= now)) {
           const attempts = (record.claimLockedUntil && record.claimLockedUntil <= now ? 0 : record.claimFailedAttempts ?? 0) + 1;
@@ -172,6 +184,54 @@ export const appRouter = router({
       await db.update(alumni).set({ claimed: true, claimedAt: record.claimedAt ?? now, claimFailedAttempts: 0, claimLockedUntil: null }).where(eq(alumni.id, record.id));
       await setAlumniSession(ctx, record.id);
       return { success: true, slug: record.slug } as const;
+    }),
+    requestClaim: publicProcedure.input(alumniClaimIdentityInput).mutation(async ({ ctx, input }) => {
+      if (!allowTokenRequest(ctx, "claim")) return { success: true } as const;
+      const db = await requireDb();
+      const [record] = await db.select({ id: alumni.id, fullName: alumni.fullName, email: alumni.email, claimed: alumni.claimed }).from(alumni).where(eq(alumni.email, input.email)).limit(1);
+      if (record && !record.claimed) {
+        const raw = createRawAccountToken();
+        await db.update(accountTokens).set({ usedAt: new Date() }).where(and(eq(accountTokens.alumniId, record.id), eq(accountTokens.type, "CLAIM"), isNull(accountTokens.usedAt)));
+        await db.insert(accountTokens).values({ alumniId: record.id, tokenHash: hashAccountToken(raw), type: "CLAIM", expiresAt: tokenExpiry("CLAIM") });
+        await sendClaimEmail(record.email!, raw, record.fullName);
+      }
+      return { success: true } as const;
+    }),
+    requestPasswordReset: publicProcedure.input(alumniClaimIdentityInput).mutation(async ({ ctx, input }) => {
+      if (!allowTokenRequest(ctx, "reset")) return { success: true } as const;
+      const db = await requireDb();
+      const [record] = await db.select({ id: alumni.id, fullName: alumni.fullName, email: alumni.email }).from(alumni).where(eq(alumni.email, input.email)).limit(1);
+      if (record) {
+        const raw = createRawAccountToken();
+        await db.update(accountTokens).set({ usedAt: new Date() }).where(and(eq(accountTokens.alumniId, record.id), eq(accountTokens.type, "RESET_PASSWORD"), isNull(accountTokens.usedAt)));
+        await db.insert(accountTokens).values({ alumniId: record.id, tokenHash: hashAccountToken(raw), type: "RESET_PASSWORD", expiresAt: tokenExpiry("RESET_PASSWORD") });
+        await sendPasswordResetEmail(record.email!, raw, record.fullName);
+      }
+      return { success: true } as const;
+    }),
+    completeClaim: publicProcedure.input(z.object({ token: z.string().regex(/^[a-f0-9]{64}$/), password: z.string().min(8).max(256) })).mutation(async ({ input }) => {
+      const db = await requireDb();
+      const [token] = await db.select().from(accountTokens).where(and(eq(accountTokens.tokenHash, hashAccountToken(input.token)), eq(accountTokens.type, "CLAIM"))).limit(1);
+      if (!token || token.usedAt || token.expiresAt <= new Date()) throw new TRPCError({ code: "BAD_REQUEST", message: "This claim link is invalid or expired." });
+      await db.transaction(async tx => {
+        const consumed = await tx.update(accountTokens).set({ usedAt: new Date() }).where(and(eq(accountTokens.id, token.id), isNull(accountTokens.usedAt), gt(accountTokens.expiresAt, new Date())));
+        if (Number(consumed[0]?.affectedRows ?? 0) !== 1) throw new TRPCError({ code: "CONFLICT", message: "This claim link was already used or expired." });
+        const updated = await tx.update(alumni).set({ passwordHash: hashAlumniPassword(input.password), claimed: true, claimedAt: new Date(), claimFailedAttempts: 0, claimLockedUntil: null }).where(and(eq(alumni.id, token.alumniId), eq(alumni.claimed, false)));
+        if (Number(updated[0]?.affectedRows ?? 0) !== 1) throw new TRPCError({ code: "CONFLICT", message: "This alumni account has already been claimed." });
+      });
+      return { success: true } as const;
+    }),
+    completePasswordReset: publicProcedure.input(z.object({ token: z.string().regex(/^[a-f0-9]{64}$/), password: z.string().min(8).max(256) })).mutation(async ({ input }) => {
+      const db = await requireDb();
+      const [token] = await db.select().from(accountTokens).where(and(eq(accountTokens.tokenHash, hashAccountToken(input.token)), eq(accountTokens.type, "RESET_PASSWORD"))).limit(1);
+      if (!token || token.usedAt || token.expiresAt <= new Date()) throw new TRPCError({ code: "BAD_REQUEST", message: "This password-reset link is invalid or expired." });
+      await db.transaction(async tx => {
+        const consumed = await tx.update(accountTokens).set({ usedAt: new Date() }).where(and(eq(accountTokens.id, token.id), isNull(accountTokens.usedAt), gt(accountTokens.expiresAt, new Date())));
+        if (Number(consumed[0]?.affectedRows ?? 0) !== 1) throw new TRPCError({ code: "CONFLICT", message: "This password-reset link was already used or expired." });
+        const updated = await tx.update(alumni).set({ passwordHash: hashAlumniPassword(input.password), claimed: true, claimedAt: new Date() }).where(eq(alumni.id, token.alumniId));
+        if (Number(updated[0]?.affectedRows ?? 0) !== 1) throw new TRPCError({ code: "NOT_FOUND", message: "This alumni account could not be updated." });
+      });
+      return { success: true } as const;
     }),
     signOut: publicProcedure.mutation(({ ctx }) => { ctx.res.clearCookie(ALUMNI_SESSION_COOKIE, { ...getSessionCookieOptions(ctx.req), maxAge: -1 }); return { success: true } as const; }),
     profile: alumniProcedure.query(async ({ ctx }) => {
@@ -244,8 +304,7 @@ export const appRouter = router({
     }),
     alumni: router({
       list: editorProcedure.input(z.object({ search: z.string().optional(), batchId: z.number().optional(), districtId: z.number().optional(), organization: z.string().optional() }).optional()).query(async ({ input }) => { const db = await requireDb(); const conditions = []; if (input?.search?.trim()) { const term = `%${input.search.trim()}%`; conditions.push(or(like(alumni.fullName, term), like(alumni.studentId, term), like(alumni.currentOrganization, term))!); } if (input?.batchId) conditions.push(eq(alumni.batchId, input.batchId)); if (input?.districtId) conditions.push(eq(alumni.districtId, input.districtId)); if (input?.organization?.trim()) conditions.push(like(alumni.currentOrganization, `%${input.organization.trim()}%`)); return db.select({ ...adminAlumniSelect, status: alumni.status, updatedAt: alumni.updatedAt }).from(alumni).leftJoin(batches, eq(alumni.batchId, batches.id)).leftJoin(districts, eq(alumni.districtId, districts.id)).where(conditions.length ? and(...conditions) : undefined).orderBy(desc(alumni.updatedAt)); }),
-      save: editorProcedure.input(alumniInput).mutation(async ({ ctx, input }) => { const db = await requireDb(); const { id, photoUrl, ...values } = input; const updateValues = photoUrl === undefined ? values : { ...values, photoUrl }; if (id) { const [current] = await db.select({ passwordHash: alumni.passwordHash, claimed: alumni.claimed }).from(alumni).where(eq(alumni.id, id)).limit(1); const initialPassword = typeof values.email === "string" && values.email && current && !current.claimed && !current.passwordHash ? hashAlumniPassword(values.email) : undefined; await db.update(alumni).set(initialPassword ? { ...updateValues, passwordHash: initialPassword } : updateValues).where(eq(alumni.id, id)); await recordActivity({ actorId: ctx.user.id, action: "updated", entityType: "alumni", entityId: String(id), details: { fullName: input.fullName } }); return { id }; } const initialPassword = typeof values.email === "string" && values.email ? hashAlumniPassword(values.email) : undefined; const result = await db.insert(alumni).values({ ...values, ...(photoUrl === undefined ? {} : { photoUrl }), ...(initialPassword ? { passwordHash: initialPassword } : {}), createdBy: ctx.user.id }); const insertedId = Number(result[0].insertId); await recordActivity({ actorId: ctx.user.id, action: "created", entityType: "alumni", entityId: String(insertedId), details: { fullName: input.fullName } }); return { id: insertedId }; }),
-      initializeMissingPasswords: adminProcedure.mutation(async ({ ctx }) => { const db = await requireDb(); const report = await initializeMissingAlumniPasswords(db); await recordActivity({ actorId: ctx.user.id, action: "initialized_missing_alumni_passwords", entityType: "alumni", details: { totalRecords: report.totalRecords, initialized: report.initialized.length, alreadyConfigured: report.alreadyConfigured, skippedClaimed: report.skippedClaimed.length, skippedMissingEmail: report.skippedMissingEmail.length } }); return report; }),
+      save: editorProcedure.input(alumniInput).mutation(async ({ ctx, input }) => { const db = await requireDb(); const { id, photoUrl, ...values } = input; const updateValues = photoUrl === undefined ? values : { ...values, photoUrl }; if (id) { await db.update(alumni).set(updateValues).where(eq(alumni.id, id)); await recordActivity({ actorId: ctx.user.id, action: "updated", entityType: "alumni", entityId: String(id), details: { fullName: input.fullName } }); return { id }; } const result = await db.insert(alumni).values({ ...values, ...(photoUrl === undefined ? {} : { photoUrl }), passwordHash: null, claimed: false, createdBy: ctx.user.id }); const insertedId = Number(result[0].insertId); await recordActivity({ actorId: ctx.user.id, action: "created", entityType: "alumni", entityId: String(insertedId), details: { fullName: input.fullName } }); return { id: insertedId }; }),
       delete: editorProcedure.input(z.object({ id: z.number().int() })).mutation(async ({ ctx, input }) => { const db = await requireDb(); await db.delete(alumni).where(eq(alumni.id, input.id)); await recordActivity({ actorId: ctx.user.id, action: "deleted", entityType: "alumni", entityId: String(input.id) }); return { success: true }; }),
       importLegacy: editorProcedure.input(z.array(legacyAlumniInput).max(1000)).mutation(async ({ ctx, input }) => { const db = await requireDb(); for (const row of input) { await db.insert(batches).values({ batchNumber: row.batchNumber, displayName: `Batch ${row.batchNumber}` }).onDuplicateKeyUpdate({ set: { batchNumber: row.batchNumber } }); await db.insert(districts).values({ name: row.districtName }).onDuplicateKeyUpdate({ set: { name: row.districtName } }); const [batch] = await db.select().from(batches).where(eq(batches.batchNumber, row.batchNumber)).limit(1); const [district] = await db.select().from(districts).where(eq(districts.name, row.districtName)).limit(1); const values={slug:row.slug,fullName:row.fullName,batchId:batch?.id,districtId:district?.id,session:row.session,studentId:row.studentId,bloodGroup:row.bloodGroup,photoUrl:row.photoUrl,school:row.school,college:row.college,bsc:row.bsc,msc:row.msc,skill:row.skill,researchActivities:row.researchActivities,currentOrganization:row.organization,currentDesignation:row.designation,currentDuration:row.currentDuration,previousOrganization:row.previousOrganization,previousDesignation:row.previousDesignation,previousDuration:row.previousDuration,whatsapp:row.whatsapp,facebook:row.facebook,linkedin:row.linkedin,industry:row.industry,country:row.country??"Bangladesh",city:row.city,status:"published" as const,createdBy:ctx.user.id}; const { photoUrl, ...valuesWithoutPhoto } = values; await db.insert(alumni).values(values).onDuplicateKeyUpdate({ set: photoUrl === undefined ? valuesWithoutPhoto : values }); } await recordActivity({ actorId: ctx.user.id, action: "imported", entityType: "alumni", details: { count: input.length } }); return { imported: input.length }; }),
       previewExcelImport: editorProcedure.input(z.array(alumniExcelRowInput).min(1).max(1000)).mutation(async ({ input }) => previewAlumniExcelImport(await requireDb(), input)),
@@ -273,8 +332,7 @@ export const appRouter = router({
             const [emailOwner] = await db.select({ id: alumni.id }).from(alumni).where(eq(alumni.email, proposedData.email)).limit(1);
             if (emailOwner && emailOwner.id !== change.alumniId) throw new TRPCError({ code: "BAD_REQUEST", message: "The requested email is already assigned to another alumni record." });
           }
-          const [owner] = await db.select({ passwordHash: alumni.passwordHash, claimed: alumni.claimed }).from(alumni).where(eq(alumni.id, change.alumniId)).limit(1);
-          const approvedValues = owner && !owner.claimed && !owner.passwordHash && proposedData.email ? { ...proposedData, passwordHash: hashAlumniPassword(proposedData.email) } : proposedData;
+          const approvedValues = proposedData;
           await db.update(alumni).set(approvedValues).where(eq(alumni.id, change.alumniId));
         }
         await db.update(alumniProfileChanges).set({ status: input.decision, reviewNotes: input.notes ?? null, reviewedBy: ctx.user.id, reviewedAt: new Date() }).where(eq(alumniProfileChanges.id, change.id));
@@ -308,7 +366,7 @@ export const appRouter = router({
           const data = submission.submittedData && typeof submission.submittedData === "object" ? submission.submittedData as Record<string, unknown> : {};
           const field = (key: string) => typeof data[key] === "string" ? data[key] : null;
           const safeSlug = `${submission.fullName.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "alumni"}-submission-${submission.id}`;
-          const result = await db.insert(alumni).values({ fullName: submission.fullName, slug: safeSlug, batchId: submission.batchId, districtId: submission.districtId, email: submission.email, passwordHash: hashAlumniPassword(submission.email), studentId: submission.studentId, phone: submission.phone, photoUrl: submission.photoUrl, session: field("session"), bloodGroup: field("bloodGroup"), school: field("school"), college: field("college"), bsc: field("bsc"), msc: field("msc"), skill: field("skill"), researchActivities: field("researchActivities"), currentOrganization: field("currentOrganization"), currentDesignation: field("currentDesignation"), currentDuration: field("currentDuration"), previousOrganization: field("previousOrganization"), previousDesignation: field("previousDesignation"), previousDuration: field("previousDuration"), whatsapp: field("whatsapp"), facebook: field("facebook"), linkedin: field("linkedin"), country: field("country") || "Bangladesh", city: field("city"), industry: field("industry"), status: "published", createdBy: ctx.user.id });
+          const result = await db.insert(alumni).values({ fullName: submission.fullName, slug: safeSlug, batchId: submission.batchId, districtId: submission.districtId, email: submission.email, passwordHash: null, claimed: false, studentId: submission.studentId, phone: submission.phone, photoUrl: submission.photoUrl, session: field("session"), bloodGroup: field("bloodGroup"), school: field("school"), college: field("college"), bsc: field("bsc"), msc: field("msc"), skill: field("skill"), researchActivities: field("researchActivities"), currentOrganization: field("currentOrganization"), currentDesignation: field("currentDesignation"), currentDuration: field("currentDuration"), previousOrganization: field("previousOrganization"), previousDesignation: field("previousDesignation"), previousDuration: field("previousDuration"), whatsapp: field("whatsapp"), facebook: field("facebook"), linkedin: field("linkedin"), country: field("country") || "Bangladesh", city: field("city"), industry: field("industry"), status: "published", createdBy: ctx.user.id });
           approvedAlumniId = Number(result[0].insertId);
         }
         await db.update(batchAlumniSubmissions).set({ status: input.decision, reviewerNotes: input.notes ?? null, reviewedBy: ctx.user.id, reviewedAt: new Date(), approvedAlumniId }).where(eq(batchAlumniSubmissions.id, submission.id));

@@ -317,3 +317,16 @@ Audit note: the database currently contains one registered email field per alumn
 - [ ] Add CSRF/origin protection, defense-in-depth security headers, public-read rate limiting, pagination, hardened image validation, and documented/tested backup restore.
 - [ ] Run approved staged capacity tests at 50, 100, 250, and 500 concurrent users; current audit makes no 500-user capacity claim.
 - [x] Full report saved as `production-readiness-audit-2026-10-14.md`.
+
+
+## Secure claim and password-reset migration — 2026-10-15
+
+- [x] Added the `accountTokens` table with unique token hashes, claim/reset types, expiry, used-at timestamps, and supporting indexes.
+- [x] Added one-time hashed claim and password-reset procedures with single-active-token behavior, bounded request rate limiting, atomic consumption, expiry checks, and owner-scoped password updates.
+- [x] Added server-side transactional email delivery through Resend environment configuration and responsive public claim/reset pages.
+- [x] Removed email-derived password initialization from administrator saves, Excel imports, profile-review approval, and batch-submission approval paths.
+- [x] Public individual profiles no longer expose registered email; private/admin payloads retain email where required.
+- [x] New passwords use bcrypt; existing claimed legacy hashes remain verifiable for compatibility until the owner changes their password.
+- [x] Live credential cleanup completed: 61 unclaimed email-derived hashes cleared; 8 claimed accounts with existing password hashes preserved.
+- [x] Verification: TypeScript check passed, focused security tests 16/16 passed, full suite 23 files / 56 tests passed, production build passed, and `git diff --check` passed.
+- [ ] Configure and verify the production `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and public URL environment values before inviting real alumni to claim accounts; no email was sent during this code/data verification.

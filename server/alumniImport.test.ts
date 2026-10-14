@@ -29,7 +29,7 @@ describe("alumni Excel import preview", () => {
     expect(result.validRows.map(row => row.action)).toEqual(["update", "new"]);
   });
 
-  it("keeps commit logic transaction-backed, preserves approved photos when a spreadsheet cell is blank, and accepts a supplied replacement", () => {
+  it("keeps commit logic transaction-backed, preserves approved photos when a spreadsheet cell is blank, and never assigns email-derived passwords", () => {
     const source = readFileSync(new URL("./alumniImport.ts", import.meta.url), "utf8");
     expect(source).toContain("db.transaction(async");
     expect(source).toContain("await tx.insert(activityLogs)");
@@ -38,6 +38,7 @@ describe("alumni Excel import preview", () => {
     expect(source).toContain("photoUrl: normalizePhotoUrl(source.photoUrl)");
     expect(source).toContain("const { photoUrl, ...valuesWithoutPhoto } = values");
     expect(source).toContain("const updateValues = photoUrl ? values : valuesWithoutPhoto");
-    expect(source).toContain("set(needsInitialPassword ? { ...updateValues, passwordHash: hashAlumniPassword(row.email!) } : updateValues)");
+    expect(source).toContain("passwordHash: null, claimed: false");
+    expect(source).not.toContain("hashAlumniPassword");
   });
 });

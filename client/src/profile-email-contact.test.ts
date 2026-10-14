@@ -1,21 +1,17 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-describe("alumni profile email contact", () => {
-  it("adds a valid, profile-specific mailto action without rendering an email button for an empty address", () => {
+describe("alumni profile contact privacy", () => {
+  it("does not expose registered email in public profile markup while retaining admin and private-editor email fields", () => {
     const profile = readFileSync(new URL("./pages/Profile.tsx", import.meta.url), "utf8");
     const admin = readFileSync(new URL("./pages/Admin.tsx", import.meta.url), "utf8");
     const claim = readFileSync(new URL("./components/AlumniClaimPanel.tsx", import.meta.url), "utf8");
 
-    expect(profile).toContain("Mail");
-    expect(profile).toContain("const contactEmail");
-    expect(profile).toContain("mailto:${contactEmail}");
-    expect(profile).toContain("...(contactEmail ? [{ label: \"Email\"");
-    expect(profile).toContain('href.startsWith("mailto:")');
+    expect(profile).not.toContain("managed.data.email");
+    expect(profile).not.toContain("contactEmail");
     expect(admin).toContain('email: ""');
     expect(admin).toContain('label="Email address" type="email"');
-    expect(claim).toContain('Registered email address');
-    expect(claim).toContain('readOnly');
-    expect(claim).not.toContain('Registered email (changes require approval)');
+    expect(claim).toContain("Registered email address");
+    expect(claim).toContain("Request secure claim link");
   });
 });
